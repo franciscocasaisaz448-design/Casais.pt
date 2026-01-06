@@ -1,0 +1,440 @@
+-- OneFile_ESP_TP_PRO_Resize_Spectate_Grab_BugarCarro.client.lua
+-- Ferramentas locais para o TEU jogo (admin/debug). Sem código remoto.
+
+-- ========= Serviços =========
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local Lighting = game:GetService("Lighting")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- ========= Configurações Globais (Otimização para reduzir registros locais) =========
+ESP_DEFAULT_ON = false
+SHOW_NAME_DEFAULT = false
+SHOW_HEALTH_DEFAULT = false
+SHOW_DISTANCE_DEFAULT = false
+SHOW_TRACERS_DEFAULT = false
+ESP_POSITION_DEFAULT = "Topo"
+ESP_MODE_DEFAULT = "Cheio"
+TEAM_FILTER_DEFAULT = "Todos"
+
+FILL_COLOR = Color3.fromRGB(255, 0, 0)
+OUTLINE_COLOR = Color3.fromRGB(255, 255, 255)
+TRACER_COLOR = Color3.fromRGB(0, 255, 0)
+
+-- Aimbot Config Global
+aimbotEnabled = false
+aimbotFOV = 100
+aimbotFOVZero = 0
+aimbotSmooth = 5
+aimbotTarget = "Cabeça"
+aimbotBind = Enum.KeyCode.Unknown
+aimbotBindString = "None"
+aimbotShowFOV = false
+aimbotShowFOVZero = false
+aimbotOnlyVisible = false
+aimbotOnNPCs = false
+aimbotMobile = false
+
+-- Dropdown alvo
+local targetDropdownOpen = false
+local targetOptions = {"Cabeça", "Peito"}
+
+UI_TOGGLE_KEY = Enum.KeyCode.M
+FREEFLY_TOGGLE_KEY = Enum.KeyCode.F
+UNLOCK_MOUSE_KEY = Enum.KeyCode.P
+
+-- Free-Fly manual
+FREEFLY_SPEED = 50
+FREEFLY_SPRINT_MULT = 2
+FREEFLY_VERTICAL_SPEED = 30
+
+-- Limites do painel
+PANEL_MIN = Vector2.new(500, 400)
+PANEL_MAX = Vector2.new(900, 700)
+
+-- ========= Estado Global (Otimização) =========
+espEnabled = ESP_DEFAULT_ON
+showName = SHOW_NAME_DEFAULT
+showHealth = SHOW_HEALTH_DEFAULT
+showDistance = SHOW_DISTANCE_DEFAULT
+showTracers = SHOW_TRACERS_DEFAULT
+espPosition = ESP_POSITION_DEFAULT
+espMode = ESP_MODE_DEFAULT
+teamFilter = TEAM_FILTER_DEFAULT
+espAutoEnabled = false
+
+-- Player enhancements globais
+speedBoostEnabled = false
+speedBoostValue = 50
+jumpPowerBoostEnabled = false
+jumpPowerBoostValue = 100
+infiniteJumpEnabled = false
+antiKickEnabled = false
+
+-- Valores originais
+originalWalkSpeed = 16
+originalJumpPower = 50
+
+highlights = {}         -- [Character] = Highlight
+overlays = {}           -- [Character] = BillboardGui
+
+-- Fly-to target
+flightConn = nil
+flightStartTime = 0
+cancelling = false
+noclipActive = false
+savedCollide = {}
+
+-- Free-fly manual
+freeflyOn = false
+freeflyConn = nil
+inputStates = {W=false,A=false,S=false,D=false,Space=false,Shift=false,Ctrl=false}
+freeflyStartCFrame = nil
+
+-- UI state
+panelVisible = false
+prevMouseBehavior = nil
+prevMouseIconEnabled = nil
+
+-- Spectate
+spectating = nil
+savedSubject = nil
+savedCamType = nil
+spectateConn = nil
+
+-- Grab system
+grabbing = false
+grabbedPlayer = nil
+grabConn = nil
+GRAB_DISTANCE = 3
+GRAB_HEIGHT = 0
+
+-- Bugar systems
+buggingPlayers = {}
+bugConn = nil
+buggingCars = {}
+bugCarConn = nil
+
+-- Player selection
+selectedPlayer = nil
+
+-- ========= FUNÇÕES AUXILIARES PARA LISTA DE JOGADORES =========
+local function getPlayerTeam(player: Player): string
+	if not player.Team then return "Sem Equipe" end
+	return player.Team.Name
+end
+
+local function getPlayerTeamColor(player: Player): Color3
+	if not player.Team then return Color3.fromRGB(128, 128, 128) end
+	return player.TeamColor.Color
+end
+
+local function getPlayerHealth(player: Player): number?
+	local char = player.Character
+	if not char then return nil end
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	if not hum then return nil end
+	return hum.Health
+end
+
+local function getPlayerMaxHealth(player: Player): number?
+	local char = player.Character
+	if not char then return nil end
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	if not hum then return nil end
+	return hum.MaxHealth
+end
+
+local function getPlayerDistance(player: Player): number?
+	local char = player.Character
+	local myChar = LocalPlayer.Character
+	if not char or not myChar then return nil end
+
+	local myRoot = getPrimaryPart(myChar)
+	local targetRoot = getPrimaryPart(char)
+	if not myRoot or not targetRoot then return nil end
+
+	return math.floor((targetRoot.Position - myRoot.Position).Magnitude + 0.5)
+end
+
+local function isPlayerAlive(player: Player): boolean
+	local health = getPlayerHealth(player)
+	return health and health > 0
+end
+
+local function formatPlayerInfo(player: Player): string
+	local displayName = player.DisplayName or player.Name
+	local username = player.Name
+	local team = getPlayerTeam(player)
+	local distance = getPlayerDistance(player)
+	local health = getPlayerHealth(player)
+	local maxHealth = getPlayerMaxHealth(player)
+	local alive = isPlayerAlive(player)
+
+	local info = string.format("%s (@%s)", displayName, username)
+	if team ~= "Sem Equipe" then
+		info = info .. string.format(" | %s", team)
+	end
+	if distance then
+		info = info .. string.format(" | %dm", distance)
+	end
+	if health and maxHealth then
+		info = info .. string.format(" | HP: %d/%d", math.floor(health), math.floor(maxHealth))
+	end
+	if not alive then
+		info = info .. " | 💀 MORTO"
+	end
+
+	return info
+end
+
+-- Função para atualizar um botão de jogador específico
+local function updatePlayerButton(player: Player, button: Frame)
+	if not button or not button.Parent then return end
+
+	local mainContainer = button:FindFirstChild("MainContainer")
+	if not mainContainer then return end
+
+	local infoLabel = mainContainer:FindFirstChild("InfoLabel")
+	local teamIndicator = mainContainer:FindFirstChild("TeamIndicator")
+	local healthBarBg = mainContainer:FindFirstChild("HealthBarBg")
+	local statusLabel = mainContainer:FindFirstChild("StatusLabel")
+
+	-- Atualizar informações secundárias
+	if infoLabel then
+		infoLabel.Text = formatPlayerInfo(player)
+	end
+
+	-- Atualizar indicador de equipe
+	if teamIndicator then
+		teamIndicator.BackgroundColor3 = getPlayerTeamColor(player)
+	end
+
+	-- Atualizar barra de vida
+	if healthBarBg then
+		local healthBar = healthBarBg:FindFirstChild("HealthBar")
+		if healthBar then
+			local health = getPlayerHealth(player)
+			local maxHealth = getPlayerMaxHealth(player)
+			local healthPercent = maxHealth and health and (health / maxHealth) or 0
+
+			healthBar.Size = UDim2.new(healthPercent, 0, 1, 0)
+			healthBar.BackgroundColor3 = healthPercent > 0.5 and Color3.fromRGB(0, 255, 0) or healthPercent > 0.25 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
+		end
+	end
+
+	-- Atualizar status
+	if statusLabel then
+		local alive = isPlayerAlive(player)
+		statusLabel.TextColor3 = alive and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+		statusLabel.Text = alive and "VIVO" or "MORTO"
+	end
+end
+
+-- Sistema de atualização em tempo real
+local function startRealTimeUpdates()
+	task.spawn(function()
+		while true do
+			task.wait(0.5) -- Atualizar a cada 0.5 segundos
+
+			for player, button in pairs(playerButtons) do
+				if player and player.Parent and button and button.Parent then
+					updatePlayerButton(player, button)
+				end
+			end
+		end
+	end)
+end
+
+-- Conectar eventos de mudança de equipe
+local function setupPlayerEvents(player: Player)
+	if not player then return end
+
+	player:GetPropertyChangedSignal("Team"):Connect(function()
+		local button = playerButtons[player]
+		if button then
+			updatePlayerButton(player, button)
+		end
+	end)
+
+	player.CharacterAdded:Connect(function(character)
+		task.wait(0.1)
+		local button = playerButtons[player]
+		if button then
+			updatePlayerButton(player, button)
+		end
+	end)
+
+	player.CharacterRemoving:Connect(function()
+		local button = playerButtons[player]
+		if button then
+			updatePlayerButton(player, button)
+		end
+	end)
+end
+
+local function createPlayerButton(player)
+	if not player or player == LocalPlayer then return end
+
+	local btn = Instance.new("Frame")
+	btn.Name = player.Name .. "_Enhanced"
+	btn.Size = UDim2.new(1, -10, 0, 60) -- Maior para mais informações
+	btn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+	btn.Parent = playersList
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+	-- Indicador de seleção lateral
+	local selectionIndicator = Instance.new("Frame")
+	selectionIndicator.Size = UDim2.new(0, 4, 1, -8)
+	selectionIndicator.Position = UDim2.new(0, 2, 0, 4)
+	selectionIndicator.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+	selectionIndicator.Visible = false
+	selectionIndicator.Parent = btn
+	Instance.new("UICorner", selectionIndicator).CornerRadius = UDim.new(0, 2)
+
+	-- Container principal
+	local mainContainer = Instance.new("Frame")
+	mainContainer.Size = UDim2.new(1, -8, 1, 0)
+	mainContainer.Position = UDim2.new(0, 6, 0, 0)
+	mainContainer.BackgroundTransparency = 1
+	mainContainer.Parent = btn
+
+	-- Nome e Display Name
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Size = UDim2.new(0.6, 0, 0, 20)
+	nameLabel.Position = UDim2.new(0, 0, 0, 2)
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Font = Enum.Font.GothamBold
+	nameLabel.TextSize = 14
+	nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+	nameLabel.Text = player.DisplayName .. " (@" .. player.Name .. ")"
+	nameLabel.Parent = mainContainer
+
+	-- Informações secundárias (equipe, distância, vida)
+	local infoLabel = Instance.new("TextLabel")
+	infoLabel.Size = UDim2.new(0.6, 0, 0, 16)
+	infoLabel.Position = UDim2.new(0, 0, 0, 22)
+	infoLabel.BackgroundTransparency = 1
+	infoLabel.Font = Enum.Font.SourceSans
+	infoLabel.TextSize = 12
+	infoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+	infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+	infoLabel.Text = formatPlayerInfo(player)
+	infoLabel.Parent = mainContainer
+
+	-- Indicador de equipe (canto superior direito)
+	local teamIndicator = Instance.new("Frame")
+	teamIndicator.Size = UDim2.new(0, 12, 0, 12)
+	teamIndicator.Position = UDim2.new(1, -16, 0, 4)
+	teamIndicator.BackgroundColor3 = getPlayerTeamColor(player)
+	teamIndicator.Parent = mainContainer
+	Instance.new("UICorner", teamIndicator).CornerRadius = UDim.new(1, 0)
+
+	-- Barra de vida (parte inferior)
+	local healthBarBg = Instance.new("Frame")
+	healthBarBg.Size = UDim2.new(0.6, 0, 0, 6)
+	healthBarBg.Position = UDim2.new(0, 0, 0, 42)
+	healthBarBg.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	healthBarBg.Parent = mainContainer
+	Instance.new("UICorner", healthBarBg).CornerRadius = UDim.new(0, 3)
+
+	local health = getPlayerHealth(player)
+	local maxHealth = getPlayerMaxHealth(player)
+	local healthPercent = maxHealth and health and (health / maxHealth) or 0
+
+	local healthBar = Instance.new("Frame")
+	healthBar.Size = UDim2.new(healthPercent, 0, 1, 0)
+	healthBar.BackgroundColor3 = healthPercent > 0.5 and Color3.fromRGB(0, 255, 0) or healthPercent > 0.25 and Color3.fromRGB(255, 255, 0) or Color3.fromRGB(255, 0, 0)
+	healthBar.Parent = healthBarBg
+	Instance.new("UICorner", healthBar).CornerRadius = UDim.new(0, 3)
+
+	-- Status de vida (canto inferior direito)
+	local statusLabel = Instance.new("TextLabel")
+	statusLabel.Size = UDim2.new(0.35, 0, 0, 16)
+	statusLabel.Position = UDim2.new(0.65, 0, 0, 40)
+	statusLabel.BackgroundTransparency = 1
+	statusLabel.Font = Enum.Font.SourceSansBold
+	statusLabel.TextSize = 10
+	statusLabel.TextColor3 = isPlayerAlive(player) and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+	statusLabel.TextXAlignment = Enum.TextXAlignment.Right
+	statusLabel.Text = isPlayerAlive(player) and "VIVO" or "MORTO"
+	statusLabel.Parent = mainContainer
+
+	-- Botão invisível para cliques
+	local clickBtn = Instance.new("TextButton")
+	clickBtn.Size = UDim2.new(1, 0, 1, 0)
+	clickBtn.BackgroundTransparency = 1
+	clickBtn.Text = ""
+	clickBtn.Parent = btn
+
+	clickBtn.MouseButton1Click:Connect(function()
+		-- Desselecionar anterior
+		for _, button in pairs(playerButtons) do
+			if button:IsA("Frame") then
+				local indicator = button:FindFirstChild("SelectionIndicator")
+				if indicator then
+					indicator.Visible = false
+					button.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+				end
+			end
+		end
+
+		-- Selecionar atual
+		selectionIndicator.Visible = true
+		btn.BackgroundColor3 = Color3.fromRGB(60, 60, 75)
+		selectedPlayer = player
+
+		-- Mostrar painel de ações
+		if actionsPanel then
+			actionsPanel.Visible = true
+			if tpBtn then tpBtn.Visible = true end
+			if spectateBtn then spectateBtn.Visible = true end
+		spectateToggle.Visible = true
+		end
+	end)
+
+	playerButtons[player] = btn
+	return btn
+end
+
+local function buildPlayersOnce()
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and not playerButtons[p] then
+			createPlayerButton(p)
+		end
+	end
+end
+
+
+
+Players.PlayerRemoving:Connect(function(p)
+	if playerButtons[p] then
+		playerButtons[p]:Destroy()
+		playerButtons[p] = nil
+	end
+	if selectedPlayer == p then
+		selectedPlayer = nil
+		actionsPanel.Visible = false
+	end
+end)
+
+local function applySearch(text)
+	text = text:lower()
+
+	for player, button in pairs(playerButtons) do
+		if text == "" then
+			button.Visible = true
+		else
+			local name = player.Name:lower()
+			local display = player.DisplayName:lower()
+			button.Visible = name:find(text) or display:find(text)
+		end
+	end
+end	return btn
