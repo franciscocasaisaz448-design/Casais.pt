@@ -154,19 +154,19 @@ gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(900, 620)
-frame.Position = UDim2.new(0.5, -450, 0.5, -310)
-frame.BackgroundColor3 = Color3.fromRGB(18,18,26)
+frame.Size = UDim2.fromOffset(950, 650)
+frame.Position = UDim2.new(0.5, -475, 0.5, -325)
+frame.BackgroundColor3 = Color3.fromRGB(15,15,20)
 frame.Active = true
 frame.Draggable = true
 frame.Visible = false
 frame.Parent = gui
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
 
 local frameStroke = Instance.new("UIStroke")
 frameStroke.Color = Color3.fromRGB(139, 92, 246)
-frameStroke.Thickness = 2
-frameStroke.Transparency = 0.5
+frameStroke.Thickness = 3
+frameStroke.Transparency = 0.3
 frameStroke.Parent = frame
 
 local shadow = Instance.new("ImageLabel")
@@ -180,83 +180,116 @@ shadow.ZIndex = 0
 shadow.Parent = frame
 
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 75)
+header.Size = UDim2.new(1, 0, 0, 80)
 header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 header.BorderSizePixel = 0
 header.Parent = frame
+local headerGradient = Instance.new("UIGradient")
+headerGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(139, 92, 246)), ColorSequenceKeypoint.new(1, Color3.fromRGB(109, 62, 216))}
+headerGradient.Rotation = 45
+headerGradient.Parent = header
 local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 18)
+headerCorner.CornerRadius = UDim.new(0, 20)
 headerCorner.Parent = header
 local headerCover = Instance.new("Frame")
-headerCover.Size = UDim2.new(1, 0, 0, 30)
-headerCover.Position = UDim2.new(0, 0, 1, -30)
+headerCover.Size = UDim2.new(1, 0, 0, 35)
+headerCover.Position = UDim2.new(0, 0, 1, -35)
 headerCover.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 headerCover.BorderSizePixel = 0
 headerCover.Parent = header
+local headerCoverGradient = Instance.new("UIGradient")
+headerCoverGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(139, 92, 246)), ColorSequenceKeypoint.new(1, Color3.fromRGB(109, 62, 216))}
+headerCoverGradient.Rotation = 45
+headerCoverGradient.Parent = headerCover
 
 local titleIcon = Instance.new("TextLabel")
-titleIcon.Size = UDim2.new(0, 50, 0, 50)
-titleIcon.Position = UDim2.new(0, 15, 0, 10)
+titleIcon.Size = UDim2.new(0, 55, 0, 55)
+titleIcon.Position = UDim2.new(0, 18, 0, 12)
 titleIcon.BackgroundColor3 = Color3.fromRGB(255,255,255)
-titleIcon.BackgroundTransparency = 0.85
+titleIcon.BackgroundTransparency = 0.9
 titleIcon.Text = "⚡"
 titleIcon.Font = Enum.Font.GothamBold
-titleIcon.TextSize = 28
+titleIcon.TextSize = 32
 titleIcon.TextColor3 = Color3.fromRGB(255,255,255)
 titleIcon.Parent = header
-Instance.new("UICorner", titleIcon).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", titleIcon).CornerRadius = UDim.new(0, 14)
+local iconStroke = Instance.new("UIStroke", titleIcon)
+iconStroke.Color = Color3.fromRGB(255,255,255)
+iconStroke.Thickness = 2
+iconStroke.Transparency = 0.7
 
 local title = Instance.new("TextLabel")
 title.BackgroundTransparency = 1
-title.Size = UDim2.new(1, -120, 1, 0)
-title.Position = UDim2.new(0, 75, 0, 0)
+title.Size = UDim2.new(1, -140, 1, 0)
+title.Position = UDim2.new(0, 82, 0, 0)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 24
+title.TextSize = 26
 title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Text = "CASAIS SCRIPTER"
 title.Parent = header
+local titleStroke = Instance.new("UIStroke", title)
+titleStroke.Color = Color3.fromRGB(0,0,0)
+titleStroke.Thickness = 1
+titleStroke.Transparency = 0.5
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.fromOffset(45, 45)
-closeBtn.Position = UDim2.new(1, -60, 0, 12)
+closeBtn.Size = UDim2.fromOffset(50, 50)
+closeBtn.Position = UDim2.new(1, -65, 0, 15)
 closeBtn.Text = "✕"
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 20
+closeBtn.TextSize = 22
 closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
 closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 closeBtn.Parent = header
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 12)
+local closeBtnStroke = Instance.new("UIStroke", closeBtn)
+closeBtnStroke.Color = Color3.fromRGB(200, 40, 40)
+closeBtnStroke.Thickness = 2
+closeBtnStroke.Transparency = 0.5
 
 local tabs = Instance.new("ScrollingFrame")
-tabs.Size = UDim2.new(0, 150, 1, -95)
-tabs.Position = UDim2.new(0, 15, 0, 85)
-tabs.BackgroundTransparency = 1
+tabs.Size = UDim2.new(0, 165, 1, -100)
+tabs.Position = UDim2.new(0, 18, 0, 90)
+tabs.BackgroundColor3 = Color3.fromRGB(20,20,28)
 tabs.BorderSizePixel = 0
-tabs.ScrollBarThickness = 4
+tabs.ScrollBarThickness = 5
 tabs.CanvasSize = UDim2.new(0,0,0,0)
 tabs.AutomaticCanvasSize = Enum.AutomaticSize.Y
 tabs.Parent = frame
+Instance.new("UICorner", tabs).CornerRadius = UDim.new(0, 14)
+local tabsStroke = Instance.new("UIStroke", tabs)
+tabsStroke.Color = Color3.fromRGB(40,40,50)
+tabsStroke.Thickness = 1
+tabsStroke.Transparency = 0.5
 local tabsLayout = Instance.new("UIListLayout", tabs)
-tabsLayout.Padding = UDim.new(0,8)
+tabsLayout.Padding = UDim.new(0,10)
 tabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+local tabsPadding = Instance.new("UIPadding", tabs)
+tabsPadding.PaddingTop = UDim.new(0,8)
+tabsPadding.PaddingBottom = UDim.new(0,8)
+tabsPadding.PaddingLeft = UDim.new(0,8)
+tabsPadding.PaddingRight = UDim.new(0,8)
 
 local function makeTab(text, order)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, -8, 0, 50)
+	b.Size = UDim2.new(1, -8, 0, 55)
 	b.Text = text
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = 14
-	b.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	b.TextColor3 = Color3.fromRGB(180,180,190)
+	b.TextSize = 15
+	b.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	b.TextColor3 = Color3.fromRGB(160,160,170)
 	b.LayoutOrder = order
 	b.Parent = tabs
 	local corner = Instance.new("UICorner", b)
-	corner.CornerRadius = UDim.new(0, 12)
+	corner.CornerRadius = UDim.new(0, 14)
 	local stroke = Instance.new("UIStroke", b)
-	stroke.Color = Color3.fromRGB(50,50,60)
-	stroke.Thickness = 1
-	stroke.Transparency = 0.5
+	stroke.Color = Color3.fromRGB(45,45,55)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.6
+	local gradient = Instance.new("UIGradient", b)
+	gradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(28,28,38)), ColorSequenceKeypoint.new(1, Color3.fromRGB(22,22,32))}
+	gradient.Rotation = 90
 	return b
 end
 
@@ -268,8 +301,8 @@ local tabVision = makeTab("👁️ VISÃO", 5)
 local tabMisc = makeTab("⚙️ MISC", 6)
 
 local pages = Instance.new("Frame")
-pages.Size = UDim2.new(1, -185, 1, -95)
-pages.Position = UDim2.new(0, 175, 0, 85)
+pages.Size = UDim2.new(1, -205, 1, -100)
+pages.Position = UDim2.new(0, 193, 0, 90)
 pages.BackgroundTransparency = 1
 pages.Parent = frame
 
@@ -302,6 +335,7 @@ local aimbotTarget = "Head"
 local aimbotKey = Enum.UserInputType.MouseButton2
 local aimbotKeyName = "Botão Direito"
 local aimbotSmooth = 5
+local aimbotMaxDist = 500
 local fovCircle = nil
 local waitingForKey = false
 
@@ -328,6 +362,15 @@ local function getClosestPlayer()
 			if hum and hum.Health > 0 then
 				local targetPart = char:FindFirstChild(aimbotTarget)
 				if targetPart then
+					local myChar = LocalPlayer.Character
+					if myChar then
+						local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+						if myRoot then
+							local dist3D = (targetPart.Position - myRoot.Position).Magnitude
+							if dist3D > aimbotMaxDist then continue end
+						end
+					end
+					
 					local screenPos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
 					if onScreen and screenPos.Z > 0 then
 						local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
@@ -411,7 +454,7 @@ end)
 aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local aimbotMainCard = Instance.new("Frame")
-aimbotMainCard.Size = UDim2.new(1, 0, 0, 220)
+aimbotMainCard.Size = UDim2.new(1, 0, 0, 280)
 aimbotMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
 aimbotMainCard.Parent = aimbotPage
 Instance.new("UICorner", aimbotMainCard).CornerRadius = UDim.new(0, 12)
@@ -544,7 +587,7 @@ createFOVSlider()
 
 local targetToggle = Instance.new("TextButton")
 targetToggle.Size = UDim2.new(0.48, -5, 0, 35)
-targetToggle.Position = UDim2.new(0, 12, 0, 175)
+targetToggle.Position = UDim2.new(0, 12, 0, 235)
 targetToggle.Text = "🎯 CABEÇA"
 targetToggle.Font = Enum.Font.GothamBold
 targetToggle.TextSize = 13
@@ -631,7 +674,7 @@ createSmoothSlider()
 
 local keyBindBtn = Instance.new("TextButton")
 keyBindBtn.Size = UDim2.new(0.48, -5, 0, 35)
-keyBindBtn.Position = UDim2.new(0.52, 0, 0, 175)
+keyBindBtn.Position = UDim2.new(0.52, 0, 0, 235)
 keyBindBtn.Text = "⏱️ " .. aimbotKeyName
 keyBindBtn.Font = Enum.Font.GothamBold
 keyBindBtn.TextSize = 13
@@ -1471,6 +1514,7 @@ infoText.Parent = infoCard
 
 local espEnabled = true
 local espMode = "TEAM"
+local espMaxDist = 500
 local espHighlights = {}
 
 local function isSameTeam(player)
@@ -1500,6 +1544,24 @@ local function updateESP()
 		if player ~= LocalPlayer and player.Character then
 			local char = player.Character
 			local highlight = espHighlights[player]
+			
+			local myChar = LocalPlayer.Character
+			local inRange = false
+			if myChar then
+				local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+				local theirRoot = char:FindFirstChild("HumanoidRootPart")
+				if myRoot and theirRoot then
+					local dist = (theirRoot.Position - myRoot.Position).Magnitude
+					inRange = dist <= espMaxDist
+				end
+			end
+			
+			if not inRange then
+				if highlight then
+					highlight.Enabled = false
+				end
+				continue
+			end
 			
 			if not highlight then
 				highlight = Instance.new("Highlight")
@@ -2287,42 +2349,66 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 local function setTab(which)
-	tabPlayers.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabPlayers.TextColor3 = Color3.fromRGB(180,180,190)
-	tabMovement.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabMovement.TextColor3 = Color3.fromRGB(180,180,190)
-	tabAimbot.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabAimbot.TextColor3 = Color3.fromRGB(180,180,190)
-	tabClicker.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
-	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
-	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
+	tabPlayers.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabPlayers.TextColor3 = Color3.fromRGB(160,160,170)
+	tabPlayers:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabPlayers:FindFirstChildOfClass("UIStroke").Transparency=0.6
+	tabMovement.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabMovement.TextColor3 = Color3.fromRGB(160,160,170)
+	tabMovement:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabMovement:FindFirstChildOfClass("UIStroke").Transparency=0.6
+	tabAimbot.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabAimbot.TextColor3 = Color3.fromRGB(160,160,170)
+	tabAimbot:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabAimbot:FindFirstChildOfClass("UIStroke").Transparency=0.6
+	tabClicker.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabClicker.TextColor3 = Color3.fromRGB(160,160,170)
+	tabClicker:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabClicker:FindFirstChildOfClass("UIStroke").Transparency=0.6
+	tabVision.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabVision.TextColor3 = Color3.fromRGB(160,160,170)
+	tabVision:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabVision:FindFirstChildOfClass("UIStroke").Transparency=0.6
+	tabMisc.BackgroundColor3 = Color3.fromRGB(28,28,38)
+	tabMisc.TextColor3 = Color3.fromRGB(160,160,170)
+	tabMisc:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(45,45,55)
+	tabMisc:FindFirstChildOfClass("UIStroke").Transparency=0.6
 	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
+		tabPlayers:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabPlayers:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		playersPage.Visible=true
 	elseif which=="MOVEMENT" then 
 		tabMovement.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMovement.TextColor3=Color3.fromRGB(255,255,255)
+		tabMovement:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabMovement:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		movementPage.Visible=true
 	elseif which=="AIMBOT" then 
 		tabAimbot.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabAimbot.TextColor3=Color3.fromRGB(255,255,255)
+		tabAimbot:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabAimbot:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		aimbotPage.Visible=true
 	elseif which=="CLICKER" then 
 		tabClicker.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabClicker.TextColor3=Color3.fromRGB(255,255,255)
+		tabClicker:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabClicker:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		clickerPage.Visible=true
 	elseif which=="VISION" then 
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
+		tabVision:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabVision:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		visionPage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
+		tabMisc:FindFirstChildOfClass("UIStroke").Color=Color3.fromRGB(139, 92, 246)
+		tabMisc:FindFirstChildOfClass("UIStroke").Transparency=0.3
 		miscPage.Visible=true 
 	end
 end
