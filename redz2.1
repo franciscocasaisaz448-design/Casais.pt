@@ -444,7 +444,9 @@ RunService.Heartbeat:Connect(function()
 		local currentTime = tick()
 		if currentTime - lastClickTime >= autoClickerSpeed / 1000 then
 			pcall(function()
-				mouse1click()
+				local VirtualInputManager = game:GetService("VirtualInputManager")
+				VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+				VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 			end)
 			lastClickTime = currentTime
 		end
