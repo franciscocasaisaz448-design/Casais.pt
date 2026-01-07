@@ -1,232 +1,252 @@
+-- CASAIS SCRIPTER - Admin Panel PRO
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local UI_TOGGLE_KEY = Enum.KeyCode.M
-local panelVisible = false
-local prevMouseBehavior, prevMouseIconEnabled
-local spectating, savedSubject, savedCamType
-local selectedPlayer
+local selectedPlayer = nil
 local playerButtons = {}
+local spectating = false
+local prevMouseBehavior
+local prevMouseIconEnabled
+local panelVisible = false
 
-local function getPrimaryPart(char)
-	if not char then return nil end
-	return char.PrimaryPart or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
-end
-
-local FlySystem = {
+-- Sistema de Voo
+_G.FlySystem = {
     flying = false,
     noclip = false,
     speed = 50,
     bodyGyro = nil,
     bodyVelocity = nil,
-    control = {F = 0, B = 0, L = 0, R = 0, U = 0, D = 0}
+    control = {F=0, B=0, L=0, R=0, U=0, D=0}
 }
 
-function FlySystem:toggleFly()
-    self.flying = not self.flying
-    local character = LocalPlayer.Character
-    if not character then return end
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRootPart then return end
+function _G.FlySystem.toggleFly()
+    _G.FlySystem.flying = not _G.FlySystem.flying
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
 
-    if self.flying then
-        self.bodyGyro = Instance.new("BodyGyro", humanoidRootPart)
-        self.bodyGyro.MaxTorque = Vector3.new(400000, 400000, 400000)
-        self.bodyGyro.D = 1000
-        self.bodyGyro.CFrame = humanoidRootPart.CFrame
-        self.bodyVelocity = Instance.new("BodyVelocity", humanoidRootPart)
-        self.bodyVelocity.MaxForce = Vector3.new(400000, 400000, 400000)
-        self.bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    if _G.FlySystem.flying then
+        _G.FlySystem.bodyGyro = Instance.new("BodyGyro", hrp)
+        _G.FlySystem.bodyGyro.MaxTorque = Vector3.new(4e5, 4e5, 4e5)
+        _G.FlySystem.bodyGyro.CFrame = hrp.CFrame
+        _G.FlySystem.bodyVelocity = Instance.new("BodyVelocity", hrp)
+        _G.FlySystem.bodyVelocity.MaxForce = Vector3.new(4e5, 4e5, 4e5)
+        _G.FlySystem.bodyVelocity.Velocity = Vector3.zero
     else
-        if self.bodyGyro then self.bodyGyro:Destroy() end
-        if self.bodyVelocity then self.bodyVelocity:Destroy() end
-        self.bodyGyro = nil
-        self.bodyVelocity = nil
+        if _G.FlySystem.bodyGyro then _G.FlySystem.bodyGyro:Destroy() end
+        if _G.FlySystem.bodyVelocity then _G.FlySystem.bodyVelocity:Destroy() end
     end
 end
 
-function FlySystem:disableFly()
-    if self.flying then
-        self.flying = false
-        if self.bodyGyro then self.bodyGyro:Destroy() end
-        if self.bodyVelocity then self.bodyVelocity:Destroy() end
-        self.bodyGyro = nil
-        self.bodyVelocity = nil
-    end
+function _G.FlySystem.toggleNoclip()
+    _G.FlySystem.noclip = not _G.FlySystem.noclip
 end
 
-function FlySystem:toggleNoclip()
-    self.noclip = not self.noclip
-end
-
-function FlySystem:setupControls()
+function _G.FlySystem.init()
     UserInputService.InputBegan:Connect(function(input, gpe)
         if gpe then return end
-        if input.KeyCode == Enum.KeyCode.W then self.control.F = 1 end
-        if input.KeyCode == Enum.KeyCode.S then self.control.B = 1 end
-        if input.KeyCode == Enum.KeyCode.A then self.control.L = 1 end
-        if input.KeyCode == Enum.KeyCode.D then self.control.R = 1 end
-        if input.KeyCode == Enum.KeyCode.Space then self.control.U = 1 end
-        if input.KeyCode == Enum.KeyCode.LeftControl then self.control.D = 1 end
+        if input.KeyCode == Enum.KeyCode.W then _G.FlySystem.control.F = 1
+        elseif input.KeyCode == Enum.KeyCode.S then _G.FlySystem.control.B = 1
+        elseif input.KeyCode == Enum.KeyCode.A then _G.FlySystem.control.L = 1
+        elseif input.KeyCode == Enum.KeyCode.D then _G.FlySystem.control.R = 1
+        elseif input.KeyCode == Enum.KeyCode.Space then _G.FlySystem.control.U = 1
+        elseif input.KeyCode == Enum.KeyCode.LeftControl then _G.FlySystem.control.D = 1 end
     end)
+
     UserInputService.InputEnded:Connect(function(input, gpe)
         if gpe then return end
-        if input.KeyCode == Enum.KeyCode.W then self.control.F = 0 end
-        if input.KeyCode == Enum.KeyCode.S then self.control.B = 0 end
-        if input.KeyCode == Enum.KeyCode.A then self.control.L = 0 end
-        if input.KeyCode == Enum.KeyCode.D then self.control.R = 0 end
-        if input.KeyCode == Enum.KeyCode.Space then self.control.U = 0 end
-        if input.KeyCode == Enum.KeyCode.LeftControl then self.control.D = 0 end
+        if input.KeyCode == Enum.KeyCode.W then _G.FlySystem.control.F = 0
+        elseif input.KeyCode == Enum.KeyCode.S then _G.FlySystem.control.B = 0
+        elseif input.KeyCode == Enum.KeyCode.A then _G.FlySystem.control.L = 0
+        elseif input.KeyCode == Enum.KeyCode.D then _G.FlySystem.control.R = 0
+        elseif input.KeyCode == Enum.KeyCode.Space then _G.FlySystem.control.U = 0
+        elseif input.KeyCode == Enum.KeyCode.LeftControl then _G.FlySystem.control.D = 0 end
     end)
-end
 
-function FlySystem:startLoop()
     RunService.RenderStepped:Connect(function()
-        local character = LocalPlayer.Character
-        if not character then return end
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        if not humanoidRootPart then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
 
-        if self.noclip then
-            for _, v in pairs(character:GetDescendants()) do
-                if v:IsA("BasePart") and v.CanCollide == true then
-                    v.CanCollide = false
-                end
+        if _G.FlySystem.noclip then
+            for _, v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") and v.CanCollide then v.CanCollide = false end
             end
         end
 
-        if self.flying and humanoidRootPart then
+        if _G.FlySystem.flying and hrp then
             local cam = workspace.CurrentCamera
             local moveVec = Vector3.zero
-            local forward = cam.CFrame.LookVector
-            local right = cam.CFrame.RightVector
-            local up = Vector3.new(0, 1, 0)
-            moveVec = moveVec + forward * (self.control.F - self.control.B) + right * (self.control.R - self.control.L) + up * (self.control.U - self.control.D)
+            moveVec = moveVec + cam.CFrame.LookVector * (_G.FlySystem.control.F - _G.FlySystem.control.B)
+            moveVec = moveVec + cam.CFrame.RightVector * (_G.FlySystem.control.R - _G.FlySystem.control.L)
+            moveVec = moveVec + Vector3.new(0,1,0) * (_G.FlySystem.control.U - _G.FlySystem.control.D)
             if moveVec.Magnitude > 0 then
-                moveVec = moveVec.Unit * self.speed
-                humanoidRootPart.CFrame = humanoidRootPart.CFrame + moveVec
+                hrp.CFrame = hrp.CFrame + moveVec.Unit * _G.FlySystem.speed
             end
         end
     end)
 end
 
-function FlySystem:init()
-    self:setupControls()
-    self:startLoop()
+-- Funções para jogadores
+function instantTPTo(player)
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+        end
+    end
 end
 
-local function startSpectate(p)
-    if not p or p == LocalPlayer then return end
-    local targetChar = p.Character
-    if not targetChar then return end
-    local hum = targetChar:FindFirstChildOfClass("Humanoid")
-    if not hum then return end
-    if not savedSubject then savedSubject = Camera.CameraSubject end
-    if not savedCamType then savedCamType = Camera.CameraType end
-    Camera.CameraType = Enum.CameraType.Custom
-    Camera.CameraSubject = hum
-    spectating = p
+function startSpectate(player)
+    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+        spectating = player
+        Camera.CameraSubject = player.Character.Humanoid
+    end
 end
 
-local function stopSpectate()
-    if savedSubject then Camera.CameraSubject = savedSubject end
-    if savedCamType then Camera.CameraType = savedCamType end
-    spectating = nil
+function stopSpectate()
+    spectating = false
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        Camera.CameraSubject = LocalPlayer.Character.Humanoid
+    end
 end
 
-local function instantTPTo(targetPlayer)
-	if not targetPlayer or targetPlayer == LocalPlayer then return end
-	local char = LocalPlayer.Character
-	local targetChar = targetPlayer.Character
-	if not char or not targetChar then return end
-	local srcPart = getPrimaryPart(char)
-	local dstPart = getPrimaryPart(targetChar)
-	if not srcPart or not dstPart then return end
-	char:PivotTo(CFrame.new(dstPart.Position + Vector3.new(0,3,0)))
-end
-
+-- Interface
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
-gui.Parent = game.CoreGui
+gui.Parent = LocalPlayer.PlayerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(900, 620)
-frame.Position = UDim2.new(0.5, -450, 0.5, -310)
-frame.BackgroundColor3 = Color3.fromRGB(18,18,26)
+frame.Size = UDim2.fromOffset(600, 400)
+frame.Position = UDim2.new(0.5, -300, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,30)
 frame.Active = true
 frame.Draggable = true
-frame.Visible = false
+frame.Visible = true
 frame.Parent = gui
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
-
-local frameStroke = Instance.new("UIStroke")
-frameStroke.Color = Color3.fromRGB(139, 92, 246)
-frameStroke.Thickness = 2
-frameStroke.Transparency = 0.5
-frameStroke.Parent = frame
-
-local shadow = Instance.new("ImageLabel")
-shadow.Size = UDim2.new(1, 30, 1, 30)
-shadow.Position = UDim2.new(0, -15, 0, -15)
-shadow.BackgroundTransparency = 1
-shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-shadow.ImageColor3 = Color3.fromRGB(0,0,0)
-shadow.ImageTransparency = 0.7
-shadow.ZIndex = 0
-shadow.Parent = frame
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
 
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 75)
+header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-header.BorderSizePixel = 0
 header.Parent = frame
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 18)
-headerCorner.Parent = header
-local headerCover = Instance.new("Frame")
-headerCover.Size = UDim2.new(1, 0, 0, 30)
-headerCover.Position = UDim2.new(0, 0, 1, -30)
-headerCover.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-headerCover.BorderSizePixel = 0
-headerCover.Parent = header
-
-local titleIcon = Instance.new("TextLabel")
-titleIcon.Size = UDim2.new(0, 50, 0, 50)
-titleIcon.Position = UDim2.new(0, 15, 0, 10)
-titleIcon.BackgroundColor3 = Color3.fromRGB(255,255,255)
-titleIcon.BackgroundTransparency = 0.85
-titleIcon.Text = "⚡"
-titleIcon.Font = Enum.Font.GothamBold
-titleIcon.TextSize = 28
-titleIcon.TextColor3 = Color3.fromRGB(255,255,255)
-titleIcon.Parent = header
-Instance.new("UICorner", titleIcon).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 15)
 
 local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -60, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
 title.BackgroundTransparency = 1
-title.Size = UDim2.new(1, -120, 1, 0)
-title.Position = UDim2.new(0, 75, 0, 0)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 24
+title.TextSize = 20
 title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Text = "CASAIS SCRIPTER"
+title.Text = "⚡ CASAIS SCRIPTER"
 title.Parent = header
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.fromOffset(45, 45)
-closeBtn.Position = UDim2.new(1, -60, 0, 12)
+closeBtn.Size = UDim2.fromOffset(40, 40)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
 closeBtn.Text = "✕"
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 20
+closeBtn.TextSize = 18
 closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+closeBtn.TextColor3 = Color3.new(1,1,1)
 closeBtn.Parent = header
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, -20, 1, -70)
+content.Position = UDim2.new(0, 10, 0, 60)
+content.BackgroundTransparency = 1
+content.Parent = frame
+
+local flyToggle = Instance.new("TextButton")
+flyToggle.Size = UDim2.new(1, 0, 0, 50)
+flyToggle.Position = UDim2.new(0, 0, 0, 0)
+flyToggle.Text = "🚀 FLY: OFF"
+flyToggle.Font = Enum.Font.GothamBold
+flyToggle.TextSize = 16
+flyToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+flyToggle.TextColor3 = Color3.new(1,1,1)
+flyToggle.Parent = content
+Instance.new("UICorner", flyToggle).CornerRadius = UDim.new(0, 10)
+
+local noclipToggle = Instance.new("TextButton")
+noclipToggle.Size = UDim2.new(1, 0, 0, 50)
+noclipToggle.Position = UDim2.new(0, 0, 0, 60)
+noclipToggle.Text = "🌫️ NOCLIP: OFF"
+noclipToggle.Font = Enum.Font.GothamBold
+noclipToggle.TextSize = 16
+noclipToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+noclipToggle.TextColor3 = Color3.new(1,1,1)
+noclipToggle.Parent = content
+Instance.new("UICorner", noclipToggle).CornerRadius = UDim.new(0, 10)
+
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1, 0, 0, 100)
+infoLabel.Position = UDim2.new(0, 0, 0, 120)
+infoLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+infoLabel.Font = Enum.Font.Gotham
+infoLabel.TextSize = 14
+infoLabel.TextColor3 = Color3.fromRGB(200,200,200)
+infoLabel.TextWrapped = true
+infoLabel.Text = "CONTROLES:\n\nM - Abrir/Fechar Menu\nF - Toggle Fly\nWASD - Movimento\nSpace - Subir | Ctrl - Descer"
+infoLabel.Parent = content
+Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 10)
+
+-- Eventos
+pcall(function()
+    flyToggle.MouseButton1Click:Connect(function()
+        if _G.FlySystem and _G.FlySystem.toggleFly then
+            _G.FlySystem.toggleFly()
+            flyToggle.Text = _G.FlySystem.flying and "🚀 FLY: ON" or "🚀 FLY: OFF"
+            flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+        end
+    end)
+end)
+
+noclipToggle.MouseButton1Click:Connect(function()
+    pcall(function()
+        if _G.FlySystem then
+            _G.FlySystem.noclip = not _G.FlySystem.noclip
+            noclipToggle.Text = _G.FlySystem.noclip and "🌫️ NOCLIP: ON" or "🌫️ NOCLIP: OFF"
+            noclipToggle.BackgroundColor3 = _G.FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+        end
+    end)
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+    pcall(function()
+        frame.Visible = false
+    end)
+end)
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.M then
+        frame.Visible = not frame.Visible
+    elseif input.KeyCode == Enum.KeyCode.F then
+        pcall(function()
+            if _G.FlySystem and _G.FlySystem.toggleFly then
+                _G.FlySystem.toggleFly()
+                flyToggle.Text = _G.FlySystem.flying and "🚀 FLY: ON" or "🚀 FLY: OFF"
+                flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+            end
+        end)
+    end
+end)
+
+-- Inicialização
+pcall(function()
+    _G.FlySystem.init()
+end)
 
 local tabs = Instance.new("ScrollingFrame")
 tabs.Size = UDim2.new(0, 150, 1, -95)
@@ -305,6 +325,17 @@ local aimbotSmooth = 5
 local fovCircle = nil
 local waitingForKey = false
 
+if Drawing then
+    pcall(function()
+        fovCircle = Drawing.new("Circle")
+        fovCircle.Thickness = 2
+        fovCircle.NumSides = 50
+        fovCircle.Filled = false
+        fovCircle.Transparency = 1
+        fovCircle.Color = Color3.fromRGB(255, 70, 70)
+    end)
+end
+
 local autoClickerEnabled = false
 local autoClickerSpeed = 50
 local autoClickerKey = Enum.KeyCode.C
@@ -316,7 +347,7 @@ local function getClosestPlayer()
 	local closestPlayer = nil
 	local shortestDistance = aimbotFOV
 	local mousePos = UserInputService:GetMouseLocation()
-	
+
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character then
 			local char = player.Character
@@ -336,7 +367,7 @@ local function getClosestPlayer()
 			end
 		end
 	end
-	
+
 	return closestPlayer
 end
 
@@ -344,22 +375,13 @@ RunService.RenderStepped:Connect(function()
 	pcall(function()
 		if aimbotEnabled then
 			-- Atualizar círculo FOV
-			if not fovCircle then
-				fovCircle = Drawing.new("Circle")
-				fovCircle.Thickness = 2
-				fovCircle.NumSides = 50
-				fovCircle.Filled = false
-				fovCircle.Transparency = 1
-				fovCircle.Color = Color3.fromRGB(255, 70, 70)
-			end
-			
 			if fovCircle then
 				local mousePos = UserInputService:GetMouseLocation()
 				fovCircle.Position = mousePos
 				fovCircle.Radius = aimbotFOV
 				fovCircle.Visible = true
 			end
-			
+
 			-- Verificar se tecla está pressionada
 			local isKeyPressed = false
 			if aimbotKey == Enum.UserInputType.MouseButton2 then
@@ -369,7 +391,7 @@ RunService.RenderStepped:Connect(function()
 			else
 				isKeyPressed = UserInputService:IsKeyDown(aimbotKey)
 			end
-			
+
 			-- Mirar no alvo
 			if isKeyPressed then
 				local target = getClosestPlayer()
@@ -385,8 +407,8 @@ RunService.RenderStepped:Connect(function()
 				end
 			end
 		else
-			if fovCircle then 
-				fovCircle.Visible = false 
+			if fovCircle then
+				fovCircle.Visible = false
 			end
 		end
 	end)
@@ -396,7 +418,7 @@ RunService.Heartbeat:Connect(function()
 	if autoClickerEnabled then
 		local currentTime = tick()
 		if currentTime - lastClickTime >= autoClickerSpeed / 1000 then
-			mouse1click()
+			pcall(function() mouse1click() end)
 			lastClickTime = currentTime
 		end
 	end
@@ -1057,7 +1079,7 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos,
 	btnPrev.TextColor3 = Color3.fromRGB(255,255,255)
 	btnPrev.Parent = parent
 	Instance.new("UICorner", btnPrev).CornerRadius = UDim.new(0, 6)
-	
+
 	local btnNext = Instance.new("TextButton")
 	btnNext.Size = UDim2.new(0, 50, 0, 25)
 	btnNext.Position = UDim2.new(1, -60, 0, yPos)
@@ -1068,20 +1090,20 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos,
 	btnNext.TextColor3 = Color3.fromRGB(255,255,255)
 	btnNext.Parent = parent
 	Instance.new("UICorner", btnNext).CornerRadius = UDim.new(0, 6)
-	
+
 	local speedBar = Instance.new("Frame")
 	speedBar.Size = UDim2.new(1, -200, 0, 8)
 	speedBar.Position = UDim2.new(0, 140, 0, yPos + 8)
 	speedBar.BackgroundColor3 = Color3.fromRGB(40,40,50)
 	speedBar.Parent = parent
 	Instance.new("UICorner", speedBar).CornerRadius = UDim.new(1, 0)
-	
+
 	local speedFill = Instance.new("Frame")
 	speedFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
 	speedFill.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
 	speedFill.Parent = speedBar
 	Instance.new("UICorner", speedFill).CornerRadius = UDim.new(1, 0)
-	
+
 	btnPrev.MouseButton1Click:Connect(function()
 		local currentVal = tonumber(valueLabel.Text) or defaultVal
 		if currentVal > minVal then
@@ -1091,7 +1113,7 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos,
 			callback(newVal)
 		end
 	end)
-	
+
 	btnNext.MouseButton1Click:Connect(function()
 		local currentVal = tonumber(valueLabel.Text) or defaultVal
 		if currentVal < maxVal then
@@ -1123,16 +1145,16 @@ speedToggle.MouseButton1Click:Connect(function()
 	speedBoostActive = not speedBoostActive
 	speedToggle.Text = speedBoostActive and "DESATIVAR" or "ATIVAR SPEED"
 	speedToggle.BackgroundColor3 = speedBoostActive and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(200, 50, 50)
-	
+
 	if speedBoostActive then
 		speedConnection = RunService.Heartbeat:Connect(function()
 			local char = LocalPlayer.Character
 			if char then
 				local hum = char:FindFirstChildOfClass("Humanoid")
-				if hum then 
+				if hum then
 					hum.WalkSpeed = currentSpeed
 				end
-				
+
 				if currentSpeed > 16 then
 					local rootPart = char:FindFirstChild("HumanoidRootPart")
 					if rootPart then
@@ -1146,7 +1168,7 @@ speedToggle.MouseButton1Click:Connect(function()
 			speedConnection:Disconnect()
 			speedConnection = nil
 		end
-		
+
 		local char = LocalPlayer.Character
 		if char then
 			local hum = char:FindFirstChildOfClass("Humanoid")
@@ -1177,7 +1199,7 @@ local function createSliderSpeed(parent, labelText, yPos)
 
 	local speeds = {16, 25, 35, 50, 75, 100, 150, 200, 300, 500}
 	local currentIndex = 1
-	
+
 	local btnPrev = Instance.new("TextButton")
 	btnPrev.Size = UDim2.new(0, 50, 0, 25)
 	btnPrev.Position = UDim2.new(0, 80, 0, yPos)
@@ -1188,7 +1210,7 @@ local function createSliderSpeed(parent, labelText, yPos)
 	btnPrev.TextColor3 = Color3.fromRGB(255,255,255)
 	btnPrev.Parent = parent
 	Instance.new("UICorner", btnPrev).CornerRadius = UDim.new(0, 6)
-	
+
 	local btnNext = Instance.new("TextButton")
 	btnNext.Size = UDim2.new(0, 50, 0, 25)
 	btnNext.Position = UDim2.new(1, -60, 0, yPos)
@@ -1199,20 +1221,20 @@ local function createSliderSpeed(parent, labelText, yPos)
 	btnNext.TextColor3 = Color3.fromRGB(255,255,255)
 	btnNext.Parent = parent
 	Instance.new("UICorner", btnNext).CornerRadius = UDim.new(0, 6)
-	
+
 	local speedBar = Instance.new("Frame")
 	speedBar.Size = UDim2.new(1, -200, 0, 8)
 	speedBar.Position = UDim2.new(0, 140, 0, yPos + 8)
 	speedBar.BackgroundColor3 = Color3.fromRGB(40,40,50)
 	speedBar.Parent = parent
 	Instance.new("UICorner", speedBar).CornerRadius = UDim.new(1, 0)
-	
+
 	local speedFill = Instance.new("Frame")
 	speedFill.Size = UDim2.new(0.1, 0, 1, 0)
 	speedFill.BackgroundColor3 = Color3.fromRGB(120, 80, 220)
 	speedFill.Parent = speedBar
 	Instance.new("UICorner", speedFill).CornerRadius = UDim.new(1, 0)
-	
+
 	btnPrev.MouseButton1Click:Connect(function()
 		if currentIndex > 1 then
 			currentIndex = currentIndex - 1
@@ -1228,7 +1250,7 @@ local function createSliderSpeed(parent, labelText, yPos)
 			end
 		end
 	end)
-	
+
 	btnNext.MouseButton1Click:Connect(function()
 		if currentIndex < #speeds then
 			currentIndex = currentIndex + 1
@@ -1365,7 +1387,7 @@ flySubtitle.Text = "Voe livremente pelo mapa"
 flySubtitle.Parent = flyCard
 
 createSlider(flyCard, "Velocidade", 10, 100, 50, 100, function(value)
-	FlySystem.speed = value
+	_G.FlySystem.speed = value
 end)
 
 local flyToggle = Instance.new("TextButton")
@@ -1379,17 +1401,17 @@ flyToggle.TextColor3 = Color3.fromRGB(255,255,255)
 flyToggle.Parent = flyCard
 Instance.new("UICorner", flyToggle).CornerRadius = UDim.new(0, 10)
 flyToggle.MouseButton1Click:Connect(function()
-	FlySystem:toggleFly()
-	flyToggle.Text = FlySystem.flying and "FLY: ON" or "FLY: OFF"
-	flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	_G.FlySystem:toggleFly()
+	flyToggle.Text = _G.FlySystem.flying and "FLY: ON" or "FLY: OFF"
+	flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
 flyToggle.MouseEnter:Connect(function()
-	flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 180, 110) or Color3.fromRGB(80, 80, 90)
+	flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 180, 110) or Color3.fromRGB(80, 80, 90)
 end)
 
 flyToggle.MouseLeave:Connect(function()
-	flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
 local noclipToggle = Instance.new("TextButton")
@@ -1403,17 +1425,17 @@ noclipToggle.TextColor3 = Color3.fromRGB(255,255,255)
 noclipToggle.Parent = flyCard
 Instance.new("UICorner", noclipToggle).CornerRadius = UDim.new(0, 10)
 noclipToggle.MouseButton1Click:Connect(function()
-	FlySystem:toggleNoclip()
-	noclipToggle.Text = FlySystem.noclip and "NOCLIP: ON" or "NOCLIP: OFF"
-	noclipToggle.BackgroundColor3 = FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	_G.FlySystem:toggleNoclip()
+	noclipToggle.Text = _G.FlySystem.noclip and "NOCLIP: ON" or "NOCLIP: OFF"
+	noclipToggle.BackgroundColor3 = _G.FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
 noclipToggle.MouseEnter:Connect(function()
-	noclipToggle.BackgroundColor3 = FlySystem.noclip and Color3.fromRGB(0, 180, 110) or Color3.fromRGB(80, 80, 90)
+	noclipToggle.BackgroundColor3 = _G.FlySystem.noclip and Color3.fromRGB(0, 180, 110) or Color3.fromRGB(80, 80, 90)
 end)
 
 noclipToggle.MouseLeave:Connect(function()
-	noclipToggle.BackgroundColor3 = FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	noclipToggle.BackgroundColor3 = _G.FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
 local infoCard = Instance.new("Frame")
@@ -1427,28 +1449,28 @@ infoStroke.Color = Color3.fromRGB(139, 92, 246)
 infoStroke.Thickness = 2
 infoStroke.Transparency = 0.7
 
-local infoIcon = Instance.new("TextLabel")
-infoIcon.Size = UDim2.new(0, 40, 0, 40)
-infoIcon.Position = UDim2.new(0, 12, 0, 12)
-infoIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-infoIcon.BackgroundTransparency = 0.8
-infoIcon.Text = "ℹ️"
-infoIcon.Font = Enum.Font.GothamBold
-infoIcon.TextSize = 20
-infoIcon.TextColor3 = Color3.fromRGB(255,255,255)
-infoIcon.Parent = infoCard
-Instance.new("UICorner", infoIcon).CornerRadius = UDim.new(0, 10)
+local infoIconLabel = Instance.new("TextLabel")
+infoIconLabel.Size = UDim2.new(0, 40, 0, 40)
+infoIconLabel.Position = UDim2.new(0, 12, 0, 12)
+infoIconLabel.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+infoIconLabel.BackgroundTransparency = 0.8
+infoIconLabel.Text = "ℹ️"
+infoIconLabel.Font = Enum.Font.GothamBold
+infoIconLabel.TextSize = 20
+infoIconLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoIconLabel.Parent = infoCard
+Instance.new("UICorner", infoIconLabel).CornerRadius = UDim.new(0, 10)
 
-local infoTitle = Instance.new("TextLabel")
-infoTitle.Size = UDim2.new(1, -70, 0, 20)
-infoTitle.Position = UDim2.new(0, 60, 0, 15)
-infoTitle.BackgroundTransparency = 1
-infoTitle.Font = Enum.Font.GothamBold
-infoTitle.TextSize = 15
-infoTitle.TextColor3 = Color3.fromRGB(255,255,255)
-infoTitle.TextXAlignment = Enum.TextXAlignment.Left
-infoTitle.Text = "CONTROLES"
-infoTitle.Parent = infoCard
+local infoTitleLabel = Instance.new("TextLabel")
+infoTitleLabel.Size = UDim2.new(1, -70, 0, 20)
+infoTitleLabel.Position = UDim2.new(0, 60, 0, 15)
+infoTitleLabel.BackgroundTransparency = 1
+infoTitleLabel.Font = Enum.Font.GothamBold
+infoTitleLabel.TextSize = 15
+infoTitleLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+infoTitleLabel.Text = "CONTROLES"
+infoTitleLabel.Parent = infoCard
 
 local infoText = Instance.new("TextLabel")
 infoText.Size = UDim2.new(1, -24, 0, 60)
@@ -1476,15 +1498,15 @@ local function isPlayerBehindWall(player)
 	if not player.Character then return false end
 	local targetPart = player.Character:FindFirstChild("HumanoidRootPart")
 	if not targetPart then return false end
-	
+
 	local origin = Camera.CFrame.Position
 	local direction = (targetPart.Position - origin).Unit
 	local distance = (targetPart.Position - origin).Magnitude
-	
+
 	local raycastParams = RaycastParams.new()
 	raycastParams.FilterDescendantsInstances = {LocalPlayer.Character, player.Character}
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-	
+
 	local result = workspace:Raycast(origin, direction * distance, raycastParams)
 	return result ~= nil
 end
@@ -1494,7 +1516,7 @@ local function updateESP()
 		if player ~= LocalPlayer and player.Character then
 			local char = player.Character
 			local highlight = espHighlights[player]
-			
+
 			if not highlight then
 				highlight = Instance.new("Highlight")
 				highlight.Adornee = char
@@ -1503,7 +1525,7 @@ local function updateESP()
 				highlight.Parent = char
 				espHighlights[player] = highlight
 			end
-			
+
 			if espMode == "TEAM" then
 				if isSameTeam(player) then
 					highlight.FillColor = Color3.fromRGB(0, 150, 255)
@@ -1527,7 +1549,7 @@ local function updateESP()
 end
 
 RunService.Heartbeat:Connect(function()
-	if espEnabled then 
+	if espEnabled then
 		updateESP()
 		-- Limpar highlights de jogadores que saíram
 		for player, highlight in pairs(espHighlights) do
@@ -1788,26 +1810,29 @@ RunService.RenderStepped:Connect(function()
 				if part then
 					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
 					if onScreen and screenPos.Z > 0 then
-						local line = Drawing.new("Line")
-						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-						line.To = Vector2.new(screenPos.X, screenPos.Y)
-						line.Color = Color3.fromRGB(139, 92, 246)
-						line.Thickness = 2
-						line.Transparency = 1
-						line.Visible = true
-						table.insert(tracerLines, line)
+						if Drawing then
+							pcall(function()
+								local line = Drawing.new("Line")
+								line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+								line.To = Vector2.new(screenPos.X, screenPos.Y)
+								line.Color = Color3.fromRGB(139, 92, 246)
+								line.Thickness = 2
+								line.Transparency = 1
+								line.Visible = true
+								table.insert(tracerLines, line)
+							end)
+						end
 					end
 				end
 			end
 		end
 	end
-	
-RunService.RenderStepped:Connect(function()
+
 	for player, gui in pairs(nametagsGuis) do
 		if gui then gui:Destroy() end
 	end
 	nametagsGuis = {}
-	
+
 	if nametagsEnabled then
 		for _, player in ipairs(Players:GetPlayers()) do
 			if player ~= LocalPlayer and player.Character then
@@ -1819,7 +1844,7 @@ RunService.RenderStepped:Connect(function()
 					billboard.StudsOffset = Vector3.new(0, 2, 0)
 					billboard.AlwaysOnTop = true
 					billboard.Parent = head
-					
+
 					local nameLabel = Instance.new("TextLabel")
 					nameLabel.Size = UDim2.new(1, 0, 1, 0)
 					nameLabel.BackgroundTransparency = 1
@@ -1829,7 +1854,7 @@ RunService.RenderStepped:Connect(function()
 					nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 					nameLabel.TextStrokeTransparency = 0.5
 					nameLabel.Parent = billboard
-					
+
 					nametagsGuis[player] = billboard
 				end
 			end
@@ -1839,8 +1864,8 @@ end)
 
 local visionBottomRow = Instance.new("Frame")
 visionBottomRow.Size = UDim2.new(1, 0, 0, 100)
-visionBottomRow.Position = UDim2.new(0, 0, 0, 150)
 visionBottomRow.BackgroundTransparency = 1
+visionBottomRow.Position = UDim2.new(0, 0, 0, 150)
 visionBottomRow.Parent = visionPage
 
 local tracersCard = Instance.new("Frame")
@@ -2360,9 +2385,9 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		clickerToggle.Text = autoClickerEnabled and "AUTO CLICKER: ON" or "AUTO CLICKER: OFF"
 		clickerToggle.BackgroundColor3 = autoClickerEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	elseif input.KeyCode == Enum.KeyCode.F then
-		FlySystem:toggleFly()
-		flyToggle.Text = FlySystem.flying and "FLY: ON" or "FLY: OFF"
-		flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+		_G.FlySystem:toggleFly()
+		flyToggle.Text = _G.FlySystem.flying and "FLY: ON" or "FLY: OFF"
+		flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	elseif input.KeyCode == Enum.KeyCode.P then
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 		UserInputService.MouseIconEnabled = true
@@ -2379,7 +2404,7 @@ end)
 LocalPlayer.CharacterAdded:Connect(function(char)
 	local hum = char:WaitForChild("Humanoid")
 	hum.Died:Connect(function()
-		FlySystem:disableFly()
+		_G.FlySystem:disableFly()
 		if flyToggle then
 			flyToggle.Text = "FLY: OFF"
 			flyToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
@@ -2387,7 +2412,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end)
 end)
 
-FlySystem:init()
+_G.FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
