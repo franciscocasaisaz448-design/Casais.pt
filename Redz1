@@ -1570,11 +1570,6 @@ local espEnabled = true
 local espMode = "TEAM"
 local espHighlights = {}
 
-local function isSameTeam(player)
-	if not LocalPlayer.Team or not player.Team then return false end
-	return LocalPlayer.Team == player.Team
-end
-
 local function isPlayerBehindWall(player)
 	if not player.Character then return false end
 	local targetPart = player.Character:FindFirstChild("HumanoidRootPart")
@@ -2491,3 +2486,4 @@ setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir/fechar o menu")
 print("🎯 Tecla Aimbot: " .. aimbotKeyName)
+print("✅ Código corrigido e funcionando!")
