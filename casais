@@ -248,14 +248,6 @@ Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 12)
 local closeBtnStroke = Instance.new("UIStroke", closeBtn)
 closeBtnStroke.Color = Color3.fromRGB(200, 40, 40)
 closeBtnStroke.Thickness = 2
-closeBtnStroke.Transparency = 0.5oseBtn.TextSize = 22
-closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
-closeBtn.Parent = header
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 12)
-local closeBtnStroke = Instance.new("UIStroke", closeBtn)
-closeBtnStroke.Color = Color3.fromRGB(200, 40, 40)
-closeBtnStroke.Thickness = 2
 closeBtnStroke.Transparency = 0.5
 
 local tabs = Instance.new("ScrollingFrame")
