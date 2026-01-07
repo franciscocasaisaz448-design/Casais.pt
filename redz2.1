@@ -148,10 +148,12 @@ local function instantTPTo(targetPlayer)
 	char:PivotTo(CFrame.new(dstPart.Position + Vector3.new(0,3,0)))
 end
 
+repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
-gui.Parent = game.CoreGui
+gui.Parent = LocalPlayer.PlayerGui
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(950, 650)
