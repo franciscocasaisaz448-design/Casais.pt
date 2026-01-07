@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
@@ -10,6 +11,12 @@ local prevMouseBehavior, prevMouseIconEnabled
 local spectating, savedSubject, savedCamType
 local selectedPlayer
 local playerButtons = {}
+
+-- Variáveis adicionais para ESP e Tracers
+local tracersEnabled = false
+local nametagsEnabled = false
+local tracerLines = {}
+local nametagsGuis = {}
 
 local function getPrimaryPart(char)
 	if not char then return nil end
@@ -393,13 +400,16 @@ RunService.RenderStepped:Connect(function()
 end)
 
 RunService.Heartbeat:Connect(function()
-	if autoClickerEnabled then
-		local currentTime = tick()
-		if currentTime - lastClickTime >= autoClickerSpeed / 1000 then
-			mouse1click()
-			lastClickTime = currentTime
-		end
-	end
+    if autoClickerEnabled then
+        local currentTime = tick()
+        if currentTime - lastClickTime >= autoClickerSpeed / 1000 then
+            -- Simular clique do mouse usando VirtualInputManager
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+            task.wait()
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+            lastClickTime = currentTime
+        end
+    end
 end)
 
 aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
@@ -1773,9 +1783,6 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
-local tracerLines = {}
-local nametagsGuis = {}
-
 RunService.RenderStepped:Connect(function()
 	for _, line in pairs(tracerLines) do
 		if line then line:Remove() end
@@ -1802,7 +1809,6 @@ RunService.RenderStepped:Connect(function()
 		end
 	end
 	
-RunService.RenderStepped:Connect(function()
 	for player, gui in pairs(nametagsGuis) do
 		if gui then gui:Destroy() end
 	end
@@ -1886,7 +1892,6 @@ tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
 tracersBtn.Parent = tracersCard
 Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
-local tracersEnabled = false
 tracersBtn.MouseButton1Click:Connect(function()
 	tracersEnabled = not tracersEnabled
 	tracersBtn.Text = tracersEnabled and "ON" or "OFF"
@@ -1937,7 +1942,6 @@ nametagsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
 nametagsBtn.Parent = nametagsCard
 Instance.new("UICorner", nametagsBtn).CornerRadius = UDim.new(0, 8)
-local nametagsEnabled = false
 nametagsBtn.MouseButton1Click:Connect(function()
 	nametagsEnabled = not nametagsEnabled
 	nametagsBtn.Text = nametagsEnabled and "ON" or "OFF"
@@ -2161,24 +2165,23 @@ antiAfkBtn.MouseButton1Click:Connect(function()
 	antiAfkBtn.Text = antiAfkEnabled and "⏰ ON" or "⏰ ANTI-AFK"
 	antiAfkBtn.BackgroundColor3 = antiAfkEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	if antiAfkEnabled then
-		antiAfkConnection = game:GetService("VirtualUser"):CaptureController()
 		game:GetService("Players").LocalPlayer.Idled:Connect(function()
 			game:GetService("VirtualUser"):ClickButton2(Vector2.new())
 		end)
 	end
 end)
 
-local removeBlurBtn = Instance.new("TextButton")
-removeBlurBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeBlurBtn.Position = UDim2.new(0, 12, 0, 108)
-removeBlurBtn.Text = "🌫️ BLUR"
-removeBlurBtn.Font = Enum.Font.GothamBold
-removeBlurBtn.TextSize = 12
-removeBlurBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
-removeBlurBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeBlurBtn.Parent = utilityCard
-Instance.new("UICorner", removeBlurBtn).CornerRadius = UDim.new(0, 8)
-removeBlurBtn.MouseButton1Click:Connect(function()
+local removeBlurBtn2 = Instance.new("TextButton")
+removeBlurBtn2.Size = UDim2.new(0.48, -5, 0, 38)
+removeBlurBtn2.Position = UDim2.new(0, 12, 0, 108)
+removeBlurBtn2.Text = "🌫️ BLUR"
+removeBlurBtn2.Font = Enum.Font.GothamBold
+removeBlurBtn2.TextSize = 12
+removeBlurBtn2.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
+removeBlurBtn2.TextColor3 = Color3.fromRGB(255,255,255)
+removeBlurBtn2.Parent = utilityCard
+Instance.new("UICorner", removeBlurBtn2).CornerRadius = UDim.new(0, 8)
+removeBlurBtn2.MouseButton1Click:Connect(function()
 	for _, obj in pairs(game:GetService("Lighting"):GetChildren()) do
 		if obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("ColorCorrectionEffect") then
 			obj:Destroy()
@@ -2388,7 +2391,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 end)
 
 FlySystem:init()
-wait(1)
+task.wait(1)
 showPanel(true)
 updatePlayersList()
 setTab("PLAYERS")
