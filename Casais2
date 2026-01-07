@@ -124,8 +124,8 @@ gui.ResetOnSpawn = false
 gui.Parent = LocalPlayer.PlayerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(600, 400)
-frame.Position = UDim2.new(0.5, -300, 0.5, -200)
+frame.Size = UDim2.fromOffset(700, 500)
+frame.Position = UDim2.new(0.5, -350, 0.5, -250)
 frame.BackgroundColor3 = Color3.fromRGB(20,20,30)
 frame.Active = true
 frame.Draggable = true
@@ -280,12 +280,11 @@ local function makeTab(text, order)
 	return b
 end
 
-local tabPlayers = makeTab("👥 JOGADORES", 1)
-local tabMovement = makeTab("🚀 MOVIMENTO", 2)
-local tabAimbot = makeTab("🎯 AIMBOT", 3)
-local tabClicker = makeTab("🖱️ CLICKER", 4)
-local tabVision = makeTab("👁️ VISÃO", 5)
-local tabMisc = makeTab("⚙️ MISC", 6)
+local tabPlayers = makeTab("👥 PLAYERS", 1)
+local tabCombat = makeTab("⚔️ COMBAT", 2)
+local tabMovement = makeTab("🚀 MOVEMENT", 3)
+local tabVisual = makeTab("👁️ VISUAL", 4)
+local tabMisc = makeTab("⚙️ MISC", 5)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -310,10 +309,9 @@ local function makePage()
 end
 
 local playersPage = makePage(); playersPage.Visible = true
+local combatPage = makePage()
 local movementPage = makePage()
-local aimbotPage = makePage()
-local clickerPage = makePage()
-local visionPage = makePage()
+local visualPage = makePage()
 local miscPage = makePage()
 
 local aimbotEnabled = false
@@ -424,12 +422,12 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+combatPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local aimbotMainCard = Instance.new("Frame")
 aimbotMainCard.Size = UDim2.new(1, 0, 0, 220)
 aimbotMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-aimbotMainCard.Parent = aimbotPage
+aimbotMainCard.Parent = combatPage
 Instance.new("UICorner", aimbotMainCard).CornerRadius = UDim.new(0, 12)
 local aimbotStroke = Instance.new("UIStroke", aimbotMainCard)
 aimbotStroke.Color = Color3.fromRGB(255, 70, 70)
@@ -703,15 +701,15 @@ aimbotInfo.TextSize = 12
 aimbotInfo.TextColor3 = Color3.fromRGB(180,180,200)
 aimbotInfo.TextWrapped = true
 aimbotInfo.Text = "  COMO USAR:\n\n  • Ative o Aimbot e ajuste FOV/Suavidade\n  • Escolha o alvo (Cabeça/Corpo) e tecla\n  • Segure a tecla para mirar automaticamente"
-aimbotInfo.Parent = aimbotPage
+aimbotInfo.Parent = combatPage
 Instance.new("UICorner", aimbotInfo).CornerRadius = UDim.new(0, 12)
 
-clickerPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+combatPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local clickerMainCard = Instance.new("Frame")
 clickerMainCard.Size = UDim2.new(1, 0, 0, 180)
 clickerMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-clickerMainCard.Parent = clickerPage
+clickerMainCard.Parent = combatPage
 Instance.new("UICorner", clickerMainCard).CornerRadius = UDim.new(0, 12)
 local clickerStroke = Instance.new("UIStroke", clickerMainCard)
 clickerStroke.Color = Color3.fromRGB(0, 160, 220)
@@ -866,7 +864,7 @@ clickerInfo.TextSize = 12
 clickerInfo.TextColor3 = Color3.fromRGB(180,180,200)
 clickerInfo.TextWrapped = true
 clickerInfo.Text = "  COMO USAR:\n\n  • Ative o Auto Clicker e ajuste velocidade\n  • Escolha a tecla de ativação\n  • Segure a tecla para clicar automaticamente"
-clickerInfo.Parent = clickerPage
+clickerInfo.Parent = combatPage
 Instance.new("UICorner", clickerInfo).CornerRadius = UDim.new(0, 12)
 
 playersPage:FindFirstChildOfClass("UIListLayout"):Destroy()
@@ -2309,48 +2307,41 @@ end)
 local function setTab(which)
 	tabPlayers.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabPlayers.TextColor3 = Color3.fromRGB(180,180,190)
+	tabCombat.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabCombat.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMovement.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMovement.TextColor3 = Color3.fromRGB(180,180,190)
-	tabAimbot.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabAimbot.TextColor3 = Color3.fromRGB(180,180,190)
-	tabClicker.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
-	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
+	tabVisual.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabVisual.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
-	if which=="PLAYERS" then 
+	playersPage.Visible=false; combatPage.Visible=false; movementPage.Visible=false; visualPage.Visible=false; miscPage.Visible=false
+	if which=="PLAYERS" then
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
 		playersPage.Visible=true
-	elseif which=="MOVEMENT" then 
+	elseif which=="COMBAT" then
+		tabCombat.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabCombat.TextColor3=Color3.fromRGB(255,255,255)
+		combatPage.Visible=true
+	elseif which=="MOVEMENT" then
 		tabMovement.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMovement.TextColor3=Color3.fromRGB(255,255,255)
 		movementPage.Visible=true
-	elseif which=="AIMBOT" then 
-		tabAimbot.BackgroundColor3=Color3.fromRGB(139, 92, 246)
-		tabAimbot.TextColor3=Color3.fromRGB(255,255,255)
-		aimbotPage.Visible=true
-	elseif which=="CLICKER" then 
-		tabClicker.BackgroundColor3=Color3.fromRGB(139, 92, 246)
-		tabClicker.TextColor3=Color3.fromRGB(255,255,255)
-		clickerPage.Visible=true
-	elseif which=="VISION" then 
-		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
-		tabVision.TextColor3=Color3.fromRGB(255,255,255)
-		visionPage.Visible=true
-	else 
+	elseif which=="VISUAL" then
+		tabVisual.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabVisual.TextColor3=Color3.fromRGB(255,255,255)
+		visualPage.Visible=true
+	else
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
-		miscPage.Visible=true 
+		miscPage.Visible=true
 	end
 end
 tabPlayers.MouseButton1Click:Connect(function() setTab("PLAYERS") end)
+tabCombat.MouseButton1Click:Connect(function() setTab("COMBAT") end)
 tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
-tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
-tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
-tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabVisual.MouseButton1Click:Connect(function() setTab("VISUAL") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 closeBtn.MouseButton1Click:Connect(function() 
@@ -2417,4 +2408,5 @@ updatePlayersList()
 setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
-print("🎯 Tecla Aimbot: " .. aimbotKeyName)
+print("🎯 Tecla Aimbot: " .. aimbotKeyName)print("🔑 Pressione M para abrir o menu")
+updatePlayersList()
