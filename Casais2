@@ -2386,6 +2386,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 		end
 	end)
 end)
+
 FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
