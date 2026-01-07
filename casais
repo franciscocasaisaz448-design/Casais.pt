@@ -320,6 +320,11 @@ local autoClickerKeyName = "C"
 local waitingForClickerKey = false
 local lastClickTime = 0
 
+local function isSameTeam(player)
+	if not LocalPlayer.Team or not player.Team then return false end
+	return LocalPlayer.Team == player.Team
+end
+
 local function getClosestPlayer()
 	local closestPlayer = nil
 	local shortestDistance = aimbotFOV
