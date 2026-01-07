@@ -163,7 +163,7 @@ gui.Parent = game.CoreGui
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(900, 620)
 frame.Position = UDim2.new(0.5, -450, 0.5, -310)
-frame.BackgroundColor3 = Color3.fromRGB(18,18,26)
+frame.BackgroundColor3 = Color3.fromRGB(10,10,15)
 frame.Active = true
 frame.Draggable = true
 frame.Visible = false
@@ -171,9 +171,9 @@ frame.Parent = gui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
 
 local frameStroke = Instance.new("UIStroke")
-frameStroke.Color = Color3.fromRGB(139, 92, 246)
-frameStroke.Thickness = 2
-frameStroke.Transparency = 0.5
+frameStroke.Color = Color3.fromRGB(255, 200, 0)
+frameStroke.Thickness = 3
+frameStroke.Transparency = 0.3
 frameStroke.Parent = frame
 
 local shadow = Instance.new("ImageLabel")
@@ -188,7 +188,7 @@ shadow.Parent = frame
 
 local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 75)
-header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+header.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 header.BorderSizePixel = 0
 header.Parent = frame
 local headerCorner = Instance.new("UICorner")
@@ -197,15 +197,15 @@ headerCorner.Parent = header
 local headerCover = Instance.new("Frame")
 headerCover.Size = UDim2.new(1, 0, 0, 30)
 headerCover.Position = UDim2.new(0, 0, 1, -30)
-headerCover.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+headerCover.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 headerCover.BorderSizePixel = 0
 headerCover.Parent = header
 
 local titleIcon = Instance.new("TextLabel")
 titleIcon.Size = UDim2.new(0, 50, 0, 50)
 titleIcon.Position = UDim2.new(0, 15, 0, 10)
-titleIcon.BackgroundColor3 = Color3.fromRGB(255,255,255)
-titleIcon.BackgroundTransparency = 0.85
+titleIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+titleIcon.BackgroundTransparency = 0.2
 titleIcon.Text = "⚡"
 titleIcon.Font = Enum.Font.GothamBold
 titleIcon.TextSize = 28
@@ -254,16 +254,16 @@ local function makeTab(text, order)
 	b.Text = text
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
-	b.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	b.TextColor3 = Color3.fromRGB(180,180,190)
+	b.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	b.TextColor3 = Color3.fromRGB(200,200,220)
 	b.LayoutOrder = order
 	b.Parent = tabs
 	local corner = Instance.new("UICorner", b)
 	corner.CornerRadius = UDim.new(0, 12)
 	local stroke = Instance.new("UIStroke", b)
-	stroke.Color = Color3.fromRGB(50,50,60)
-	stroke.Thickness = 1
-	stroke.Transparency = 0.5
+	stroke.Color = Color3.fromRGB(0, 120, 255)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.6
 	return b
 end
 
@@ -416,18 +416,18 @@ aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local aimbotMainCard = Instance.new("Frame")
 aimbotMainCard.Size = UDim2.new(1, 0, 0, 220)
-aimbotMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+aimbotMainCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 aimbotMainCard.Parent = aimbotPage
 Instance.new("UICorner", aimbotMainCard).CornerRadius = UDim.new(0, 12)
 local aimbotStroke = Instance.new("UIStroke", aimbotMainCard)
-aimbotStroke.Color = Color3.fromRGB(255, 70, 70)
+aimbotStroke.Color = Color3.fromRGB(255, 200, 0)
 aimbotStroke.Thickness = 2
-aimbotStroke.Transparency = 0.7
+aimbotStroke.Transparency = 0.5
 
 local aimbotIcon = Instance.new("TextLabel")
 aimbotIcon.Size = UDim2.new(0, 40, 0, 40)
 aimbotIcon.Position = UDim2.new(0, 12, 0, 12)
-aimbotIcon.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+aimbotIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 aimbotIcon.BackgroundTransparency = 0.8
 aimbotIcon.Text = "🎯"
 aimbotIcon.Font = Enum.Font.GothamBold
@@ -552,7 +552,7 @@ targetToggle.Position = UDim2.new(0, 12, 0, 175)
 targetToggle.Text = "🎯 CABEÇA"
 targetToggle.Font = Enum.Font.GothamBold
 targetToggle.TextSize = 13
-targetToggle.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+targetToggle.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 targetToggle.TextColor3 = Color3.fromRGB(255,255,255)
 targetToggle.Parent = aimbotMainCard
 Instance.new("UICorner", targetToggle).CornerRadius = UDim.new(0, 8)
@@ -685,7 +685,7 @@ end)
 local aimbotInfo = Instance.new("TextLabel")
 aimbotInfo.Size = UDim2.new(1, 0, 0, 90)
 aimbotInfo.Position = UDim2.new(0, 0, 0, 230)
-aimbotInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+aimbotInfo.BackgroundColor3 = Color3.fromRGB(15,15,25)
 aimbotInfo.Font = Enum.Font.Gotham
 aimbotInfo.TextSize = 12
 aimbotInfo.TextColor3 = Color3.fromRGB(180,180,200)
@@ -698,18 +698,18 @@ clickerPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local clickerMainCard = Instance.new("Frame")
 clickerMainCard.Size = UDim2.new(1, 0, 0, 180)
-clickerMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+clickerMainCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 clickerMainCard.Parent = clickerPage
 Instance.new("UICorner", clickerMainCard).CornerRadius = UDim.new(0, 12)
 local clickerStroke = Instance.new("UIStroke", clickerMainCard)
-clickerStroke.Color = Color3.fromRGB(0, 160, 220)
+clickerStroke.Color = Color3.fromRGB(0, 120, 255)
 clickerStroke.Thickness = 2
-clickerStroke.Transparency = 0.7
+clickerStroke.Transparency = 0.5
 
 local clickerIcon = Instance.new("TextLabel")
 clickerIcon.Size = UDim2.new(0, 40, 0, 40)
 clickerIcon.Position = UDim2.new(0, 12, 0, 12)
-clickerIcon.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+clickerIcon.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 clickerIcon.BackgroundTransparency = 0.8
 clickerIcon.Text = "🖱️"
 clickerIcon.Font = Enum.Font.GothamBold
@@ -848,7 +848,7 @@ end)
 local clickerInfo = Instance.new("TextLabel")
 clickerInfo.Size = UDim2.new(1, 0, 0, 90)
 clickerInfo.Position = UDim2.new(0, 0, 0, 190)
-clickerInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+clickerInfo.BackgroundColor3 = Color3.fromRGB(15,15,25)
 clickerInfo.Font = Enum.Font.Gotham
 clickerInfo.TextSize = 12
 clickerInfo.TextColor3 = Color3.fromRGB(180,180,200)
@@ -862,7 +862,7 @@ playersPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 local playersListFrame = Instance.new("Frame")
 playersListFrame.Size = UDim2.new(0.48, 0, 1, 0)
 playersListFrame.Position = UDim2.new(0, 0, 0, 0)
-playersListFrame.BackgroundColor3 = Color3.fromRGB(28,28,38)
+playersListFrame.BackgroundColor3 = Color3.fromRGB(15,15,25)
 playersListFrame.Parent = playersPage
 Instance.new("UICorner", playersListFrame).CornerRadius = UDim.new(0, 12)
 local playersFrameStroke = Instance.new("UIStroke", playersListFrame)
@@ -882,7 +882,7 @@ playersListTitle.Parent = playersListFrame
 local searchBox = Instance.new("TextBox")
 searchBox.Size = UDim2.new(1, -16, 0, 35)
 searchBox.Position = UDim2.new(0, 8, 0, 45)
-searchBox.BackgroundColor3 = Color3.fromRGB(15,15,22)
+searchBox.BackgroundColor3 = Color3.fromRGB(5,5,12)
 searchBox.PlaceholderText = "🔍 Pesquisar jogador..."
 searchBox.PlaceholderColor3 = Color3.fromRGB(100,100,110)
 searchBox.Text = ""
@@ -901,7 +901,7 @@ playersList.Size = UDim2.new(1, -16, 1, -92)
 playersList.Position = UDim2.new(0, 8, 0, 86)
 playersList.CanvasSize = UDim2.new(0,0,0,0)
 playersList.ScrollBarThickness = 6
-playersList.BackgroundColor3 = Color3.fromRGB(15,15,22)
+playersList.BackgroundColor3 = Color3.fromRGB(5,5,12)
 playersList.BorderSizePixel = 0
 playersList.Parent = playersListFrame
 Instance.new("UICorner", playersList).CornerRadius = UDim.new(0,10)
@@ -911,7 +911,7 @@ playersLayout.Padding = UDim.new(0,6)
 local actionsFrame = Instance.new("Frame")
 actionsFrame.Size = UDim2.new(0.48, 0, 1, 0)
 actionsFrame.Position = UDim2.new(0.52, 0, 0, 0)
-actionsFrame.BackgroundColor3 = Color3.fromRGB(28,28,38)
+actionsFrame.BackgroundColor3 = Color3.fromRGB(15,15,25)
 actionsFrame.Parent = playersPage
 Instance.new("UICorner", actionsFrame).CornerRadius = UDim.new(0, 12)
 local actionsFrameStroke = Instance.new("UIStroke", actionsFrame)
@@ -982,7 +982,7 @@ local function createPlayerButton(player)
 	local btn = Instance.new("TextButton")
 	btn.Name = player.Name
 	btn.Size = UDim2.new(1, -12, 0, 55)
-	btn.BackgroundColor3 = Color3.fromRGB(30,30,42)
+	btn.BackgroundColor3 = Color3.fromRGB(25,25,35)
 	btn.Text = ""
 	btn.Parent = playersList
 	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
@@ -1033,11 +1033,11 @@ local function createPlayerButton(player)
 		for _, button in pairs(playerButtons) do
 			if button:IsA("TextButton") and button:FindFirstChild("Frame") then
 				button.Frame.Visible = false
-				button.BackgroundColor3 = Color3.fromRGB(30,30,42)
+				button.BackgroundColor3 = Color3.fromRGB(25,25,35)
 			end
 		end
 		indicator.Visible = true
-		btn.BackgroundColor3 = Color3.fromRGB(45,45,60)
+		btn.BackgroundColor3 = Color3.fromRGB(35,35,50)
 		selectedPlayer = player
 		selectedPlayerTitle.Text = "⚙️ AÇÕES: " .. player.Name
 	end)
@@ -1266,18 +1266,18 @@ topRow.Parent = movementPage
 local speedCard = Instance.new("Frame")
 speedCard.Size = UDim2.new(0.48, -5, 1, 0)
 speedCard.Position = UDim2.new(0, 0, 0, 0)
-speedCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+speedCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 speedCard.Parent = topRow
 Instance.new("UICorner", speedCard).CornerRadius = UDim.new(0, 12)
 local speedStroke = Instance.new("UIStroke", speedCard)
-speedStroke.Color = Color3.fromRGB(120, 80, 220)
+speedStroke.Color = Color3.fromRGB(255, 200, 0)
 speedStroke.Thickness = 2
-speedStroke.Transparency = 0.7
+speedStroke.Transparency = 0.5
 
 local speedIcon = Instance.new("TextLabel")
 speedIcon.Size = UDim2.new(0, 40, 0, 40)
 speedIcon.Position = UDim2.new(0, 12, 0, 12)
-speedIcon.BackgroundColor3 = Color3.fromRGB(120, 80, 220)
+speedIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 speedIcon.BackgroundTransparency = 0.8
 speedIcon.Text = "🏃"
 speedIcon.Font = Enum.Font.GothamBold
@@ -1332,18 +1332,18 @@ Instance.new("UICorner", speedHint).CornerRadius = UDim.new(0, 8)
 local flyCard = Instance.new("Frame")
 flyCard.Size = UDim2.new(0.48, -5, 1, 0)
 flyCard.Position = UDim2.new(0.52, 0, 0, 0)
-flyCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+flyCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 flyCard.Parent = topRow
 Instance.new("UICorner", flyCard).CornerRadius = UDim.new(0, 12)
 local flyStroke = Instance.new("UIStroke", flyCard)
-flyStroke.Color = Color3.fromRGB(0, 160, 220)
+flyStroke.Color = Color3.fromRGB(0, 120, 255)
 flyStroke.Thickness = 2
-flyStroke.Transparency = 0.7
+flyStroke.Transparency = 0.5
 
 local flyIcon = Instance.new("TextLabel")
 flyIcon.Size = UDim2.new(0, 40, 0, 40)
 flyIcon.Position = UDim2.new(0, 12, 0, 12)
-flyIcon.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+flyIcon.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 flyIcon.BackgroundTransparency = 0.8
 flyIcon.Text = "✈️"
 flyIcon.Font = Enum.Font.GothamBold
@@ -1429,18 +1429,18 @@ end)
 local infoCard = Instance.new("Frame")
 infoCard.Size = UDim2.new(1, 0, 0, 110)
 infoCard.Position = UDim2.new(0, 0, 0, 210)
-infoCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+infoCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 infoCard.Parent = movementPage
 Instance.new("UICorner", infoCard).CornerRadius = UDim.new(0, 12)
 local infoStroke = Instance.new("UIStroke", infoCard)
-infoStroke.Color = Color3.fromRGB(139, 92, 246)
+infoStroke.Color = Color3.fromRGB(255, 200, 0)
 infoStroke.Thickness = 2
 infoStroke.Transparency = 0.7
 
 local infoIcon = Instance.new("TextLabel")
 infoIcon.Size = UDim2.new(0, 40, 0, 40)
 infoIcon.Position = UDim2.new(0, 12, 0, 12)
-infoIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+infoIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 infoIcon.BackgroundTransparency = 0.8
 infoIcon.Text = "ℹ️"
 infoIcon.Font = Enum.Font.GothamBold
@@ -1573,18 +1573,18 @@ visionTopRow.Parent = visionPage
 local espCard = Instance.new("Frame")
 espCard.Size = UDim2.new(0.48, -5, 1, 0)
 espCard.Position = UDim2.new(0, 0, 0, 0)
-espCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+espCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 espCard.Parent = visionTopRow
 Instance.new("UICorner", espCard).CornerRadius = UDim.new(0, 12)
 local espStroke = Instance.new("UIStroke", espCard)
-espStroke.Color = Color3.fromRGB(0, 255, 150)
+espStroke.Color = Color3.fromRGB(0, 120, 255)
 espStroke.Thickness = 2
 espStroke.Transparency = 0.7
 
 local espIcon = Instance.new("TextLabel")
 espIcon.Size = UDim2.new(0, 35, 0, 35)
 espIcon.Position = UDim2.new(0, 12, 0, 12)
-espIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+espIcon.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 espIcon.BackgroundTransparency = 0.8
 espIcon.Text = "👁️"
 espIcon.Font = Enum.Font.GothamBold
@@ -1638,7 +1638,7 @@ espModeToggle.Position = UDim2.new(0, 12, 0, 60)
 espModeToggle.Text = "👥 MODO: EQUIPA"
 espModeToggle.Font = Enum.Font.GothamBold
 espModeToggle.TextSize = 12
-espModeToggle.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+espModeToggle.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 espModeToggle.TextColor3 = Color3.fromRGB(255,255,255)
 espModeToggle.Parent = espCard
 Instance.new("UICorner", espModeToggle).CornerRadius = UDim.new(0, 8)
@@ -1685,7 +1685,7 @@ end)
 local visualCard = Instance.new("Frame")
 visualCard.Size = UDim2.new(0.48, -5, 1, 0)
 visualCard.Position = UDim2.new(0.52, 0, 0, 0)
-visualCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+visualCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 visualCard.Parent = visionTopRow
 Instance.new("UICorner", visualCard).CornerRadius = UDim.new(0, 12)
 local visualStroke = Instance.new("UIStroke", visualCard)
@@ -1851,18 +1851,18 @@ visionBottomRow.Parent = visionPage
 
 local tracersCard = Instance.new("Frame")
 tracersCard.Size = UDim2.new(0.48, -5, 1, 0)
-tracersCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+tracersCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 tracersCard.Parent = visionBottomRow
 Instance.new("UICorner", tracersCard).CornerRadius = UDim.new(0, 12)
 local tracersStroke = Instance.new("UIStroke", tracersCard)
-tracersStroke.Color = Color3.fromRGB(139, 92, 246)
+tracersStroke.Color = Color3.fromRGB(0, 120, 255)
 tracersStroke.Thickness = 2
 tracersStroke.Transparency = 0.7
 
 local tracersIcon = Instance.new("TextLabel")
 tracersIcon.Size = UDim2.new(0, 30, 0, 30)
 tracersIcon.Position = UDim2.new(0, 12, 0, 12)
-tracersIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+tracersIcon.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 tracersIcon.BackgroundTransparency = 0.8
 tracersIcon.Text = "📏"
 tracersIcon.Font = Enum.Font.GothamBold
@@ -1901,18 +1901,18 @@ end)
 local nametagsCard = Instance.new("Frame")
 nametagsCard.Size = UDim2.new(0.48, -5, 1, 0)
 nametagsCard.Position = UDim2.new(0.52, 0, 0, 0)
-nametagsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+nametagsCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 nametagsCard.Parent = visionBottomRow
 Instance.new("UICorner", nametagsCard).CornerRadius = UDim.new(0, 12)
 local nametagsStroke = Instance.new("UIStroke", nametagsCard)
-nametagsStroke.Color = Color3.fromRGB(255, 100, 150)
+nametagsStroke.Color = Color3.fromRGB(255, 200, 0)
 nametagsStroke.Thickness = 2
 nametagsStroke.Transparency = 0.7
 
 local nametagsIcon = Instance.new("TextLabel")
 nametagsIcon.Size = UDim2.new(0, 30, 0, 30)
 nametagsIcon.Position = UDim2.new(0, 12, 0, 12)
-nametagsIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 150)
+nametagsIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 nametagsIcon.BackgroundTransparency = 0.8
 nametagsIcon.Text = "🏷️"
 nametagsIcon.Font = Enum.Font.GothamBold
@@ -1973,7 +1973,7 @@ Instance.new("UICorner", nametagsHealthBtn).CornerRadius = UDim.new(0, 8)
 local visionInfo = Instance.new("TextLabel")
 visionInfo.Size = UDim2.new(1, 0, 0, 70)
 visionInfo.Position = UDim2.new(0, 0, 0, 260)
-visionInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+visionInfo.BackgroundColor3 = Color3.fromRGB(15,15,25)
 visionInfo.Font = Enum.Font.Gotham
 visionInfo.TextSize = 11
 visionInfo.TextColor3 = Color3.fromRGB(180,180,200)
@@ -1989,18 +1989,18 @@ miscTopRow.Parent = miscPage
 
 local characterCard = Instance.new("Frame")
 characterCard.Size = UDim2.new(0.48, -5, 1, 0)
-characterCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+characterCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 characterCard.Parent = miscTopRow
 Instance.new("UICorner", characterCard).CornerRadius = UDim.new(0, 12)
 local charStroke = Instance.new("UIStroke", characterCard)
-charStroke.Color = Color3.fromRGB(255, 100, 100)
+charStroke.Color = Color3.fromRGB(255, 200, 0)
 charStroke.Thickness = 2
 charStroke.Transparency = 0.7
 
 local charIcon = Instance.new("TextLabel")
 charIcon.Size = UDim2.new(0, 35, 0, 35)
 charIcon.Position = UDim2.new(0, 12, 0, 12)
-charIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+charIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 charIcon.BackgroundTransparency = 0.8
 charIcon.Text = "🛡️"
 charIcon.Font = Enum.Font.GothamBold
@@ -2106,18 +2106,18 @@ end)
 local utilityCard = Instance.new("Frame")
 utilityCard.Size = UDim2.new(0.48, -5, 1, 0)
 utilityCard.Position = UDim2.new(0.52, 0, 0, 0)
-utilityCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+utilityCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 utilityCard.Parent = miscTopRow
 Instance.new("UICorner", utilityCard).CornerRadius = UDim.new(0, 12)
 local utilStroke = Instance.new("UIStroke", utilityCard)
-utilStroke.Color = Color3.fromRGB(100, 200, 255)
+utilStroke.Color = Color3.fromRGB(0, 120, 255)
 utilStroke.Thickness = 2
 utilStroke.Transparency = 0.7
 
 local utilIcon = Instance.new("TextLabel")
 utilIcon.Size = UDim2.new(0, 35, 0, 35)
 utilIcon.Position = UDim2.new(0, 12, 0, 12)
-utilIcon.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+utilIcon.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 utilIcon.BackgroundTransparency = 0.8
 utilIcon.Text = "⚙️"
 utilIcon.Font = Enum.Font.GothamBold
@@ -2220,18 +2220,18 @@ end)
 local infoCard = Instance.new("Frame")
 infoCard.Size = UDim2.new(1, 0, 0, 110)
 infoCard.Position = UDim2.new(0, 0, 0, 190)
-infoCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+infoCard.BackgroundColor3 = Color3.fromRGB(15,15,25)
 infoCard.Parent = miscPage
 Instance.new("UICorner", infoCard).CornerRadius = UDim.new(0, 12)
 local infoStroke = Instance.new("UIStroke", infoCard)
-infoStroke.Color = Color3.fromRGB(139, 92, 246)
+infoStroke.Color = Color3.fromRGB(255, 200, 0)
 infoStroke.Thickness = 2
 infoStroke.Transparency = 0.7
 
 local infoIconLabel = Instance.new("TextLabel")
 infoIconLabel.Size = UDim2.new(0, 40, 0, 40)
 infoIconLabel.Position = UDim2.new(0, 12, 0, 12)
-infoIconLabel.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+infoIconLabel.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 infoIconLabel.BackgroundTransparency = 0.8
 infoIconLabel.Text = "ℹ️"
 infoIconLabel.Font = Enum.Font.GothamBold
@@ -2285,41 +2285,41 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 local function setTab(which)
-	tabPlayers.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabPlayers.TextColor3 = Color3.fromRGB(180,180,190)
-	tabMovement.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabMovement.TextColor3 = Color3.fromRGB(180,180,190)
-	tabAimbot.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabAimbot.TextColor3 = Color3.fromRGB(180,180,190)
-	tabClicker.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
-	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
-	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
+	tabPlayers.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabPlayers.TextColor3 = Color3.fromRGB(200,200,220)
+	tabMovement.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabMovement.TextColor3 = Color3.fromRGB(200,200,220)
+	tabAimbot.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabAimbot.TextColor3 = Color3.fromRGB(200,200,220)
+	tabClicker.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabClicker.TextColor3 = Color3.fromRGB(200,200,220)
+	tabVision.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabVision.TextColor3 = Color3.fromRGB(200,200,220)
+	tabMisc.BackgroundColor3 = Color3.fromRGB(20,20,30)
+	tabMisc.TextColor3 = Color3.fromRGB(200,200,220)
 	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
 	if which=="PLAYERS" then 
-		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabPlayers.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
 		playersPage.Visible=true
 	elseif which=="MOVEMENT" then 
-		tabMovement.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMovement.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabMovement.TextColor3=Color3.fromRGB(255,255,255)
 		movementPage.Visible=true
 	elseif which=="AIMBOT" then 
-		tabAimbot.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabAimbot.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabAimbot.TextColor3=Color3.fromRGB(255,255,255)
 		aimbotPage.Visible=true
 	elseif which=="CLICKER" then 
-		tabClicker.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabClicker.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabClicker.TextColor3=Color3.fromRGB(255,255,255)
 		clickerPage.Visible=true
 	elseif which=="VISION" then 
-		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabVision.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
 	else 
-		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMisc.BackgroundColor3=Color3.fromRGB(0, 120, 255)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
 		miscPage.Visible=true 
 	end
