@@ -312,7 +312,6 @@ local aimbotSmooth = 5
 local aimbotMaxDistance = 500
 local fovCircle = nil
 local waitingForKey = false
-local aimbotKeyPressed = false
 
 local autoClickerEnabled = false
 local autoClickerSpeed = 50
@@ -320,11 +319,6 @@ local autoClickerKey = Enum.KeyCode.C
 local autoClickerKeyName = "C"
 local waitingForClickerKey = false
 local lastClickTime = 0
-
-local function isSameTeam(player)
-	if not LocalPlayer.Team or not player.Team then return false end
-	return LocalPlayer.Team == player.Team
-end
 
 local function getClosestPlayer()
 	local closestPlayer = nil
@@ -377,8 +371,18 @@ RunService.RenderStepped:Connect(function()
 				fovCircle.Visible = true
 			end
 			
+			-- Verificar se tecla está pressionada
+			local isKeyPressed = false
+			if aimbotKey == Enum.UserInputType.MouseButton2 then
+				isKeyPressed = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+			elseif aimbotKey == Enum.UserInputType.MouseButton1 then
+				isKeyPressed = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)
+			else
+				isKeyPressed = UserInputService:IsKeyDown(aimbotKey)
+			end
+			
 			-- Mirar no alvo
-			if aimbotKeyPressed then
+			if isKeyPressed then
 				local target = getClosestPlayer()
 				if target and target.Character then
 					local targetPart = target.Character:FindFirstChild(aimbotTarget)
@@ -751,26 +755,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 			clickerKeyBtn.Text = "TECLA: " .. autoClickerKeyName
 			clickerKeyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 			waitingForClickerKey = false
-		end
-	else
-		-- Controlar tecla do aimbot
-		if aimbotEnabled then
-			if (aimbotKey == Enum.UserInputType.MouseButton2 and input.UserInputType == Enum.UserInputType.MouseButton2) or
-			   (aimbotKey == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseButton1) or
-			   (input.KeyCode == aimbotKey) then
-				aimbotKeyPressed = true
-			end
-		end
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gpe)
-	-- Controlar tecla do aimbot
-	if aimbotEnabled then
-		if (aimbotKey == Enum.UserInputType.MouseButton2 and input.UserInputType == Enum.UserInputType.MouseButton2) or
-		   (aimbotKey == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseButton1) or
-		   (input.KeyCode == aimbotKey) then
-			aimbotKeyPressed = false
 		end
 	end
 end)
