@@ -4,7 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local UI_TOGGLE_KEY = Enum.KeyCode.M
+local UI_TOGGLE_KEY = Enum.KeyCode.P
 local panelVisible = false
 local prevMouseBehavior, prevMouseIconEnabled
 local spectating, savedSubject, savedCamType
@@ -2261,7 +2261,7 @@ infoText.TextColor3 = Color3.fromRGB(180,180,200)
 infoText.TextWrapped = true
 infoText.TextXAlignment = Enum.TextXAlignment.Left
 infoText.TextYAlignment = Enum.TextYAlignment.Top
-infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
+infoText.Text = "• P: Abrir/Fechar painel | • F: Toggle Fly rápido | • M: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
 local function updatePlayersList()
@@ -2356,7 +2356,7 @@ end
 
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
-	if input.KeyCode == Enum.KeyCode.M then 
+	if input.KeyCode == Enum.KeyCode.P then 
 		showPanel(not panelVisible)
 	elseif input.KeyCode == autoClickerKey then
 		autoClickerEnabled = not autoClickerEnabled
@@ -2366,7 +2366,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		FlySystem:toggleFly()
 		flyToggle.Text = FlySystem.flying and "FLY: ON" or "FLY: OFF"
 		flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	elseif input.KeyCode == Enum.KeyCode.P then
+	elseif input.KeyCode == Enum.KeyCode.M then
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 		UserInputService.MouseIconEnabled = true
 	end
@@ -2403,5 +2403,5 @@ FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
-print("🔑 Pressione M para abrir o menu")
+print("🔑 Pressione P para abrir o menu")
 print("🎯 Tecla Aimbot: " .. aimbotKeyName)
