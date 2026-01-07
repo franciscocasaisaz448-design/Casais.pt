@@ -162,13 +162,13 @@ closeBtn.Parent = header
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
 
 local content = Instance.new("Frame")
-content.Size = UDim2.new(1, -20, 1, -70)
+content.Size = UDim2.new(1, -20, 0, 120)
 content.Position = UDim2.new(0, 10, 0, 60)
 content.BackgroundTransparency = 1
 content.Parent = frame
 
 local flyToggle = Instance.new("TextButton")
-flyToggle.Size = UDim2.new(1, 0, 0, 50)
+flyToggle.Size = UDim2.new(0.48, -5, 0, 50)
 flyToggle.Position = UDim2.new(0, 0, 0, 0)
 flyToggle.Text = "🚀 FLY: OFF"
 flyToggle.Font = Enum.Font.GothamBold
@@ -179,8 +179,8 @@ flyToggle.Parent = content
 Instance.new("UICorner", flyToggle).CornerRadius = UDim.new(0, 10)
 
 local noclipToggle = Instance.new("TextButton")
-noclipToggle.Size = UDim2.new(1, 0, 0, 50)
-noclipToggle.Position = UDim2.new(0, 0, 0, 60)
+noclipToggle.Size = UDim2.new(0.48, -5, 0, 50)
+noclipToggle.Position = UDim2.new(0.52, 0, 0, 0)
 noclipToggle.Text = "🌫️ NOCLIP: OFF"
 noclipToggle.Font = Enum.Font.GothamBold
 noclipToggle.TextSize = 16
@@ -190,14 +190,14 @@ noclipToggle.Parent = content
 Instance.new("UICorner", noclipToggle).CornerRadius = UDim.new(0, 10)
 
 local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1, 0, 0, 100)
-infoLabel.Position = UDim2.new(0, 0, 0, 120)
+infoLabel.Size = UDim2.new(1, 0, 0, 60)
+infoLabel.Position = UDim2.new(0, 0, 0, 60)
 infoLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = 14
 infoLabel.TextColor3 = Color3.fromRGB(200,200,200)
 infoLabel.TextWrapped = true
-infoLabel.Text = "CONTROLES:\n\nM - Abrir/Fechar Menu\nF - Toggle Fly\nWASD - Movimento\nSpace - Subir | Ctrl - Descer"
+infoLabel.Text = "CONTROLES:\n\nM - Menu | F - Fly | WASD - Move\nSpace - Up | Ctrl - Down"
 infoLabel.Parent = content
 Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 10)
 
@@ -248,22 +248,20 @@ pcall(function()
     _G.FlySystem.init()
 end)
 
-local tabs = Instance.new("ScrollingFrame")
-tabs.Size = UDim2.new(0, 150, 1, -95)
-tabs.Position = UDim2.new(0, 15, 0, 85)
+local tabs = Instance.new("Frame")
+tabs.Size = UDim2.new(1, -20, 0, 60)
+tabs.Position = UDim2.new(0, 10, 0, 190)
 tabs.BackgroundTransparency = 1
-tabs.BorderSizePixel = 0
-tabs.ScrollBarThickness = 4
-tabs.CanvasSize = UDim2.new(0,0,0,0)
-tabs.AutomaticCanvasSize = Enum.AutomaticSize.Y
 tabs.Parent = frame
 local tabsLayout = Instance.new("UIListLayout", tabs)
-tabsLayout.Padding = UDim.new(0,8)
+tabsLayout.FillDirection = Enum.FillDirection.Horizontal
+tabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+tabsLayout.Padding = UDim.new(0, 15)
 tabsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 local function makeTab(text, order)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, -8, 0, 50)
+	b.Size = UDim2.new(0, 120, 0, 50)
 	b.Text = text
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 14
@@ -287,8 +285,8 @@ local tabVisual = makeTab("👁️ VISUAL", 4)
 local tabMisc = makeTab("⚙️ MISC", 5)
 
 local pages = Instance.new("Frame")
-pages.Size = UDim2.new(1, -185, 1, -95)
-pages.Position = UDim2.new(0, 175, 0, 85)
+pages.Size = UDim2.new(1, -20, 1, -270)
+pages.Position = UDim2.new(0, 10, 0, 260)
 pages.BackgroundTransparency = 1
 pages.Parent = frame
 
@@ -2409,4 +2407,5 @@ setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
 print("🎯 Tecla Aimbot: " .. aimbotKeyName)print("🔑 Pressione M para abrir o menu")
+updatePlayersList()
 updatePlayersList()
