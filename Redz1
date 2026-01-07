@@ -361,7 +361,7 @@ RunService.RenderStepped:Connect(function()
 	pcall(function()
 		if aimbotEnabled then
 			-- Atualizar círculo FOV
-			if not fovCircle then
+			if not fovCircle and Drawing then
 				fovCircle = Drawing.new("Circle")
 				fovCircle.Thickness = 2
 				fovCircle.NumSides = 50
@@ -1881,7 +1881,7 @@ RunService.RenderStepped:Connect(function()
 		if line then line:Remove() end
 	end
 	tracerLines = {}
-	if tracersEnabled then
+	if tracersEnabled and Drawing then
 		for _, player in ipairs(Players:GetPlayers()) do
 			if player ~= LocalPlayer and player.Character then
 				local part = player.Character:FindFirstChild("HumanoidRootPart")
