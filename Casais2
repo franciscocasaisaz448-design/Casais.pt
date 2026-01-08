@@ -11,8 +11,15 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
+-- Verificações de compatibilidade do executor
+local hasDrawing = pcall(function() return Drawing end)
+local hasVIM = pcall(function() return game:GetService("VirtualInputManager") end)
+if not hasDrawing then print("Aviso: Biblioteca Drawing não disponível. ESP boxes e tracers desabilitados.") end
+if not hasVIM then print("Aviso: VirtualInputManager não disponível. Auto clicker pode não funcionar.") end
+
 -- Função para simular clique do mouse (necessária para o auto clicker)
 local function mouse1click()
+    if not hasVIM then return end
     local vim = game:GetService("VirtualInputManager")
     local mousePos = UserInputService:GetMouseLocation()
     vim:SendMouseButtonEvent(mousePos.X, mousePos.Y, 0, true, game, 0)
