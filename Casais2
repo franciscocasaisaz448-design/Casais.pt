@@ -1,12 +1,6 @@
 -- ⚡ CASAIS SCRIPTER - Admin Panel PRO ⚡
 -- 🎯 Script Organizado e Otimizado
 
--- Safety check for Roblox environment
-if not game or not game:GetService then
-    warn("This script must be run in a Roblox environment")
-    return
-end
-
 -- ═══════════════════════════════════════════════════════════════
 --                          SERVIÇOS
 -- ═══════════════════════════════════════════════════════════════
@@ -2960,8 +2954,79 @@ end)
 
 RunService.RenderStepped:Connect(function()
     updateTracers()
-updateNametags()
+    updateNametags()
 end)
+
+-- ═══════════════════════════════════════════════════════════════
+--                    SISTEMA DE NAVEGAÇÃO
+-- ═══════════════════════════════════════════════════════════════
+
+local function setTab(which)
+    -- Resetar todas as abas
+    tabPlayers.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabPlayers.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabMovement.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabMovement.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabAimbot.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabAimbot.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabClicker.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabClicker.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabVision.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabVision.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabPerformance.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabPerformance.TextColor3 = Color3.fromRGB(180, 180, 190)
+    tabMisc.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    tabMisc.TextColor3 = Color3.fromRGB(180, 180, 190)
+    
+    -- Ocultar todas as páginas
+    playersPage.Visible = false
+    movementPage.Visible = false
+    aimbotPage.Visible = false
+    clickerPage.Visible = false
+    visionPage.Visible = false
+    performancePage.Visible = false
+    miscPage.Visible = false
+    
+    -- Ativar aba selecionada
+    if which == "PLAYERS" then 
+        tabPlayers.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabPlayers.TextColor3 = Color3.fromRGB(255, 255, 255)
+        playersPage.Visible = true
+    elseif which == "MOVEMENT" then 
+        tabMovement.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabMovement.TextColor3 = Color3.fromRGB(255, 255, 255)
+        movementPage.Visible = true
+    elseif which == "AIMBOT" then 
+        tabAimbot.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabAimbot.TextColor3 = Color3.fromRGB(255, 255, 255)
+        aimbotPage.Visible = true
+    elseif which == "CLICKER" then 
+        tabClicker.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabClicker.TextColor3 = Color3.fromRGB(255, 255, 255)
+        clickerPage.Visible = true
+    elseif which == "VISION" then 
+        tabVision.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabVision.TextColor3 = Color3.fromRGB(255, 255, 255)
+        visionPage.Visible = true
+    elseif which == "PERFORMANCE" then 
+        tabPerformance.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabPerformance.TextColor3 = Color3.fromRGB(255, 255, 255)
+        performancePage.Visible = true
+    else 
+        tabMisc.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        tabMisc.TextColor3 = Color3.fromRGB(255, 255, 255)
+        miscPage.Visible = true 
+    end
+end
+
+-- Conectar eventos das abas
+tabPlayers.MouseButton1Click:Connect(function() setTab("PLAYERS") end)
+tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
+tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
+tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
+tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabPerformance.MouseButton1Click:Connect(function() setTab("PERFORMANCE") end)
+tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 -- ═══════════════════════════════════════════════════════════════
 --                    CONTROLE DO PAINEL
@@ -3321,4 +3386,4 @@ print("✅ CASAIS SCRIPTER - Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
 print("🎯 Pressione F para ativar/desativar Fly")
 print("📌 Pressione P para destravar o mouse")
-print("⚡ Script criado por CASAIS SCRIPTER")optimizeFPSBtn.MouseButton1Click:Connect(function()
+print("⚡ Script criado por CASAIS SCRIPTER")
