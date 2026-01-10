@@ -1,15 +1,3 @@
-[file name]: image.png
-[file content begin]
-attempt to call a nil value
-
-Stack Begin
-Script 'CoreGui.17048.2664372'
-Stack End        COMECAR
-
-1Pegue a pluma
-
-[file content end]
-
 -- ⚡ CASAIS SCRIPTER - Admin Panel PRO ⚡
 -- 🎯 Script Organizado e Otimizado
 
