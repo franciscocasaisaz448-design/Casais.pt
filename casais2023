@@ -1862,16 +1862,19 @@ local nametagsGuis = {}
 
 RunService.RenderStepped:Connect(function()
 	pcall(function()
+		-- Limpar tracers antigos
 		for _, line in pairs(tracerLines) do
 			if line then line:Remove() end
 		end
 		tracerLines = {}
 		
+		-- Limpar nametags antigos
 		for player, gui in pairs(nametagsGuis) do
 			if gui then gui:Destroy() end
 		end
 		nametagsGuis = {}
 		
+		-- Verificar se ESP está ativo
 		if not espEnabled then return end
 		
 		for _, player in ipairs(Players:GetPlayers()) do
@@ -1881,7 +1884,7 @@ RunService.RenderStepped:Connect(function()
 				local head = char:FindFirstChild("Head")
 				local hum = char:FindFirstChildOfClass("Humanoid")
 				
-				if rootPart and head and hum then
+				if rootPart and head and hum and hum.Health > 0 then
 					local myChar = LocalPlayer.Character
 					local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
 					if not myRoot then continue end
@@ -1891,6 +1894,7 @@ RunService.RenderStepped:Connect(function()
 					
 					local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 					
+					-- Desenhar tracers
 					if tracersEnabled and onScreen and screenPos.Z > 0 then
 						local line = Drawing.new("Line")
 						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
@@ -1902,13 +1906,14 @@ RunService.RenderStepped:Connect(function()
 						table.insert(tracerLines, line)
 					end
 					
-					if (showName or showHealth or showDistance) then
+					-- Mostrar nome, vida e distância
+					if showName or showHealth or showDistance then
 						local billboard = Instance.new("BillboardGui")
 						billboard.Adornee = head
-						billboard.Size = UDim2.new(0, 200, 0, 70)
+						billboard.Size = UDim2.new(0, 200, 0, 80)
 						billboard.StudsOffset = Vector3.new(0, 2.5, 0)
 						billboard.AlwaysOnTop = true
-						billboard.Parent = head
+						billboard.Parent = game.CoreGui
 						
 						local textLabel = Instance.new("TextLabel")
 						textLabel.Size = UDim2.new(1, 0, 1, 0)
