@@ -402,6 +402,14 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- CONTEÚDO DAS ABAS
+playersPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+movementPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+clickerPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+visionPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
+miscPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
 local infoLabel = Instance.new("TextLabel")
 infoLabel.Size = UDim2.new(1, -20, 0, 100)
 infoLabel.Position = UDim2.new(0, 10, 0, 10)
