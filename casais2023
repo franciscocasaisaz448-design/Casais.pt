@@ -1857,16 +1857,16 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
-local tracerLines = {}
+local tracerFolder = Instance.new("Folder")
+tracerFolder.Name = "TracerLines"
+tracerFolder.Parent = game.CoreGui
+
 local nametagsGuis = {}
 
 RunService.RenderStepped:Connect(function()
 	pcall(function()
 		-- Limpar tracers antigos
-		for _, line in pairs(tracerLines) do
-			if line then line:Remove() end
-		end
-		tracerLines = {}
+		tracerFolder:ClearAllChildren()
 		
 		-- Limpar nametags antigos
 		for player, gui in pairs(nametagsGuis) do
@@ -1894,21 +1894,23 @@ RunService.RenderStepped:Connect(function()
 					
 					local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 					
-					-- Desenhar tracers
+					-- Desenhar tracers usando Drawing API
 					if tracersEnabled and onScreen and screenPos.Z > 0 then
-						local line = Drawing.new("Line")
-						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-						line.To = Vector2.new(screenPos.X, screenPos.Y)
-						line.Color = Color3.fromRGB(139, 92, 246)
-						line.Thickness = 2
-						line.Transparency = 1
-						line.Visible = true
-						table.insert(tracerLines, line)
+						local success = pcall(function()
+							local line = Drawing.new("Line")
+							line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+							line.To = Vector2.new(screenPos.X, screenPos.Y)
+							line.Color = Color3.fromRGB(139, 92, 246)
+							line.Thickness = 2
+							line.Transparency = 1
+							line.Visible = true
+						end)
 					end
 					
 					-- Mostrar nome, vida e distância
 					if showName or showHealth or showDistance then
 						local billboard = Instance.new("BillboardGui")
+						billboard.Name = "ESP_" .. player.Name
 						billboard.Adornee = head
 						billboard.Size = UDim2.new(0, 200, 0, 80)
 						billboard.StudsOffset = Vector3.new(0, 2.5, 0)
@@ -1932,10 +1934,10 @@ RunService.RenderStepped:Connect(function()
 						if showHealth then
 							local health = math.floor(hum.Health)
 							local maxHealth = math.floor(hum.MaxHealth)
-							text = text .. (text ~= "" and "\n" or "") .. "❤️ " .. health .. "/" .. maxHealth
+							text = text .. (text ~= "" and "\n" or "") .. "HP: " .. health .. "/" .. maxHealth
 						end
 						if showDistance then
-							text = text .. (text ~= "" and "\n" or "") .. "📍 " .. distance .. "m"
+							text = text .. (text ~= "" and "\n" or "") .. "DIST: " .. distance .. "m"
 						end
 						
 						textLabel.Text = text
