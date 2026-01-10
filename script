@@ -402,17 +402,8 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- CONTEÚDO DAS ABAS
-playersPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-movementPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-clickerPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-visionPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
-miscPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-
 local infoLabel = Instance.new("TextLabel")
 infoLabel.Size = UDim2.new(1, -20, 0, 100)
-infoLabel.Position = UDim2.new(0, 10, 0, 10)
 infoLabel.BackgroundColor3 = Color3.fromRGB(28,28,38)
 infoLabel.Text = "👥 JOGADORES\n\nLista de jogadores online aparecerá aqui"
 infoLabel.TextColor3 = Color3.fromRGB(255,255,255)
@@ -420,11 +411,11 @@ infoLabel.Font = Enum.Font.GothamBold
 infoLabel.TextSize = 16
 infoLabel.Parent = playersPage
 Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 12)
+Instance.new("UIPadding", playersPage).PaddingTop = UDim.new(0, 10)
 
 -- ABA MOVIMENTO
 local flyBtn = Instance.new("TextButton")
 flyBtn.Size = UDim2.new(1, -20, 0, 60)
-flyBtn.Position = UDim2.new(0, 10, 0, 10)
 flyBtn.Text = "✈️ FLY (Tecla F)"
 flyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 flyBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -437,10 +428,10 @@ flyBtn.MouseButton1Click:Connect(function()
 	flyBtn.Text = FlySystem.flying and "✈️ FLY: ON" or "✈️ FLY: OFF"
 	flyBtn.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
+Instance.new("UIPadding", movementPage).PaddingTop = UDim.new(0, 10)
 
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Size = UDim2.new(1, -20, 0, 60)
-noclipBtn.Position = UDim2.new(0, 10, 0, 80)
 noclipBtn.Text = "🌫️ NOCLIP"
 noclipBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 noclipBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -456,7 +447,6 @@ end)
 
 local speedBtn = Instance.new("TextButton")
 speedBtn.Size = UDim2.new(1, -20, 0, 60)
-speedBtn.Position = UDim2.new(0, 10, 0, 150)
 speedBtn.Text = "🏃 SPEED BOOST"
 speedBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 speedBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -478,7 +468,6 @@ end)
 -- ABA AIMBOT
 local aimbotBtn = Instance.new("TextButton")
 aimbotBtn.Size = UDim2.new(1, -20, 0, 60)
-aimbotBtn.Position = UDim2.new(0, 10, 0, 10)
 aimbotBtn.Text = "🎯 AIMBOT"
 aimbotBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 aimbotBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -491,10 +480,10 @@ aimbotBtn.MouseButton1Click:Connect(function()
 	aimbotBtn.Text = aimbotEnabled and "🎯 AIMBOT: ON" or "🎯 AIMBOT: OFF"
 	aimbotBtn.BackgroundColor3 = aimbotEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
+Instance.new("UIPadding", aimbotPage).PaddingTop = UDim.new(0, 10)
 
 local aimbotInfo = Instance.new("TextLabel")
 aimbotInfo.Size = UDim2.new(1, -20, 0, 100)
-aimbotInfo.Position = UDim2.new(0, 10, 0, 80)
 aimbotInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
 aimbotInfo.Text = "Segure o botão direito do mouse\npara ativar o aimbot"
 aimbotInfo.TextColor3 = Color3.fromRGB(200,200,200)
@@ -506,7 +495,6 @@ Instance.new("UICorner", aimbotInfo).CornerRadius = UDim.new(0, 12)
 -- ABA CLICKER
 local clickerBtn = Instance.new("TextButton")
 clickerBtn.Size = UDim2.new(1, -20, 0, 60)
-clickerBtn.Position = UDim2.new(0, 10, 0, 10)
 clickerBtn.Text = "🖱️ AUTO CLICKER (Tecla C)"
 clickerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 clickerBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -519,11 +507,11 @@ clickerBtn.MouseButton1Click:Connect(function()
 	clickerBtn.Text = autoClickerEnabled and "🖱️ CLICKER: ON" or "🖱️ AUTO CLICKER"
 	clickerBtn.BackgroundColor3 = autoClickerEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
+Instance.new("UIPadding", clickerPage).PaddingTop = UDim.new(0, 10)
 
 -- ABA VISÃO
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(1, -20, 0, 60)
-espBtn.Position = UDim2.new(0, 10, 0, 10)
 espBtn.Text = "👁️ ESP WALLHACK"
 espBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 espBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -537,10 +525,10 @@ espBtn.MouseButton1Click:Connect(function()
 	espBtn.Text = espEnabled and "👁️ ESP: ON" or "👁️ ESP WALLHACK"
 	espBtn.BackgroundColor3 = espEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
+Instance.new("UIPadding", visionPage).PaddingTop = UDim.new(0, 10)
 
 local fullbrightBtn = Instance.new("TextButton")
 fullbrightBtn.Size = UDim2.new(1, -20, 0, 60)
-fullbrightBtn.Position = UDim2.new(0, 10, 0, 80)
 fullbrightBtn.Text = "💡 FULLBRIGHT"
 fullbrightBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 fullbrightBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -560,7 +548,6 @@ end)
 -- ABA DESEMPENHO
 local lowGraphicsBtn = Instance.new("TextButton")
 lowGraphicsBtn.Size = UDim2.new(1, -20, 0, 60)
-lowGraphicsBtn.Position = UDim2.new(0, 10, 0, 10)
 lowGraphicsBtn.Text = "📊 GRÁFICOS BAIXOS"
 lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -575,10 +562,10 @@ lowGraphicsBtn.MouseButton1Click:Connect(function()
 	lowGraphicsBtn.BackgroundColor3 = lowGraphicsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	settings().Rendering.QualityLevel = lowGraphicsEnabled and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic
 end)
+Instance.new("UIPadding", performancePage).PaddingTop = UDim.new(0, 10)
 
 local removeTexturesBtn = Instance.new("TextButton")
 removeTexturesBtn.Size = UDim2.new(1, -20, 0, 60)
-removeTexturesBtn.Position = UDim2.new(0, 10, 0, 80)
 removeTexturesBtn.Text = "🖼️ REMOVER TEXTURAS"
 removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -599,7 +586,6 @@ end)
 -- ABA MISC
 local infJumpBtn = Instance.new("TextButton")
 infJumpBtn.Size = UDim2.new(1, -20, 0, 60)
-infJumpBtn.Position = UDim2.new(0, 10, 0, 10)
 infJumpBtn.Text = "🦘 INFINITE JUMP"
 infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 infJumpBtn.TextColor3 = Color3.fromRGB(255,255,255)
@@ -619,10 +605,10 @@ UserInputService.JumpRequest:Connect(function()
 		if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
 	end
 end)
+Instance.new("UIPadding", miscPage).PaddingTop = UDim.new(0, 10)
 
 local antiAfkBtn = Instance.new("TextButton")
 antiAfkBtn.Size = UDim2.new(1, -20, 0, 60)
-antiAfkBtn.Position = UDim2.new(0, 10, 0, 80)
 antiAfkBtn.Text = "⏰ ANTI-AFK"
 antiAfkBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 antiAfkBtn.TextColor3 = Color3.fromRGB(255,255,255)
