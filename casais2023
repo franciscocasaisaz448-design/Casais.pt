@@ -11,18 +11,6 @@ local spectating, savedSubject, savedCamType
 local selectedPlayer
 local playerButtons = {}
 
-local function mouse1click()
-    -- Simulate mouse click for auto clicker
-    if game:GetService("VirtualInputManager") then
-        local vim = game:GetService("VirtualInputManager")
-        vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-        wait(0.01)
-        vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-    else
-        print("VirtualInputManager not available - auto clicker may not work")
-    end
-end
-
 local function getPrimaryPart(char)
 	if not char then return nil end
 	return char.PrimaryPart or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -164,7 +152,6 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
-print("✅ GUI criada")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(900, 620)
@@ -358,6 +345,23 @@ end
 RunService.RenderStepped:Connect(function()
 	pcall(function()
 		if aimbotEnabled then
+			-- Atualizar círculo FOV
+			if not fovCircle then
+				fovCircle = Drawing.new("Circle")
+				fovCircle.Thickness = 2
+				fovCircle.NumSides = 50
+				fovCircle.Filled = false
+				fovCircle.Transparency = 1
+				fovCircle.Color = Color3.fromRGB(255, 70, 70)
+			end
+			
+			if fovCircle then
+				local mousePos = UserInputService:GetMouseLocation()
+				fovCircle.Position = mousePos
+				fovCircle.Radius = aimbotFOV
+				fovCircle.Visible = true
+			end
+			
 			-- Verificar se tecla está pressionada
 			local isKeyPressed = false
 			if aimbotKey == Enum.UserInputType.MouseButton2 then
@@ -367,7 +371,7 @@ RunService.RenderStepped:Connect(function()
 			else
 				isKeyPressed = UserInputService:IsKeyDown(aimbotKey)
 			end
-
+			
 			-- Mirar no alvo
 			if isKeyPressed then
 				local target = getClosestPlayer()
@@ -381,6 +385,10 @@ RunService.RenderStepped:Connect(function()
 						Camera.CFrame = currentCFrame:Lerp(targetCFrame, 1 / smoothValue)
 					end
 				end
+			end
+		else
+			if fovCircle then 
+				fovCircle.Visible = false 
 			end
 		end
 	end)
@@ -1535,7 +1543,7 @@ end)
 
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function()
-		wait(0.5)
+		task.wait(0.5)
 		if espEnabled then updateESP() end
 	end)
 end)
@@ -1767,7 +1775,33 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
--- Tracers disabled for compatibility with mobile executors
+local tracerLines = {}
+RunService.RenderStepped:Connect(function()
+	for _, line in pairs(tracerLines) do
+		if line then line:Remove() end
+	end
+	tracerLines = {}
+	if tracersEnabled then
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character then
+				local part = player.Character:FindFirstChild("HumanoidRootPart")
+				if part then
+					local line = Drawing.new("Line")
+					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+					if onScreen then
+						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+						line.To = Vector2.new(screenPos.X, screenPos.Y)
+						line.Color = Color3.fromRGB(139, 92, 246)
+						line.Thickness = 2
+						line.Transparency = 1
+						line.Visible = true
+						table.insert(tracerLines, line)
+					end
+				end
+			end
+		end
+	end
+end)
 
 RunService.RenderStepped:Connect(function()
 	for player, gui in pairs(nametagsGuis) do
@@ -1946,184 +1980,6 @@ visionInfo.TextWrapped = true
 visionInfo.Text = "  💡 DICAS:\n  • ESP mostra jogadores através de paredes | • Fullbright ilumina tudo\n  • Tracers desenha linhas | • Nametags mostra informações"
 visionInfo.Parent = visionPage
 Instance.new("UICorner", visionInfo).CornerRadius = UDim.new(0, 12)
-
-performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
-
-local perfStatsCard = Instance.new("Frame")
-perfStatsCard.Size = UDim2.new(1, 0, 0, 180)
-perfStatsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfStatsCard.Parent = performancePage
-Instance.new("UICorner", perfStatsCard).CornerRadius = UDim.new(0, 12)
-local perfStroke = Instance.new("UIStroke", perfStatsCard)
-perfStroke.Color = Color3.fromRGB(0, 200, 150)
-perfStroke.Thickness = 2
-perfStroke.Transparency = 0.7
-
-local perfIcon = Instance.new("TextLabel")
-perfIcon.Size = UDim2.new(0, 40, 0, 40)
-perfIcon.Position = UDim2.new(0, 12, 0, 12)
-perfIcon.BackgroundColor3 = Color3.fromRGB(0, 200, 150)
-perfIcon.BackgroundTransparency = 0.8
-perfIcon.Text = "📊"
-perfIcon.Font = Enum.Font.GothamBold
-perfIcon.TextSize = 20
-perfIcon.TextColor3 = Color3.fromRGB(255,255,255)
-perfIcon.Parent = perfStatsCard
-Instance.new("UICorner", perfIcon).CornerRadius = UDim.new(0, 10)
-
-local perfTitle = Instance.new("TextLabel")
-perfTitle.Size = UDim2.new(1, -70, 0, 20)
-perfTitle.Position = UDim2.new(0, 60, 0, 15)
-perfTitle.BackgroundTransparency = 1
-perfTitle.Font = Enum.Font.GothamBold
-perfTitle.TextSize = 15
-perfTitle.TextColor3 = Color3.fromRGB(255,255,255)
-perfTitle.TextXAlignment = Enum.TextXAlignment.Left
-perfTitle.Text = "ESTATÍSTICAS DO SISTEMA"
-perfTitle.Parent = perfStatsCard
-
-local fpsLabel = Instance.new("TextLabel")
-fpsLabel.Size = UDim2.new(0.3, -10, 0, 50)
-fpsLabel.Position = UDim2.new(0, 12, 0, 70)
-fpsLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-fpsLabel.Font = Enum.Font.GothamBold
-fpsLabel.TextSize = 14
-fpsLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
-fpsLabel.Text = "FPS\n--"
-fpsLabel.Parent = perfStatsCard
-Instance.new("UICorner", fpsLabel).CornerRadius = UDim.new(0, 8)
-
-local pingLabel = Instance.new("TextLabel")
-pingLabel.Size = UDim2.new(0.3, -10, 0, 50)
-pingLabel.Position = UDim2.new(0.35, 0, 0, 70)
-pingLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-pingLabel.Font = Enum.Font.GothamBold
-pingLabel.TextSize = 14
-pingLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
-pingLabel.Text = "PING\n--"
-pingLabel.Parent = perfStatsCard
-Instance.new("UICorner", pingLabel).CornerRadius = UDim.new(0, 8)
-
-local memLabel = Instance.new("TextLabel")
-memLabel.Size = UDim2.new(0.3, -10, 0, 50)
-memLabel.Position = UDim2.new(0.7, 0, 0, 70)
-memLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-memLabel.Font = Enum.Font.GothamBold
-memLabel.TextSize = 14
-memLabel.TextColor3 = Color3.fromRGB(100, 150, 255)
-memLabel.Text = "MEMÓRIA\n--"
-memLabel.Parent = perfStatsCard
-Instance.new("UICorner", memLabel).CornerRadius = UDim.new(0, 8)
-
-local boostCard = Instance.new("Frame")
-boostCard.Size = UDim2.new(1, 0, 0, 120)
-boostCard.Position = UDim2.new(0, 0, 0, 190)
-boostCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-boostCard.Parent = performancePage
-Instance.new("UICorner", boostCard).CornerRadius = UDim.new(0, 12)
-local boostStroke = Instance.new("UIStroke", boostCard)
-boostStroke.Color = Color3.fromRGB(255, 100, 100)
-boostStroke.Thickness = 2
-boostStroke.Transparency = 0.7
-
-local boostIcon = Instance.new("TextLabel")
-boostIcon.Size = UDim2.new(0, 35, 0, 35)
-boostIcon.Position = UDim2.new(0, 12, 0, 12)
-boostIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-boostIcon.BackgroundTransparency = 0.8
-boostIcon.Text = "⚡"
-boostIcon.Font = Enum.Font.GothamBold
-boostIcon.TextSize = 18
-boostIcon.TextColor3 = Color3.fromRGB(255,255,255)
-boostIcon.Parent = boostCard
-Instance.new("UICorner", boostIcon).CornerRadius = UDim.new(0, 8)
-
-local boostTitle = Instance.new("TextLabel")
-boostTitle.Size = UDim2.new(1, -60, 0, 18)
-boostTitle.Position = UDim2.new(0, 55, 0, 15)
-boostTitle.BackgroundTransparency = 1
-boostTitle.Font = Enum.Font.GothamBold
-boostTitle.TextSize = 14
-boostTitle.TextColor3 = Color3.fromRGB(255,255,255)
-boostTitle.TextXAlignment = Enum.TextXAlignment.Left
-boostTitle.Text = "OTIMIZAÇÃO"
-boostTitle.Parent = boostCard
-
-local boostFpsBtn = Instance.new("TextButton")
-boostFpsBtn.Size = UDim2.new(0.48, -5, 0, 35)
-boostFpsBtn.Position = UDim2.new(0, 12, 0, 60)
-boostFpsBtn.Text = "🚀 BOOST FPS"
-boostFpsBtn.Font = Enum.Font.GothamBold
-boostFpsBtn.TextSize = 12
-boostFpsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-boostFpsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-boostFpsBtn.Parent = boostCard
-Instance.new("UICorner", boostFpsBtn).CornerRadius = UDim.new(0, 8)
-local fpsBoostEnabled = false
-boostFpsBtn.MouseButton1Click:Connect(function()
-	fpsBoostEnabled = not fpsBoostEnabled
-	boostFpsBtn.Text = fpsBoostEnabled and "🚀 ON" or "🚀 BOOST FPS"
-	boostFpsBtn.BackgroundColor3 = fpsBoostEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	if fpsBoostEnabled then
-		settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-		for _, v in pairs(workspace:GetDescendants()) do
-			if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-				v.Enabled = false
-			end
-		end
-	else
-		settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-	end
-end)
-
-local lowGraphicsBtn = Instance.new("TextButton")
-lowGraphicsBtn.Size = UDim2.new(0.48, -5, 0, 35)
-lowGraphicsBtn.Position = UDim2.new(0.52, 0, 0, 60)
-lowGraphicsBtn.Text = "📉 GRÁFICOS BAIXOS"
-lowGraphicsBtn.Font = Enum.Font.GothamBold
-lowGraphicsBtn.TextSize = 11
-lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-lowGraphicsBtn.Parent = boostCard
-Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 8)
-local lowGraphicsEnabled = false
-lowGraphicsBtn.MouseButton1Click:Connect(function()
-	lowGraphicsEnabled = not lowGraphicsEnabled
-	lowGraphicsBtn.Text = lowGraphicsEnabled and "📉 ON" or "📉 GRÁFICOS BAIXOS"
-	lowGraphicsBtn.BackgroundColor3 = lowGraphicsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	if lowGraphicsEnabled then
-		for _, v in pairs(workspace:GetDescendants()) do
-			if v:IsA("Decal") or v:IsA("Texture") then
-				v.Transparency = 1
-			end
-			if v:IsA("Part") or v:IsA("MeshPart") then
-				v.Material = Enum.Material.SmoothPlastic
-				v.Reflectance = 0
-			end
-		end
-	end
-end)
-
-local frameCounter = 0
-local lastTime = tick()
-RunService.RenderStepped:Connect(function()
-	frameCounter = frameCounter + 1
-	local currentTime = tick()
-	if currentTime - lastTime >= 1 then
-		local fps = frameCounter
-		fpsLabel.Text = "FPS\n" .. fps
-		fpsLabel.TextColor3 = fps >= 60 and Color3.fromRGB(0, 255, 150) or fps >= 30 and Color3.fromRGB(255, 200, 0) or Color3.fromRGB(255, 50, 50)
-		frameCounter = 0
-		lastTime = currentTime
-		
-		local ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
-		pingLabel.Text = "PING\n" .. ping .. " ms"
-		pingLabel.TextColor3 = ping <= 50 and Color3.fromRGB(0, 255, 150) or ping <= 100 and Color3.fromRGB(255, 200, 0) or Color3.fromRGB(255, 50, 50)
-		
-		local mem = math.floor(game:GetService("Stats"):GetTotalMemoryUsageMb())
-		memLabel.Text = "MEMÓRIA\n" .. mem .. " MB"
-	end
-end)
 
 local miscTopRow = Instance.new("Frame")
 miscTopRow.Size = UDim2.new(1, 0, 0, 180)
@@ -2334,7 +2190,8 @@ removeBlurBtn.MouseButton1Click:Connect(function()
 end)
 
 local chatSpamBtn = Instance.new("TextButton")
-chatSpamBtn.Size = UDim2.nechatSpamBtn.Position = UDim2.new(0.48, -5, 0, 38)
+chatSpamBtn.Size = UDim2.new(0.48, -5, 0, 38)
+chatSpamBtn.Position = UDim2.new(0.52, 0, 0, 108)
 chatSpamBtn.Text = "💬 SPAM"
 chatSpamBtn.Font = Enum.Font.GothamBold
 chatSpamBtn.TextSize = 12
@@ -2351,7 +2208,7 @@ chatSpamBtn.MouseButton1Click:Connect(function()
 	if chatSpamEnabled then
 		chatSpamConnection = RunService.Heartbeat:Connect(function()
 			game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Admin Panel PRO", "All")
-			wait(2)
+			task.wait(2)
 		end)
 	else
 		if chatSpamConnection then
@@ -2406,6 +2263,151 @@ infoText.TextXAlignment = Enum.TextXAlignment.Left
 infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
+
+performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
+local perfCard = Instance.new("Frame")
+perfCard.Size = UDim2.new(1, 0, 0, 200)
+perfCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+perfCard.Parent = performancePage
+Instance.new("UICorner", perfCard).CornerRadius = UDim.new(0, 12)
+local perfStroke = Instance.new("UIStroke", perfCard)
+perfStroke.Color = Color3.fromRGB(255, 165, 0)
+perfStroke.Thickness = 2
+perfStroke.Transparency = 0.7
+
+local perfIcon = Instance.new("TextLabel")
+perfIcon.Size = UDim2.new(0, 40, 0, 40)
+perfIcon.Position = UDim2.new(0, 12, 0, 12)
+perfIcon.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+perfIcon.BackgroundTransparency = 0.8
+perfIcon.Text = "📊"
+perfIcon.Font = Enum.Font.GothamBold
+perfIcon.TextSize = 20
+perfIcon.TextColor3 = Color3.fromRGB(255,255,255)
+perfIcon.Parent = perfCard
+Instance.new("UICorner", perfIcon).CornerRadius = UDim.new(0, 10)
+
+local perfTitle = Instance.new("TextLabel")
+perfTitle.Size = UDim2.new(1, -70, 0, 20)
+perfTitle.Position = UDim2.new(0, 60, 0, 15)
+perfTitle.BackgroundTransparency = 1
+perfTitle.Font = Enum.Font.GothamBold
+perfTitle.TextSize = 15
+perfTitle.TextColor3 = Color3.fromRGB(255,255,255)
+perfTitle.TextXAlignment = Enum.TextXAlignment.Left
+perfTitle.Text = "OTIMIZAÇÃO DE DESEMPENHO"
+perfTitle.Parent = perfCard
+
+local perfSubtitle = Instance.new("TextLabel")
+perfSubtitle.Size = UDim2.new(1, -70, 0, 16)
+perfSubtitle.Position = UDim2.new(0, 60, 0, 35)
+perfSubtitle.BackgroundTransparency = 1
+perfSubtitle.Font = Enum.Font.Gotham
+perfSubtitle.TextSize = 11
+perfSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+perfSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+perfSubtitle.Text = "Melhore o FPS do jogo"
+perfSubtitle.Parent = perfCard
+
+local lowGraphicsBtn = Instance.new("TextButton")
+lowGraphicsBtn.Size = UDim2.new(0.48, -5, 0, 38)
+lowGraphicsBtn.Position = UDim2.new(0, 12, 0, 65)
+lowGraphicsBtn.Text = "💻 GRÁFICOS BAIXOS"
+lowGraphicsBtn.Font = Enum.Font.GothamBold
+lowGraphicsBtn.TextSize = 12
+lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+lowGraphicsBtn.Parent = perfCard
+Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 8)
+lowGraphicsBtn.MouseButton1Click:Connect(function()
+	local lighting = game:GetService("Lighting")
+	lighting.GlobalShadows = false
+	lighting.FogEnd = 9e9
+	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("Part") or v:IsA("MeshPart") then
+			v.Material = Enum.Material.SmoothPlastic
+			v.Reflectance = 0
+		end
+	end
+end)
+
+local removeTexturesBtn = Instance.new("TextButton")
+removeTexturesBtn.Size = UDim2.new(0.48, -5, 0, 38)
+removeTexturesBtn.Position = UDim2.new(0.52, 0, 0, 65)
+removeTexturesBtn.Text = "🖼️ REMOVER TEXTURAS"
+removeTexturesBtn.Font = Enum.Font.GothamBold
+removeTexturesBtn.TextSize = 12
+removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeTexturesBtn.Parent = perfCard
+Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 8)
+removeTexturesBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("Decal") or v:IsA("Texture") then
+			v:Destroy()
+		end
+	end
+end)
+
+local removeFXBtn = Instance.new("TextButton")
+removeFXBtn.Size = UDim2.new(0.48, -5, 0, 38)
+removeFXBtn.Position = UDim2.new(0, 12, 0, 113)
+removeFXBtn.Text = "✨ REMOVER EFEITOS"
+removeFXBtn.Font = Enum.Font.GothamBold
+removeFXBtn.TextSize = 12
+removeFXBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeFXBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeFXBtn.Parent = perfCard
+Instance.new("UICorner", removeFXBtn).CornerRadius = UDim.new(0, 8)
+removeFXBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(game:GetDescendants()) do
+		if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+			v:Destroy()
+		end
+	end
+end)
+
+local boostFPSBtn = Instance.new("TextButton")
+boostFPSBtn.Size = UDim2.new(0.48, -5, 0, 38)
+boostFPSBtn.Position = UDim2.new(0.52, 0, 0, 113)
+boostFPSBtn.Text = "🚀 BOOST FPS"
+boostFPSBtn.Font = Enum.Font.GothamBold
+boostFPSBtn.TextSize = 12
+boostFPSBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+boostFPSBtn.TextColor3 = Color3.fromRGB(255,255,255)
+boostFPSBtn.Parent = perfCard
+Instance.new("UICorner", boostFPSBtn).CornerRadius = UDim.new(0, 8)
+boostFPSBtn.MouseButton1Click:Connect(function()
+	local lighting = game:GetService("Lighting")
+	lighting.GlobalShadows = false
+	lighting.FogEnd = 9e9
+	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("Part") or v:IsA("MeshPart") then
+			v.Material = Enum.Material.SmoothPlastic
+			v.Reflectance = 0
+			v.CastShadow = false
+		elseif v:IsA("Decal") or v:IsA("Texture") then
+			v.Transparency = 1
+		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+			v.Enabled = false
+		end
+	end
+end)
+
+local perfInfo = Instance.new("TextLabel")
+perfInfo.Size = UDim2.new(1, 0, 0, 90)
+perfInfo.Position = UDim2.new(0, 0, 0, 210)
+perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+perfInfo.Font = Enum.Font.Gotham
+perfInfo.TextSize = 12
+perfInfo.TextColor3 = Color3.fromRGB(180,180,200)
+perfInfo.TextWrapped = true
+perfInfo.Text = "  💡 DICAS:\n\n  • Gráficos Baixos: Reduz qualidade visual\n  • Remover Texturas: Remove imagens de objetos\n  • Boost FPS: Aplica todas otimizações"
+perfInfo.Parent = performancePage
+Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
 
 local function updatePlayersList()
 	for _, child in ipairs(playersList:GetChildren()) do
@@ -2522,7 +2524,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
-Players.PlayerAdded:Connect(function(p) wait(0.5); updatePlayersList() end)
+Players.PlayerAdded:Connect(function(p) task.wait(0.5); updatePlayersList() end)
 Players.PlayerRemoving:Connect(function(p)
 	if playerButtons[p] then playerButtons[p]:Destroy(); playerButtons[p] = nil end
 	if selectedPlayer == p then selectedPlayer = nil; selectedPlayerTitle.Text = "SELECIONE UM JOGADOR" end
@@ -2540,17 +2542,9 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end)
 end)
 
-print("🔄 Inicializando sistemas...")
 FlySystem:init()
-print("✅ FlySystem iniciado")
 updatePlayersList()
-print("✅ Lista de jogadores atualizada")
 setTab("PLAYERS")
-print("✅ Aba inicial definida")
-print("")
-print("═══════════════════════════════════")
 print("✅ Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
 print("🎯 Tecla Aimbot: " .. aimbotKeyName)
-print("📊 Aba de Desempenho disponível!")
-print("═══════════════════════════════════")
