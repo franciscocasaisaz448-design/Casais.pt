@@ -2334,7 +2334,7 @@ removeBlurBtn.MouseButton1Click:Connect(function()
 end)
 
 local chatSpamBtn = Instance.new("TextButton")
-chatSpamBtn.Size = UDim2.nechatSpamBtn.Position = UDim2.new(0.52, 0, 0, 108)
+chatSpamchatSpamBtn.Position = UDim2.new(0.52, 0, 0, 108)
 chatSpamBtn.Text = "💬 SPAM"
 chatSpamBtn.Font = Enum.Font.GothamBold
 chatSpamBtn.TextSize = 12
