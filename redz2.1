@@ -1774,8 +1774,6 @@ noFogBtn.MouseButton1Click:Connect(function()
 end)
 
 local tracerLines = {}
-local nametagsGuis = {}
-
 RunService.RenderStepped:Connect(function()
 	for _, line in pairs(tracerLines) do
 		if line then line:Remove() end
@@ -1786,9 +1784,9 @@ RunService.RenderStepped:Connect(function()
 			if player ~= LocalPlayer and player.Character then
 				local part = player.Character:FindFirstChild("HumanoidRootPart")
 				if part then
+					local line = Drawing.new("Line")
 					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-					if onScreen and screenPos.Z > 0 then
-						local line = Drawing.new("Line")
+					if onScreen then
 						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
 						line.To = Vector2.new(screenPos.X, screenPos.Y)
 						line.Color = Color3.fromRGB(139, 92, 246)
@@ -1801,7 +1799,8 @@ RunService.RenderStepped:Connect(function()
 			end
 		end
 	end
-	
+end)
+
 RunService.RenderStepped:Connect(function()
 	for player, gui in pairs(nametagsGuis) do
 		if gui then gui:Destroy() end
@@ -1887,6 +1886,7 @@ tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
 tracersBtn.Parent = tracersCard
 Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
 local tracersEnabled = false
+local tracerLines = {}
 tracersBtn.MouseButton1Click:Connect(function()
 	tracersEnabled = not tracersEnabled
 	tracersBtn.Text = tracersEnabled and "ON" or "OFF"
@@ -1938,6 +1938,7 @@ nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
 nametagsBtn.Parent = nametagsCard
 Instance.new("UICorner", nametagsBtn).CornerRadius = UDim.new(0, 8)
 local nametagsEnabled = false
+local nametagsGuis = {}
 nametagsBtn.MouseButton1Click:Connect(function()
 	nametagsEnabled = not nametagsEnabled
 	nametagsBtn.Text = nametagsEnabled and "ON" or "OFF"
