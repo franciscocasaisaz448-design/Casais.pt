@@ -265,7 +265,8 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
-local tabMisc = makeTab("⚙️ MISC", 6)
+local tabPerformance = makeTab("⚡ DESEMPENHO", 6)
+local tabMisc = makeTab("⚙️ MISC", 7)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -294,6 +295,7 @@ local movementPage = makePage()
 local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
+local performancePage = makePage()
 local miscPage = makePage()
 
 local aimbotEnabled = false
@@ -2028,33 +2030,9 @@ charSubtitle.TextXAlignment = Enum.TextXAlignment.Left
 charSubtitle.Text = "Modificações do personagem"
 charSubtitle.Parent = characterCard
 
-local godmodeBtn = Instance.new("TextButton")
-godmodeBtn.Size = UDim2.new(1, -24, 0, 38)
-godmodeBtn.Position = UDim2.new(0, 12, 0, 60)
-godmodeBtn.Text = "🛡️ GODMODE"
-godmodeBtn.Font = Enum.Font.GothamBold
-godmodeBtn.TextSize = 13
-godmodeBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-godmodeBtn.TextColor3 = Color3.fromRGB(255,255,255)
-godmodeBtn.Parent = characterCard
-Instance.new("UICorner", godmodeBtn).CornerRadius = UDim.new(0, 8)
-local godmodeEnabled = false
-godmodeBtn.MouseButton1Click:Connect(function()
-	godmodeEnabled = not godmodeEnabled
-	godmodeBtn.Text = godmodeEnabled and "🛡️ ON" or "🛡️ GODMODE"
-	godmodeBtn.BackgroundColor3 = godmodeEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	if LocalPlayer.Character then
-		local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-		if hum and godmodeEnabled then
-			hum.MaxHealth = math.huge
-			hum.Health = math.huge
-		end
-	end
-end)
-
 local infJumpBtn = Instance.new("TextButton")
-infJumpBtn.Size = UDim2.new(0.48, -5, 0, 38)
-infJumpBtn.Position = UDim2.new(0, 12, 0, 108)
+infJumpBtn.Size = UDim2.new(1, -24, 0, 38)
+infJumpBtn.Position = UDim2.new(0, 12, 0, 60)
 infJumpBtn.Text = "🦘 INF JUMP"
 infJumpBtn.Font = Enum.Font.GothamBold
 infJumpBtn.TextSize = 12
@@ -2076,8 +2054,8 @@ UserInputService.JumpRequest:Connect(function()
 end)
 
 local bhopBtn = Instance.new("TextButton")
-bhopBtn.Size = UDim2.new(0.48, -5, 0, 38)
-bhopBtn.Position = UDim2.new(0.52, 0, 0, 108)
+bhopBtn.Size = UDim2.new(1, -24, 0, 38)
+bhopBtn.Position = UDim2.new(0, 12, 0, 108)
 bhopBtn.Text = "🐇 BHOP"
 bhopBtn.Font = Enum.Font.GothamBold
 bhopBtn.TextSize = 12
@@ -2262,6 +2240,256 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
+-- ABA DE DESEMPENHO
+performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
+local perfTopRow = Instance.new("Frame")
+perfTopRow.Size = UDim2.new(1, 0, 0, 180)
+perfTopRow.BackgroundTransparency = 1
+perfTopRow.Parent = performancePage
+
+local fpsCard = Instance.new("Frame")
+fpsCard.Size = UDim2.new(0.48, -5, 1, 0)
+fpsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+fpsCard.Parent = perfTopRow
+Instance.new("UICorner", fpsCard).CornerRadius = UDim.new(0, 12)
+local fpsStroke = Instance.new("UIStroke", fpsCard)
+fpsStroke.Color = Color3.fromRGB(0, 255, 100)
+fpsStroke.Thickness = 2
+fpsStroke.Transparency = 0.7
+
+local fpsIcon = Instance.new("TextLabel")
+fpsIcon.Size = UDim2.new(0, 35, 0, 35)
+fpsIcon.Position = UDim2.new(0, 12, 0, 12)
+fpsIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+fpsIcon.BackgroundTransparency = 0.8
+fpsIcon.Text = "⚡"
+fpsIcon.Font = Enum.Font.GothamBold
+fpsIcon.TextSize = 18
+fpsIcon.TextColor3 = Color3.fromRGB(255,255,255)
+fpsIcon.Parent = fpsCard
+Instance.new("UICorner", fpsIcon).CornerRadius = UDim.new(0, 8)
+
+local fpsTitle = Instance.new("TextLabel")
+fpsTitle.Size = UDim2.new(1, -60, 0, 18)
+fpsTitle.Position = UDim2.new(0, 55, 0, 15)
+fpsTitle.BackgroundTransparency = 1
+fpsTitle.Font = Enum.Font.GothamBold
+fpsTitle.TextSize = 14
+fpsTitle.TextColor3 = Color3.fromRGB(255,255,255)
+fpsTitle.TextXAlignment = Enum.TextXAlignment.Left
+fpsTitle.Text = "FPS BOOST"
+fpsTitle.Parent = fpsCard
+
+local fpsSubtitle = Instance.new("TextLabel")
+fpsSubtitle.Size = UDim2.new(1, -60, 0, 14)
+fpsSubtitle.Position = UDim2.new(0, 55, 0, 32)
+fpsSubtitle.BackgroundTransparency = 1
+fpsSubtitle.Font = Enum.Font.Gotham
+fpsSubtitle.TextSize = 10
+fpsSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+fpsSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+fpsSubtitle.Text = "Otimizações de desempenho"
+fpsSubtitle.Parent = fpsCard
+
+local lowGraphicsBtn = Instance.new("TextButton")
+lowGraphicsBtn.Size = UDim2.new(1, -24, 0, 38)
+lowGraphicsBtn.Position = UDim2.new(0, 12, 0, 60)
+lowGraphicsBtn.Text = "📊 GRÁFICOS BAIXOS"
+lowGraphicsBtn.Font = Enum.Font.GothamBold
+lowGraphicsBtn.TextSize = 12
+lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+lowGraphicsBtn.Parent = fpsCard
+Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 8)
+local lowGraphicsEnabled = false
+lowGraphicsBtn.MouseButton1Click:Connect(function()
+	lowGraphicsEnabled = not lowGraphicsEnabled
+	lowGraphicsBtn.Text = lowGraphicsEnabled and "📊 ON" or "📊 GRÁFICOS BAIXOS"
+	lowGraphicsBtn.BackgroundColor3 = lowGraphicsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	local lighting = game:GetService("Lighting")
+	if lowGraphicsEnabled then
+		settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+		lighting.GlobalShadows = false
+		lighting.FogEnd = 9e9
+		for _, v in pairs(lighting:GetDescendants()) do
+			if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
+				v.Enabled = false
+			end
+		end
+	else
+		settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+		lighting.GlobalShadows = true
+	end
+end)
+
+local removeTexturesBtn = Instance.new("TextButton")
+removeTexturesBtn.Size = UDim2.new(1, -24, 0, 38)
+removeTexturesBtn.Position = UDim2.new(0, 12, 0, 108)
+removeTexturesBtn.Text = "🖼️ REMOVER TEXTURAS"
+removeTexturesBtn.Font = Enum.Font.GothamBold
+removeTexturesBtn.TextSize = 12
+removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeTexturesBtn.Parent = fpsCard
+Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 8)
+local texturesRemoved = false
+removeTexturesBtn.MouseButton1Click:Connect(function()
+	texturesRemoved = not texturesRemoved
+	removeTexturesBtn.Text = texturesRemoved and "🖼️ ON" or "🖼️ REMOVER TEXTURAS"
+	removeTexturesBtn.BackgroundColor3 = texturesRemoved and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	if texturesRemoved then
+		for _, v in pairs(workspace:GetDescendants()) do
+			if v:IsA("BasePart") then
+				v.Material = Enum.Material.SmoothPlastic
+				v.Reflectance = 0
+			end
+			if v:IsA("Decal") or v:IsA("Texture") then
+				v.Transparency = 1
+			end
+			if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+				v.Enabled = false
+			end
+		end
+	end
+end)
+
+local optimizeCard = Instance.new("Frame")
+optimizeCard.Size = UDim2.new(0.48, -5, 1, 0)
+optimizeCard.Position = UDim2.new(0.52, 0, 0, 0)
+optimizeCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+optimizeCard.Parent = perfTopRow
+Instance.new("UICorner", optimizeCard).CornerRadius = UDim.new(0, 12)
+local optStroke = Instance.new("UIStroke", optimizeCard)
+optStroke.Color = Color3.fromRGB(255, 150, 0)
+optStroke.Thickness = 2
+optStroke.Transparency = 0.7
+
+local optIcon = Instance.new("TextLabel")
+optIcon.Size = UDim2.new(0, 35, 0, 35)
+optIcon.Position = UDim2.new(0, 12, 0, 12)
+optIcon.BackgroundColor3 = Color3.fromRGB(255, 150, 0)
+optIcon.BackgroundTransparency = 0.8
+optIcon.Text = "🚀"
+optIcon.Font = Enum.Font.GothamBold
+optIcon.TextSize = 18
+optIcon.TextColor3 = Color3.fromRGB(255,255,255)
+optIcon.Parent = optimizeCard
+Instance.new("UICorner", optIcon).CornerRadius = UDim.new(0, 8)
+
+local optTitle = Instance.new("TextLabel")
+optTitle.Size = UDim2.new(1, -60, 0, 18)
+optTitle.Position = UDim2.new(0, 55, 0, 15)
+optTitle.BackgroundTransparency = 1
+optTitle.Font = Enum.Font.GothamBold
+optTitle.TextSize = 14
+optTitle.TextColor3 = Color3.fromRGB(255,255,255)
+optTitle.TextXAlignment = Enum.TextXAlignment.Left
+optTitle.Text = "OTIMIZAÇÕES"
+optTitle.Parent = optimizeCard
+
+local optSubtitle = Instance.new("TextLabel")
+optSubtitle.Size = UDim2.new(1, -60, 0, 14)
+optSubtitle.Position = UDim2.new(0, 55, 0, 32)
+optSubtitle.BackgroundTransparency = 1
+optSubtitle.Font = Enum.Font.Gotham
+optSubtitle.TextSize = 10
+optSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+optSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+optSubtitle.Text = "Melhorias de performance"
+optSubtitle.Parent = optimizeCard
+
+local removeShadowsBtn = Instance.new("TextButton")
+removeShadowsBtn.Size = UDim2.new(1, -24, 0, 38)
+removeShadowsBtn.Position = UDim2.new(0, 12, 0, 60)
+removeShadowsBtn.Text = "🌑 REMOVER SOMBRAS"
+removeShadowsBtn.Font = Enum.Font.GothamBold
+removeShadowsBtn.TextSize = 12
+removeShadowsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeShadowsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeShadowsBtn.Parent = optimizeCard
+Instance.new("UICorner", removeShadowsBtn).CornerRadius = UDim.new(0, 8)
+local shadowsRemoved = false
+removeShadowsBtn.MouseButton1Click:Connect(function()
+	shadowsRemoved = not shadowsRemoved
+	removeShadowsBtn.Text = shadowsRemoved and "🌑 ON" or "🌑 REMOVER SOMBRAS"
+	removeShadowsBtn.BackgroundColor3 = shadowsRemoved and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	game:GetService("Lighting").GlobalShadows = not shadowsRemoved
+end)
+
+local optimizePartsBtn = Instance.new("TextButton")
+optimizePartsBtn.Size = UDim2.new(1, -24, 0, 38)
+optimizePartsBtn.Position = UDim2.new(0, 12, 0, 108)
+optimizePartsBtn.Text = "🧱 OTIMIZAR PARTES"
+optimizePartsBtn.Font = Enum.Font.GothamBold
+optimizePartsBtn.TextSize = 12
+optimizePartsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+optimizePartsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+optimizePartsBtn.Parent = optimizeCard
+Instance.new("UICorner", optimizePartsBtn).CornerRadius = UDim.new(0, 8)
+optimizePartsBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.CastShadow = false
+		end
+		if v:IsA("MeshPart") then
+			v.RenderFidelity = Enum.RenderFidelity.Performance
+		end
+	end
+	optimizePartsBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+	optimizePartsBtn.Text = "✅ OTIMIZADO"
+	task.wait(2)
+	optimizePartsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+	optimizePartsBtn.Text = "🧱 OTIMIZAR PARTES"
+end)
+
+local perfInfo = Instance.new("Frame")
+perfInfo.Size = UDim2.new(1, 0, 0, 110)
+perfInfo.Position = UDim2.new(0, 0, 0, 190)
+perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+perfInfo.Parent = performancePage
+Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
+local perfInfoStroke = Instance.new("UIStroke", perfInfo)
+perfInfoStroke.Color = Color3.fromRGB(139, 92, 246)
+perfInfoStroke.Thickness = 2
+perfInfoStroke.Transparency = 0.7
+
+local perfInfoIcon = Instance.new("TextLabel")
+perfInfoIcon.Size = UDim2.new(0, 40, 0, 40)
+perfInfoIcon.Position = UDim2.new(0, 12, 0, 12)
+perfInfoIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+perfInfoIcon.BackgroundTransparency = 0.8
+perfInfoIcon.Text = "💡"
+perfInfoIcon.Font = Enum.Font.GothamBold
+perfInfoIcon.TextSize = 20
+perfInfoIcon.TextColor3 = Color3.fromRGB(255,255,255)
+perfInfoIcon.Parent = perfInfo
+Instance.new("UICorner", perfInfoIcon).CornerRadius = UDim.new(0, 10)
+
+local perfInfoTitle = Instance.new("TextLabel")
+perfInfoTitle.Size = UDim2.new(1, -70, 0, 20)
+perfInfoTitle.Position = UDim2.new(0, 60, 0, 15)
+perfInfoTitle.BackgroundTransparency = 1
+perfInfoTitle.Font = Enum.Font.GothamBold
+perfInfoTitle.TextSize = 15
+perfInfoTitle.TextColor3 = Color3.fromRGB(255,255,255)
+perfInfoTitle.TextXAlignment = Enum.TextXAlignment.Left
+perfInfoTitle.Text = "DICAS DE DESEMPENHO"
+perfInfoTitle.Parent = perfInfo
+
+local perfInfoText = Instance.new("TextLabel")
+perfInfoText.Size = UDim2.new(1, -24, 0, 60)
+perfInfoText.Position = UDim2.new(0, 12, 0, 45)
+perfInfoText.BackgroundTransparency = 1
+perfInfoText.Font = Enum.Font.Gotham
+perfInfoText.TextSize = 12
+perfInfoText.TextColor3 = Color3.fromRGB(180,180,200)
+perfInfoText.TextWrapped = true
+perfInfoText.TextXAlignment = Enum.TextXAlignment.Left
+perfInfoText.TextYAlignment = Enum.TextYAlignment.Top
+perfInfoText.Text = "• Gráficos Baixos: Reduz qualidade visual para +FPS\n• Remover Texturas: Remove detalhes visuais desnecessários\n• Otimizar Partes: Melhora renderização de objetos"
+perfInfoText.Parent = perfInfo
+
 local function updatePlayersList()
 	for _, child in ipairs(playersList:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
@@ -2293,9 +2521,11 @@ local function setTab(which)
 	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
 	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
+	tabPerformance.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabPerformance.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; performancePage.Visible=false; miscPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
@@ -2316,6 +2546,10 @@ local function setTab(which)
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
+	elseif which=="PERFORMANCE" then 
+		tabPerformance.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabPerformance.TextColor3=Color3.fromRGB(255,255,255)
+		performancePage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
@@ -2327,6 +2561,7 @@ tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
 tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
 tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
 tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabPerformance.MouseButton1Click:Connect(function() setTab("PERFORMANCE") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 closeBtn.MouseButton1Click:Connect(function() 
