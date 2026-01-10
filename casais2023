@@ -1861,82 +1861,85 @@ local tracerLines = {}
 local nametagsGuis = {}
 
 RunService.RenderStepped:Connect(function()
-	for _, line in pairs(tracerLines) do
-		if line then line:Remove() end
-	end
-	tracerLines = {}
-	
-	for player, gui in pairs(nametagsGuis) do
-		if gui then gui:Destroy() end
-	end
-	nametagsGuis = {}
-	
-	if not espEnabled then return end
-	
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer and player.Character then
-			local char = player.Character
-			local rootPart = char:FindFirstChild("HumanoidRootPart")
-			local head = char:FindFirstChild("Head")
-			local hum = char:FindFirstChildOfClass("Humanoid")
-			
-			if rootPart and head and hum then
-				local myChar = LocalPlayer.Character
-				local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
-				if not myRoot then continue end
+	pcall(function()
+		for _, line in pairs(tracerLines) do
+			if line then line:Remove() end
+		end
+		tracerLines = {}
+		
+		for player, gui in pairs(nametagsGuis) do
+			if gui then gui:Destroy() end
+		end
+		nametagsGuis = {}
+		
+		if not espEnabled then return end
+		
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer and player.Character then
+				local char = player.Character
+				local rootPart = char:FindFirstChild("HumanoidRootPart")
+				local head = char:FindFirstChild("Head")
+				local hum = char:FindFirstChildOfClass("Humanoid")
 				
-				local distance = math.floor((rootPart.Position - myRoot.Position).Magnitude)
-				if distance > espDistance then continue end
-				
-				local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
-				
-				if tracersEnabled and onScreen then
-					local line = Drawing.new("Line")
-					line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-					line.To = Vector2.new(screenPos.X, screenPos.Y)
-					line.Color = Color3.fromRGB(139, 92, 246)
-					line.Thickness = 2
-					line.Transparency = 1
-					line.Visible = true
-					table.insert(tracerLines, line)
-				end
-				
-				if (showName or showHealth or showDistance) and onScreen then
-					local billboard = Instance.new("BillboardGui")
-					billboard.Adornee = head
-					billboard.Size = UDim2.new(0, 200, 0, 60)
-					billboard.StudsOffset = Vector3.new(0, 2, 0)
-					billboard.AlwaysOnTop = true
-					billboard.Parent = head
+				if rootPart and head and hum then
+					local myChar = LocalPlayer.Character
+					local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+					if not myRoot then continue end
 					
-					local textLabel = Instance.new("TextLabel")
-					textLabel.Size = UDim2.new(1, 0, 1, 0)
-					textLabel.BackgroundTransparency = 1
-					textLabel.Font = Enum.Font.GothamBold
-					textLabel.TextSize = 12
-					textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-					textLabel.TextStrokeTransparency = 0.5
-					textLabel.Parent = billboard
+					local distance = math.floor((rootPart.Position - myRoot.Position).Magnitude)
+					if distance > espDistance then continue end
 					
-					local text = ""
-					if showName then
-						text = player.Name
-					end
-					if showHealth then
-						local health = math.floor(hum.Health)
-						local maxHealth = math.floor(hum.MaxHealth)
-						text = text .. (text ~= "" and "\n" or "") .. "❤️ " .. health .. "/" .. maxHealth
-					end
-					if showDistance then
-						text = text .. (text ~= "" and "\n" or "") .. "📍 " .. distance .. "m"
+					local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+					
+					if tracersEnabled and onScreen and screenPos.Z > 0 then
+						local line = Drawing.new("Line")
+						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+						line.To = Vector2.new(screenPos.X, screenPos.Y)
+						line.Color = Color3.fromRGB(139, 92, 246)
+						line.Thickness = 2
+						line.Transparency = 1
+						line.Visible = true
+						table.insert(tracerLines, line)
 					end
 					
-					textLabel.Text = text
-					nametagsGuis[player] = billboard
+					if (showName or showHealth or showDistance) then
+						local billboard = Instance.new("BillboardGui")
+						billboard.Adornee = head
+						billboard.Size = UDim2.new(0, 200, 0, 70)
+						billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+						billboard.AlwaysOnTop = true
+						billboard.Parent = head
+						
+						local textLabel = Instance.new("TextLabel")
+						textLabel.Size = UDim2.new(1, 0, 1, 0)
+						textLabel.BackgroundTransparency = 1
+						textLabel.Font = Enum.Font.GothamBold
+						textLabel.TextSize = 14
+						textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+						textLabel.TextStrokeTransparency = 0.5
+						textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+						textLabel.Parent = billboard
+						
+						local text = ""
+						if showName then
+							text = player.Name
+						end
+						if showHealth then
+							local health = math.floor(hum.Health)
+							local maxHealth = math.floor(hum.MaxHealth)
+							text = text .. (text ~= "" and "\n" or "") .. "❤️ " .. health .. "/" .. maxHealth
+						end
+						if showDistance then
+							text = text .. (text ~= "" and "\n" or "") .. "📍 " .. distance .. "m"
+						end
+						
+						textLabel.Text = text
+						nametagsGuis[player] = billboard
+					end
 				end
 			end
 		end
-	end
+	end)
 end)
 
 
