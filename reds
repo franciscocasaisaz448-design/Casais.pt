@@ -265,7 +265,8 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
-local tabMisc = makeTab("⚙️ MISC", 6)
+local tabPerformance = makeTab("⚡ DESEMPENHO", 6)
+local tabMisc = makeTab("⚙️ MISC", 7)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -294,6 +295,7 @@ local movementPage = makePage()
 local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
+local performancePage = makePage()
 local miscPage = makePage()
 
 local aimbotEnabled = false
@@ -1979,6 +1981,254 @@ visionInfo.Text = "  💡 DICAS:\n  • ESP mostra jogadores através de paredes
 visionInfo.Parent = visionPage
 Instance.new("UICorner", visionInfo).CornerRadius = UDim.new(0, 12)
 
+performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
+local perfTopRow = Instance.new("Frame")
+perfTopRow.Size = UDim2.new(1, 0, 0, 140)
+perfTopRow.BackgroundTransparency = 1
+perfTopRow.Parent = performancePage
+
+local fpsCard = Instance.new("Frame")
+fpsCard.Size = UDim2.new(0.48, -5, 1, 0)
+fpsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+fpsCard.Parent = perfTopRow
+Instance.new("UICorner", fpsCard).CornerRadius = UDim.new(0, 12)
+local fpsStroke = Instance.new("UIStroke", fpsCard)
+fpsStroke.Color = Color3.fromRGB(0, 255, 100)
+fpsStroke.Thickness = 2
+fpsStroke.Transparency = 0.7
+
+local fpsIcon = Instance.new("TextLabel")
+fpsIcon.Size = UDim2.new(0, 35, 0, 35)
+fpsIcon.Position = UDim2.new(0, 12, 0, 12)
+fpsIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+fpsIcon.BackgroundTransparency = 0.8
+fpsIcon.Text = "📊"
+fpsIcon.Font = Enum.Font.GothamBold
+fpsIcon.TextSize = 18
+fpsIcon.TextColor3 = Color3.fromRGB(255,255,255)
+fpsIcon.Parent = fpsCard
+Instance.new("UICorner", fpsIcon).CornerRadius = UDim.new(0, 8)
+
+local fpsTitle = Instance.new("TextLabel")
+fpsTitle.Size = UDim2.new(1, -60, 0, 18)
+fpsTitle.Position = UDim2.new(0, 55, 0, 15)
+fpsTitle.BackgroundTransparency = 1
+fpsTitle.Font = Enum.Font.GothamBold
+fpsTitle.TextSize = 14
+fpsTitle.TextColor3 = Color3.fromRGB(255,255,255)
+fpsTitle.TextXAlignment = Enum.TextXAlignment.Left
+fpsTitle.Text = "FPS MONITOR"
+fpsTitle.Parent = fpsCard
+
+local fpsValue = Instance.new("TextLabel")
+fpsValue.Size = UDim2.new(1, -24, 0, 50)
+fpsValue.Position = UDim2.new(0, 12, 0, 55)
+fpsValue.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+fpsValue.BackgroundTransparency = 0.9
+fpsValue.Font = Enum.Font.GothamBold
+fpsValue.TextSize = 32
+fpsValue.TextColor3 = Color3.fromRGB(0, 255, 100)
+fpsValue.Text = "60 FPS"
+fpsValue.Parent = fpsCard
+Instance.new("UICorner", fpsValue).CornerRadius = UDim.new(0, 8)
+
+local pingCard = Instance.new("Frame")
+pingCard.Size = UDim2.new(0.48, -5, 1, 0)
+pingCard.Position = UDim2.new(0.52, 0, 0, 0)
+pingCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+pingCard.Parent = perfTopRow
+Instance.new("UICorner", pingCard).CornerRadius = UDim.new(0, 12)
+local pingStroke = Instance.new("UIStroke", pingCard)
+pingStroke.Color = Color3.fromRGB(255, 200, 0)
+pingStroke.Thickness = 2
+pingStroke.Transparency = 0.7
+
+local pingIcon = Instance.new("TextLabel")
+pingIcon.Size = UDim2.new(0, 35, 0, 35)
+pingIcon.Position = UDim2.new(0, 12, 0, 12)
+pingIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+pingIcon.BackgroundTransparency = 0.8
+pingIcon.Text = "📡"
+pingIcon.Font = Enum.Font.GothamBold
+pingIcon.TextSize = 18
+pingIcon.TextColor3 = Color3.fromRGB(255,255,255)
+pingIcon.Parent = pingCard
+Instance.new("UICorner", pingIcon).CornerRadius = UDim.new(0, 8)
+
+local pingTitle = Instance.new("TextLabel")
+pingTitle.Size = UDim2.new(1, -60, 0, 18)
+pingTitle.Position = UDim2.new(0, 55, 0, 15)
+pingTitle.BackgroundTransparency = 1
+pingTitle.Font = Enum.Font.GothamBold
+pingTitle.TextSize = 14
+pingTitle.TextColor3 = Color3.fromRGB(255,255,255)
+pingTitle.TextXAlignment = Enum.TextXAlignment.Left
+pingTitle.Text = "PING"
+pingTitle.Parent = pingCard
+
+local pingValue = Instance.new("TextLabel")
+pingValue.Size = UDim2.new(1, -24, 0, 50)
+pingValue.Position = UDim2.new(0, 12, 0, 55)
+pingValue.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
+pingValue.BackgroundTransparency = 0.9
+pingValue.Font = Enum.Font.GothamBold
+pingValue.TextSize = 32
+pingValue.TextColor3 = Color3.fromRGB(255, 200, 0)
+pingValue.Text = "0 MS"
+pingValue.Parent = pingCard
+Instance.new("UICorner", pingValue).CornerRadius = UDim.new(0, 8)
+
+local optimizeCard = Instance.new("Frame")
+optimizeCard.Size = UDim2.new(1, 0, 0, 180)
+optimizeCard.Position = UDim2.new(0, 0, 0, 150)
+optimizeCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+optimizeCard.Parent = performancePage
+Instance.new("UICorner", optimizeCard).CornerRadius = UDim.new(0, 12)
+local optStroke = Instance.new("UIStroke", optimizeCard)
+optStroke.Color = Color3.fromRGB(139, 92, 246)
+optStroke.Thickness = 2
+optStroke.Transparency = 0.7
+
+local optIcon = Instance.new("TextLabel")
+optIcon.Size = UDim2.new(0, 35, 0, 35)
+optIcon.Position = UDim2.new(0, 12, 0, 12)
+optIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+optIcon.BackgroundTransparency = 0.8
+optIcon.Text = "⚡"
+optIcon.Font = Enum.Font.GothamBold
+optIcon.TextSize = 18
+optIcon.TextColor3 = Color3.fromRGB(255,255,255)
+optIcon.Parent = optimizeCard
+Instance.new("UICorner", optIcon).CornerRadius = UDim.new(0, 8)
+
+local optTitle = Instance.new("TextLabel")
+optTitle.Size = UDim2.new(1, -60, 0, 18)
+optTitle.Position = UDim2.new(0, 55, 0, 15)
+optTitle.BackgroundTransparency = 1
+optTitle.Font = Enum.Font.GothamBold
+optTitle.TextSize = 14
+optTitle.TextColor3 = Color3.fromRGB(255,255,255)
+optTitle.TextXAlignment = Enum.TextXAlignment.Left
+optTitle.Text = "OTIMIZAÇÃO"
+optTitle.Parent = optimizeCard
+
+local optSubtitle = Instance.new("TextLabel")
+optSubtitle.Size = UDim2.new(1, -60, 0, 14)
+optSubtitle.Position = UDim2.new(0, 55, 0, 32)
+optSubtitle.BackgroundTransparency = 1
+optSubtitle.Font = Enum.Font.Gotham
+optSubtitle.TextSize = 10
+optSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+optSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+optSubtitle.Text = "Melhore o desempenho do jogo"
+optSubtitle.Parent = optimizeCard
+
+local boostFpsBtn = Instance.new("TextButton")
+boostFpsBtn.Size = UDim2.new(0.48, -5, 0, 38)
+boostFpsBtn.Position = UDim2.new(0, 12, 0, 60)
+boostFpsBtn.Text = "🚀 BOOST FPS"
+boostFpsBtn.Font = Enum.Font.GothamBold
+boostFpsBtn.TextSize = 13
+boostFpsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+boostFpsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+boostFpsBtn.Parent = optimizeCard
+Instance.new("UICorner", boostFpsBtn).CornerRadius = UDim.new(0, 8)
+local boostFpsEnabled = false
+boostFpsBtn.MouseButton1Click:Connect(function()
+	boostFpsEnabled = not boostFpsEnabled
+	boostFpsBtn.Text = boostFpsEnabled and "🚀 ON" or "🚀 BOOST FPS"
+	boostFpsBtn.BackgroundColor3 = boostFpsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	if boostFpsEnabled then
+		settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+		for _, v in pairs(workspace:GetDescendants()) do
+			if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
+				v.Enabled = false
+			end
+		end
+	else
+		settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
+	end
+end)
+
+local removeTexturesBtn = Instance.new("TextButton")
+removeTexturesBtn.Size = UDim2.new(0.48, -5, 0, 38)
+removeTexturesBtn.Position = UDim2.new(0.52, 0, 0, 60)
+removeTexturesBtn.Text = "🎨 TEXTURAS"
+removeTexturesBtn.Font = Enum.Font.GothamBold
+removeTexturesBtn.TextSize = 13
+removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeTexturesBtn.Parent = optimizeCard
+Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 8)
+removeTexturesBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("Decal") or v:IsA("Texture") then
+			v.Transparency = 1
+		end
+		if v:IsA("BasePart") then
+			v.Material = Enum.Material.SmoothPlastic
+		end
+	end
+end)
+
+local removeShadowsBtn = Instance.new("TextButton")
+removeShadowsBtn.Size = UDim2.new(0.48, -5, 0, 38)
+removeShadowsBtn.Position = UDim2.new(0, 12, 0, 108)
+removeShadowsBtn.Text = "🌑 SOMBRAS"
+removeShadowsBtn.Font = Enum.Font.GothamBold
+removeShadowsBtn.TextSize = 13
+removeShadowsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeShadowsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeShadowsBtn.Parent = optimizeCard
+Instance.new("UICorner", removeShadowsBtn).CornerRadius = UDim.new(0, 8)
+removeShadowsBtn.MouseButton1Click:Connect(function()
+	game:GetService("Lighting").GlobalShadows = false
+	game:GetService("Lighting").FogEnd = 9e9
+end)
+
+local fpsUnlockerBtn = Instance.new("TextButton")
+fpsUnlockerBtn.Size = UDim2.new(0.48, -5, 0, 38)
+fpsUnlockerBtn.Position = UDim2.new(0.52, 0, 0, 108)
+fpsUnlockerBtn.Text = "🔓 FPS UNLOCK"
+fpsUnlockerBtn.Font = Enum.Font.GothamBold
+fpsUnlockerBtn.TextSize = 13
+fpsUnlockerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+fpsUnlockerBtn.TextColor3 = Color3.fromRGB(255,255,255)
+fpsUnlockerBtn.Parent = optimizeCard
+Instance.new("UICorner", fpsUnlockerBtn).CornerRadius = UDim.new(0, 8)
+local fpsUnlocked = false
+fpsUnlockerBtn.MouseButton1Click:Connect(function()
+	fpsUnlocked = not fpsUnlocked
+	fpsUnlockerBtn.Text = fpsUnlocked and "🔓 ON" or "🔓 FPS UNLOCK"
+	fpsUnlockerBtn.BackgroundColor3 = fpsUnlocked and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	setfpscap(fpsUnlocked and 999 or 60)
+end)
+
+local perfInfo = Instance.new("TextLabel")
+perfInfo.Size = UDim2.new(1, 0, 0, 90)
+perfInfo.Position = UDim2.new(0, 0, 0, 340)
+perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+perfInfo.Font = Enum.Font.Gotham
+perfInfo.TextSize = 11
+perfInfo.TextColor3 = Color3.fromRGB(180,180,200)
+perfInfo.TextWrapped = true
+perfInfo.Text = "  💡 DICAS DE DESEMPENHO:\n\n  • Boost FPS reduz qualidade gráfica | • Remover texturas melhora FPS\n  • Desativar sombras aumenta performance | • FPS Unlock remove limite de 60 FPS"
+perfInfo.Parent = performancePage
+Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
+
+local lastFrameTime = tick()
+local fps = 60
+RunService.RenderStepped:Connect(function()
+	local currentTime = tick()
+	local deltaTime = currentTime - lastFrameTime
+	lastFrameTime = currentTime
+	fps = math.floor(1 / deltaTime)
+	fpsValue.Text = tostring(fps) .. " FPS"
+	local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+	pingValue.Text = ping
+end)
+
 local miscTopRow = Instance.new("Frame")
 miscTopRow.Size = UDim2.new(1, 0, 0, 180)
 miscTopRow.BackgroundTransparency = 1
@@ -2293,9 +2543,11 @@ local function setTab(which)
 	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
 	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
+	tabPerformance.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabPerformance.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; performancePage.Visible=false; miscPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
@@ -2316,6 +2568,10 @@ local function setTab(which)
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
+	elseif which=="PERFORMANCE" then 
+		tabPerformance.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabPerformance.TextColor3=Color3.fromRGB(255,255,255)
+		performancePage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
@@ -2327,6 +2583,7 @@ tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
 tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
 tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
 tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabPerformance.MouseButton1Click:Connect(function() setTab("PERFORMANCE") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 closeBtn.MouseButton1Click:Connect(function() 
