@@ -1471,6 +1471,7 @@ local tracersEnabled = false
 local showName = false
 local showHealth = false
 local showDistance = false
+local showDeadPlayers = false
 
 local function isSameTeam(player)
 	if not LocalPlayer.Team or not player.Team then return false end
@@ -1571,7 +1572,7 @@ end)
 visionPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local espCard = Instance.new("Frame")
-espCard.Size = UDim2.new(1, 0, 0, 200)
+espCard.Size = UDim2.new(1, 0, 0, 230)
 espCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
 espCard.Parent = visionPage
 Instance.new("UICorner", espCard).CornerRadius = UDim.new(0, 12)
@@ -1769,9 +1770,24 @@ distBtn.MouseButton1Click:Connect(function()
 	distBtn.BackgroundColor3 = showDistance and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
+local deadBtn = Instance.new("TextButton")
+deadBtn.Size = UDim2.new(1, -20, 0, 28)
+deadBtn.Position = UDim2.new(0, 10, 0, 184)
+deadBtn.Text = "💀 MORTOS"
+deadBtn.Font = Enum.Font.GothamBold
+deadBtn.TextSize = 10
+deadBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+deadBtn.TextColor3 = Color3.fromRGB(255,255,255)
+deadBtn.Parent = espCard
+Instance.new("UICorner", deadBtn).CornerRadius = UDim.new(0, 8)
+deadBtn.MouseButton1Click:Connect(function()
+	showDeadPlayers = not showDeadPlayers
+	deadBtn.BackgroundColor3 = showDeadPlayers and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
 local visualCard = Instance.new("Frame")
 visualCard.Size = UDim2.new(1, 0, 0, 100)
-visualCard.Position = UDim2.new(0, 0, 0, 210)
+visualCard.Position = UDim2.new(0, 0, 0, 240)
 visualCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
 visualCard.Parent = visionPage
 Instance.new("UICorner", visualCard).CornerRadius = UDim.new(0, 12)
@@ -1888,7 +1904,7 @@ RunService.RenderStepped:Connect(function()
 		local hum = char:FindFirstChildOfClass("Humanoid")
 		
 		if not rootPart or not head or not hum then continue end
-		if hum.Health <= 0 then continue end
+		if not showDeadPlayers and hum.Health <= 0 then continue end
 		
 		local myChar = LocalPlayer.Character
 		if not myChar then continue end
@@ -1927,35 +1943,86 @@ RunService.RenderStepped:Connect(function()
 			local billboard = Instance.new("BillboardGui")
 			billboard.Name = "ESP_" .. player.Name
 			billboard.Adornee = head
-			billboard.Size = UDim2.new(0, 200, 0, 100)
-			billboard.StudsOffset = Vector3.new(0, 3, 0)
+			billboard.Size = UDim2.new(0, 200, 0, 80)
+			billboard.StudsOffset = Vector3.new(0, 2, 0)
 			billboard.AlwaysOnTop = true
 			billboard.Parent = espFolder
 			
-			local textLabel = Instance.new("TextLabel")
-			textLabel.Size = UDim2.new(1, 0, 1, 0)
-			textLabel.BackgroundTransparency = 1
-			textLabel.Font = Enum.Font.GothamBold
-			textLabel.TextSize = 16
-			textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-			textLabel.TextStrokeTransparency = 0.3
-			textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-			textLabel.Parent = billboard
+			local container = Instance.new("Frame")
+			container.Size = UDim2.new(1, 0, 1, 0)
+			container.BackgroundTransparency = 1
+			container.Parent = billboard
 			
-			local lines = {}
+			-- NOME EM CIMA
 			if showName then
-				table.insert(lines, player.Name)
-			end
-			if showHealth then
-				local hp = math.floor(hum.Health)
-				local maxHp = math.floor(hum.MaxHealth)
-				table.insert(lines, "HP: " .. hp .. "/" .. maxHp)
-			end
-			if showDistance then
-				table.insert(lines, distance .. "m")
+				local nameLabel = Instance.new("TextLabel")
+				nameLabel.Size = UDim2.new(1, 0, 0, 20)
+				nameLabel.Position = UDim2.new(0, 0, 0, 0)
+				nameLabel.BackgroundTransparency = 1
+				nameLabel.Font = Enum.Font.GothamBold
+				nameLabel.TextSize = 14
+				nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+				nameLabel.TextStrokeTransparency = 0.3
+				nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+				nameLabel.Text = player.Name
+				nameLabel.Parent = container
 			end
 			
-			textLabel.Text = table.concat(lines, "\n")
+			-- VIDA E DISTÂNCIA EM BAIXO
+			if showHealth or showDistance then
+				local yOffset = showName and 25 or 0
+				
+				if showHealth then
+					local hp = math.floor(hum.Health)
+					local maxHp = math.floor(hum.MaxHealth)
+					local hpPercent = hp / maxHp
+					
+					-- Barra de fundo
+					local hpBarBg = Instance.new("Frame")
+					hpBarBg.Size = UDim2.new(0, 100, 0, 8)
+					hpBarBg.Position = UDim2.new(0.5, -50, 0, yOffset)
+					hpBarBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+					hpBarBg.BorderSizePixel = 0
+					hpBarBg.Parent = container
+					Instance.new("UICorner", hpBarBg).CornerRadius = UDim.new(1, 0)
+					
+					-- Barra de vida colorida
+					local hpBar = Instance.new("Frame")
+					hpBar.Size = UDim2.new(hpPercent, 0, 1, 0)
+					hpBar.BackgroundColor3 = hpPercent > 0.5 and Color3.fromRGB(0, 255, 0) or (hpPercent > 0.25 and Color3.fromRGB(255, 200, 0) or Color3.fromRGB(255, 0, 0))
+					hpBar.BorderSizePixel = 0
+					hpBar.Parent = hpBarBg
+					Instance.new("UICorner", hpBar).CornerRadius = UDim.new(1, 0)
+					
+					-- Texto da vida
+					local hpText = Instance.new("TextLabel")
+					hpText.Size = UDim2.new(1, 0, 1, 0)
+					hpText.BackgroundTransparency = 1
+					hpText.Font = Enum.Font.GothamBold
+					hpText.TextSize = 10
+					hpText.TextColor3 = Color3.fromRGB(255, 255, 255)
+					hpText.TextStrokeTransparency = 0.3
+					hpText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+					hpText.Text = hp .. "/" .. maxHp
+					hpText.Parent = hpBarBg
+					
+					yOffset = yOffset + 12
+				end
+				
+				if showDistance then
+					local distLabel = Instance.new("TextLabel")
+					distLabel.Size = UDim2.new(1, 0, 0, 16)
+					distLabel.Position = UDim2.new(0, 0, 0, yOffset)
+					distLabel.BackgroundTransparency = 1
+					distLabel.Font = Enum.Font.GothamBold
+					distLabel.TextSize = 12
+					distLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+					distLabel.TextStrokeTransparency = 0.3
+					distLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+					distLabel.Text = distance .. "m"
+					distLabel.Parent = container
+				end
+			end
 		end
 	end
 end)
