@@ -939,3 +939,222 @@ setTab("PLAYERS")
 print("✅ Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
 print("🎯 Tecla Aimbot: " .. aimbotKeyName)
+
+tn.TextColor3 = Color3.fromRGB(255,255,255)
+removeBlurBtn.Parent = utilityCard
+Instance.new("UICorner", removeBlurBtn).CornerRadius = UDim.new(0, 8)
+removeBlurBtn.MouseButton1Click:Connect(function()
+	for _, obj in pairs(game:GetService("Lighting"):GetChildren()) do
+		if obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("ColorCorrectionEffect") then
+			obj:Destroy()
+		end
+	end
+end)
+
+local chatSpamBtn = Instance.new("TextButton")
+chatSpamBtn.Size = UDim2.new(0.48, -5, 0, 38)
+chatSpamBtn.Position = UDim2.new(0.52, 0, 0, 108)
+chatSpamBtn.Text = "💬 SPAM"
+chatSpamBtn.Font = Enum.Font.GothamBold
+chatSpamBtn.TextSize = 12
+chatSpamBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+chatSpamBtn.TextColor3 = Color3.fromRGB(255,255,255)
+chatSpamBtn.Parent = utilityCard
+Instance.new("UICorner", chatSpamBtn).CornerRadius = UDim.new(0, 8)
+local chatSpamEnabled = false
+local chatSpamConnection
+chatSpamBtn.MouseButton1Click:Connect(function()
+	chatSpamEnabled = not chatSpamEnabled
+	chatSpamBtn.Text = chatSpamEnabled and "💬 ON" or "💬 SPAM"
+	chatSpamBtn.BackgroundColor3 = chatSpamEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	if chatSpamEnabled then
+		chatSpamConnection = RunService.Heartbeat:Connect(function()
+			game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Admin Panel PRO", "All")
+			task.wait(2)
+		end)
+	else
+		if chatSpamConnection then
+			chatSpamConnection:Disconnect()
+		end
+	end
+end)
+
+local infoCard = Instance.new("Frame")
+infoCard.Size = UDim2.new(1, 0, 0, 110)
+infoCard.Position = UDim2.new(0, 0, 0, 190)
+infoCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+infoCard.Parent = miscPage
+Instance.new("UICorner", infoCard).CornerRadius = UDim.new(0, 12)
+local infoStroke = Instance.new("UIStroke", infoCard)
+infoStroke.Color = Color3.fromRGB(139, 92, 246)
+infoStroke.Thickness = 2
+infoStroke.Transparency = 0.7
+
+local infoIconLabel = Instance.new("TextLabel")
+infoIconLabel.Size = UDim2.new(0, 40, 0, 40)
+infoIconLabel.Position = UDim2.new(0, 12, 0, 12)
+infoIconLabel.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+infoIconLabel.BackgroundTransparency = 0.8
+infoIconLabel.Text = "ℹ️"
+infoIconLabel.Font = Enum.Font.GothamBold
+infoIconLabel.TextSize = 20
+infoIconLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoIconLabel.Parent = infoCard
+Instance.new("UICorner", infoIconLabel).CornerRadius = UDim.new(0, 10)
+
+local infoTitleLabel = Instance.new("TextLabel")
+infoTitleLabel.Size = UDim2.new(1, -70, 0, 20)
+infoTitleLabel.Position = UDim2.new(0, 60, 0, 15)
+infoTitleLabel.BackgroundTransparency = 1
+infoTitleLabel.Font = Enum.Font.GothamBold
+infoTitleLabel.TextSize = 15
+infoTitleLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+infoTitleLabel.Text = "ATALHOS DO TECLADO"
+infoTitleLabel.Parent = infoCard
+
+local infoText = Instance.new("TextLabel")
+infoText.Size = UDim2.new(1, -24, 0, 60)
+infoText.Position = UDim2.new(0, 12, 0, 45)
+infoText.BackgroundTransparency = 1
+infoText.Font = Enum.Font.Gotham
+infoText.TextSize = 12
+infoText.TextColor3 = Color3.fromRGB(180,180,200)
+infoText.TextWrapped = true
+infoText.TextXAlignment = Enum.TextXAlignment.Left
+infoText.TextYAlignment = Enum.TextYAlignment.Top
+infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
+infoText.Parent = infoCard
+
+local function updatePlayersList()
+	for _, child in ipairs(playersList:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+	playerButtons = {}
+	local searchText = searchBox.Text:lower()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer then
+			if searchText == "" or player.Name:lower():find(searchText, 1, true) then
+				createPlayerButton(player)
+			end
+		end
+	end
+	playersList.CanvasSize = UDim2.new(0, 0, 0, playersLayout.AbsoluteContentSize.Y + 12)
+end
+
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+	updatePlayersList()
+end)
+
+local function setTab(which)
+	tabPlayers.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabPlayers.TextColor3 = Color3.fromRGB(180,180,190)
+	tabMovement.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabMovement.TextColor3 = Color3.fromRGB(180,180,190)
+	tabAimbot.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabAimbot.TextColor3 = Color3.fromRGB(180,180,190)
+	tabClicker.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
+	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
+	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
+	if which=="PLAYERS" then 
+		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
+		playersPage.Visible=true
+	elseif which=="MOVEMENT" then 
+		tabMovement.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMovement.TextColor3=Color3.fromRGB(255,255,255)
+		movementPage.Visible=true
+	elseif which=="AIMBOT" then 
+		tabAimbot.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabAimbot.TextColor3=Color3.fromRGB(255,255,255)
+		aimbotPage.Visible=true
+	elseif which=="CLICKER" then 
+		tabClicker.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabClicker.TextColor3=Color3.fromRGB(255,255,255)
+		clickerPage.Visible=true
+	elseif which=="VISION" then 
+		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabVision.TextColor3=Color3.fromRGB(255,255,255)
+		visionPage.Visible=true
+	else 
+		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
+		miscPage.Visible=true 
+	end
+end
+tabPlayers.MouseButton1Click:Connect(function() setTab("PLAYERS") end)
+tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
+tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
+tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
+tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
+
+closeBtn.MouseButton1Click:Connect(function() 
+	frame.Visible = false
+	panelVisible = false
+	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
+end)
+
+local function showPanel(show)
+	if panelVisible == show then return end
+	panelVisible = show
+	frame.Visible = show
+	if show then
+		prevMouseBehavior = UserInputService.MouseBehavior
+		prevMouseIconEnabled = UserInputService.MouseIconEnabled
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled = true
+		updatePlayersList()
+	else
+		if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+		if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
+	end
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.M then 
+		showPanel(not panelVisible)
+	elseif input.KeyCode == autoClickerKey then
+		autoClickerEnabled = not autoClickerEnabled
+		clickerToggle.Text = autoClickerEnabled and "AUTO CLICKER: ON" or "AUTO CLICKER: OFF"
+		clickerToggle.BackgroundColor3 = autoClickerEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	elseif input.KeyCode == Enum.KeyCode.F then
+		FlySystem:toggleFly()
+		flyToggle.Text = FlySystem.flying and "FLY: ON" or "FLY: OFF"
+		flyToggle.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	elseif input.KeyCode == Enum.KeyCode.P then
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled = true
+	end
+end)
+
+Players.PlayerAdded:Connect(function(p) task.wait(0.5); updatePlayersList() end)
+Players.PlayerRemoving:Connect(function(p)
+	if playerButtons[p] then playerButtons[p]:Destroy(); playerButtons[p] = nil end
+	if selectedPlayer == p then selectedPlayer = nil; selectedPlayerTitle.Text = "SELECIONE UM JOGADOR" end
+	if spectating == p then stopSpectate() end
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+	local hum = char:WaitForChild("Humanoid")
+	hum.Died:Connect(function()
+		FlySystem:disableFly()
+		if flyToggle then
+			flyToggle.Text = "FLY: OFF"
+			flyToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+		end
+	end)
+end)
+
+FlySystem:init()
+updatePlayersList()
+setTab("PLAYERS")
+print("✅ Admin Panel PRO carregado!")
+print("🔑 Pressione M para abrir o menu")
+print("🎯 Tecla Aimbot: " .. aimbotKeyName)
