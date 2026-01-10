@@ -1857,96 +1857,89 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
-local tracerFolder = Instance.new("Folder")
-tracerFolder.Name = "TracerLines"
-tracerFolder.Parent = game.CoreGui
-
-local nametagsGuis = {}
+local espFolder = Instance.new("Folder")
+espFolder.Name = "ESPFolder"
+espFolder.Parent = game.CoreGui
 
 RunService.RenderStepped:Connect(function()
-	pcall(function()
-		-- Limpar tracers antigos
-		tracerFolder:ClearAllChildren()
+	if not espEnabled then 
+		espFolder:ClearAllChildren()
+		return 
+	end
+	
+	espFolder:ClearAllChildren()
+	
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player == LocalPlayer then continue end
+		if not player.Character then continue end
 		
-		-- Limpar nametags antigos
-		for player, gui in pairs(nametagsGuis) do
-			if gui then gui:Destroy() end
+		local char = player.Character
+		local rootPart = char:FindFirstChild("HumanoidRootPart")
+		local head = char:FindFirstChild("Head")
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		
+		if not rootPart or not head or not hum then continue end
+		if hum.Health <= 0 then continue end
+		
+		local myChar = LocalPlayer.Character
+		if not myChar then continue end
+		local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+		if not myRoot then continue end
+		
+		local distance = math.floor((rootPart.Position - myRoot.Position).Magnitude)
+		if distance > espDistance then continue end
+		
+		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+		
+		-- TRACERS
+		if tracersEnabled and onScreen and screenPos.Z > 0 then
+			pcall(function()
+				local line = Drawing.new("Line")
+				line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+				line.To = Vector2.new(screenPos.X, screenPos.Y)
+				line.Color = Color3.fromRGB(139, 92, 246)
+				line.Thickness = 2
+				line.Transparency = 1
+				line.Visible = true
+			end)
 		end
-		nametagsGuis = {}
 		
-		-- Verificar se ESP está ativo
-		if not espEnabled then return end
-		
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local char = player.Character
-				local rootPart = char:FindFirstChild("HumanoidRootPart")
-				local head = char:FindFirstChild("Head")
-				local hum = char:FindFirstChildOfClass("Humanoid")
-				
-				if rootPart and head and hum and hum.Health > 0 then
-					local myChar = LocalPlayer.Character
-					local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
-					if not myRoot then continue end
-					
-					local distance = math.floor((rootPart.Position - myRoot.Position).Magnitude)
-					if distance > espDistance then continue end
-					
-					local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
-					
-					-- Desenhar tracers usando Drawing API
-					if tracersEnabled and onScreen and screenPos.Z > 0 then
-						local success = pcall(function()
-							local line = Drawing.new("Line")
-							line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-							line.To = Vector2.new(screenPos.X, screenPos.Y)
-							line.Color = Color3.fromRGB(139, 92, 246)
-							line.Thickness = 2
-							line.Transparency = 1
-							line.Visible = true
-						end)
-					end
-					
-					-- Mostrar nome, vida e distância
-					if showName or showHealth or showDistance then
-						local billboard = Instance.new("BillboardGui")
-						billboard.Name = "ESP_" .. player.Name
-						billboard.Adornee = head
-						billboard.Size = UDim2.new(0, 200, 0, 80)
-						billboard.StudsOffset = Vector3.new(0, 2.5, 0)
-						billboard.AlwaysOnTop = true
-						billboard.Parent = game.CoreGui
-						
-						local textLabel = Instance.new("TextLabel")
-						textLabel.Size = UDim2.new(1, 0, 1, 0)
-						textLabel.BackgroundTransparency = 1
-						textLabel.Font = Enum.Font.GothamBold
-						textLabel.TextSize = 14
-						textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-						textLabel.TextStrokeTransparency = 0.5
-						textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-						textLabel.Parent = billboard
-						
-						local text = ""
-						if showName then
-							text = player.Name
-						end
-						if showHealth then
-							local health = math.floor(hum.Health)
-							local maxHealth = math.floor(hum.MaxHealth)
-							text = text .. (text ~= "" and "\n" or "") .. "HP: " .. health .. "/" .. maxHealth
-						end
-						if showDistance then
-							text = text .. (text ~= "" and "\n" or "") .. "DIST: " .. distance .. "m"
-						end
-						
-						textLabel.Text = text
-						nametagsGuis[player] = billboard
-					end
-				end
+		-- NOME, VIDA, DISTANCIA
+		if showName or showHealth or showDistance then
+			local billboard = Instance.new("BillboardGui")
+			billboard.Name = "ESP_" .. player.Name
+			billboard.Adornee = head
+			billboard.Size = UDim2.new(0, 200, 0, 100)
+			billboard.StudsOffset = Vector3.new(0, 3, 0)
+			billboard.AlwaysOnTop = true
+			billboard.Parent = espFolder
+			
+			local textLabel = Instance.new("TextLabel")
+			textLabel.Size = UDim2.new(1, 0, 1, 0)
+			textLabel.BackgroundTransparency = 1
+			textLabel.Font = Enum.Font.GothamBold
+			textLabel.TextSize = 16
+			textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			textLabel.TextStrokeTransparency = 0.3
+			textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+			textLabel.Parent = billboard
+			
+			local lines = {}
+			if showName then
+				table.insert(lines, player.Name)
 			end
+			if showHealth then
+				local hp = math.floor(hum.Health)
+				local maxHp = math.floor(hum.MaxHealth)
+				table.insert(lines, "HP: " .. hp .. "/" .. maxHp)
+			end
+			if showDistance then
+				table.insert(lines, distance .. "m")
+			end
+			
+			textLabel.Text = table.concat(lines, "\n")
 		end
-	end)
+	end
 end)
 
 
