@@ -265,6 +265,133 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
+local tabMisc = makeTab("⚙️ MISC", 6)
+
+local pages = Instance.new("Frame")
+pages.Size = UDim2.new(1, -185, 1, -95)
+pages.Position = UDim2.new(0, 175, 0, 85)
+pages.BackgroundTransparency = 1
+pages.Parent = frame
+
+local function makePage()
+	local p=Instance.new("ScrollingFrame")
+	p.Size=UDim2.fromScale(1,1)
+	p.BackgroundTransparency=1
+	p.BorderSizePixel=0
+	p.ScrollBarThickness=6
+	p.CanvasSize=UDim2.new(0,0,0,0)
+	p.AutomaticCanvasSize=Enum.AutomaticSize.Y
+	p.Visible=false
+	p.Parent=pages
+	local layout=Instance.new("UIListLayout",p)
+	layout.Padding=UDim.new(0,10)
+	layout.SortOrder=Enum.SortOrder.LayoutOrder
+	return p
+end
+
+local playersPage = makePage(); playersPage.Visible = true
+local movementPage = makePage()
+local aimbotPage = makePage()
+local clickerPage = makePage()
+local visionPage = makePage()
+local miscPage = makePage()
+
+local function setTab(which)
+	tabPlayers.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabPlayers.TextColor3 = Color3.fromRGB(180,180,190)
+	tabMovement.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabMovement.TextColor3 = Color3.fromRGB(180,180,190)
+	tabAimbot.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabAimbot.TextColor3 = Color3.fromRGB(180,180,190)
+	tabClicker.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
+	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
+	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
+	if which=="PLAYERS" then 
+		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
+		playersPage.Visible=true
+	elseif which=="MOVEMENT" then 
+		tabMovement.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMovement.TextColor3=Color3.fromRGB(255,255,255)
+		movementPage.Visible=true
+	elseif which=="AIMBOT" then 
+		tabAimbot.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabAimbot.TextColor3=Color3.fromRGB(255,255,255)
+		aimbotPage.Visible=true
+	elseif which=="CLICKER" then 
+		tabClicker.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabClicker.TextColor3=Color3.fromRGB(255,255,255)
+		clickerPage.Visible=true
+	elseif which=="VISION" then 
+		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabVision.TextColor3=Color3.fromRGB(255,255,255)
+		visionPage.Visible=true
+	else 
+		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
+		miscPage.Visible=true 
+	end
+end
+
+tabPlayers.MouseButton1Click:Connect(function() setTab("PLAYERS") end)
+tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
+tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
+tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
+tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
+tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
+
+closeBtn.MouseButton1Click:Connect(function() 
+	frame.Visible = false
+	panelVisible = false
+	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
+end)
+
+local function showPanel(show)
+	if panelVisible == show then return end
+	panelVisible = show
+	frame.Visible = show
+	if show then
+		prevMouseBehavior = UserInputService.MouseBehavior
+		prevMouseIconEnabled = UserInputService.MouseIconEnabled
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled = true
+	else
+		if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+		if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
+	end
+end
+
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.M then 
+		showPanel(not panelVisible)
+	end
+end)
+
+FlySystem:init()
+setTab("PLAYERS")
+print("✅ Admin Panel PRO carregado!")
+print("🔑 Pressione M para abrir o menu") order
+	b.Parent = tabs
+	local corner = Instance.new("UICorner", b)
+	corner.CornerRadius = UDim.new(0, 12)
+	local stroke = Instance.new("UIStroke", b)
+	stroke.Color = Color3.fromRGB(50,50,60)
+	stroke.Thickness = 1
+	stroke.Transparency = 0.5
+	return b
+end
+
+local tabPlayers = makeTab("👥 JOGADORES", 1)
+local tabMovement = makeTab("🚀 MOVIMENTO", 2)
+local tabAimbot = makeTab("🎯 AIMBOT", 3)
+local tabClicker = makeTab("🖱️ CLICKER", 4)
+local tabVision = makeTab("👁️ VISÃO", 5)
 local tabPerformance = makeTab("⚡ DESEMPENHO", 6)
 local tabMisc = makeTab("⚙️ MISC", 7)
 
