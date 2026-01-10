@@ -401,16 +401,241 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-local function updatePlayersList()
-	for _, child in ipairs(playersPage:GetChildren()) do
-		if child:IsA("TextButton") then child:Destroy() end
+-- CONTEÚDO DAS ABAS
+local infoLabel = Instance.new("TextLabel")
+infoLabel.Size = UDim2.new(1, -20, 0, 100)
+infoLabel.Position = UDim2.new(0, 10, 0, 10)
+infoLabel.BackgroundColor3 = Color3.fromRGB(28,28,38)
+infoLabel.Text = "👥 JOGADORES\n\nLista de jogadores online aparecerá aqui"
+infoLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoLabel.Font = Enum.Font.GothamBold
+infoLabel.TextSize = 16
+infoLabel.Parent = playersPage
+Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 12)
+
+-- ABA MOVIMENTO
+local flyBtn = Instance.new("TextButton")
+flyBtn.Size = UDim2.new(1, -20, 0, 60)
+flyBtn.Position = UDim2.new(0, 10, 0, 10)
+flyBtn.Text = "✈️ FLY (Tecla F)"
+flyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+flyBtn.TextColor3 = Color3.fromRGB(255,255,255)
+flyBtn.Font = Enum.Font.GothamBold
+flyBtn.TextSize = 18
+flyBtn.Parent = movementPage
+Instance.new("UICorner", flyBtn).CornerRadius = UDim.new(0, 12)
+flyBtn.MouseButton1Click:Connect(function()
+	FlySystem:toggleFly()
+	flyBtn.Text = FlySystem.flying and "✈️ FLY: ON" or "✈️ FLY: OFF"
+	flyBtn.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local noclipBtn = Instance.new("TextButton")
+noclipBtn.Size = UDim2.new(1, -20, 0, 60)
+noclipBtn.Position = UDim2.new(0, 10, 0, 80)
+noclipBtn.Text = "🌫️ NOCLIP"
+noclipBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+noclipBtn.TextColor3 = Color3.fromRGB(255,255,255)
+noclipBtn.Font = Enum.Font.GothamBold
+noclipBtn.TextSize = 18
+noclipBtn.Parent = movementPage
+Instance.new("UICorner", noclipBtn).CornerRadius = UDim.new(0, 12)
+noclipBtn.MouseButton1Click:Connect(function()
+	FlySystem:toggleNoclip()
+	noclipBtn.Text = FlySystem.noclip and "🌫️ NOCLIP: ON" or "🌫️ NOCLIP: OFF"
+	noclipBtn.BackgroundColor3 = FlySystem.noclip and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local speedBtn = Instance.new("TextButton")
+speedBtn.Size = UDim2.new(1, -20, 0, 60)
+speedBtn.Position = UDim2.new(0, 10, 0, 150)
+speedBtn.Text = "🏃 SPEED BOOST"
+speedBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+speedBtn.TextColor3 = Color3.fromRGB(255,255,255)
+speedBtn.Font = Enum.Font.GothamBold
+speedBtn.TextSize = 18
+speedBtn.Parent = movementPage
+Instance.new("UICorner", speedBtn).CornerRadius = UDim.new(0, 12)
+local speedActive = false
+speedBtn.MouseButton1Click:Connect(function()
+	speedActive = not speedActive
+	speedBtn.Text = speedActive and "🏃 SPEED: ON" or "🏃 SPEED BOOST"
+	speedBtn.BackgroundColor3 = speedActive and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	if LocalPlayer.Character then
+		local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if hum then hum.WalkSpeed = speedActive and 100 or 16 end
 	end
-	playerButtons = {}
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer then
-			-- Criar botão do jogador aqui
+end)
+
+-- ABA AIMBOT
+local aimbotBtn = Instance.new("TextButton")
+aimbotBtn.Size = UDim2.new(1, -20, 0, 60)
+aimbotBtn.Position = UDim2.new(0, 10, 0, 10)
+aimbotBtn.Text = "🎯 AIMBOT"
+aimbotBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+aimbotBtn.TextColor3 = Color3.fromRGB(255,255,255)
+aimbotBtn.Font = Enum.Font.GothamBold
+aimbotBtn.TextSize = 18
+aimbotBtn.Parent = aimbotPage
+Instance.new("UICorner", aimbotBtn).CornerRadius = UDim.new(0, 12)
+aimbotBtn.MouseButton1Click:Connect(function()
+	aimbotEnabled = not aimbotEnabled
+	aimbotBtn.Text = aimbotEnabled and "🎯 AIMBOT: ON" or "🎯 AIMBOT: OFF"
+	aimbotBtn.BackgroundColor3 = aimbotEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local aimbotInfo = Instance.new("TextLabel")
+aimbotInfo.Size = UDim2.new(1, -20, 0, 100)
+aimbotInfo.Position = UDim2.new(0, 10, 0, 80)
+aimbotInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
+aimbotInfo.Text = "Segure o botão direito do mouse\npara ativar o aimbot"
+aimbotInfo.TextColor3 = Color3.fromRGB(200,200,200)
+aimbotInfo.Font = Enum.Font.Gotham
+aimbotInfo.TextSize = 14
+aimbotInfo.Parent = aimbotPage
+Instance.new("UICorner", aimbotInfo).CornerRadius = UDim.new(0, 12)
+
+-- ABA CLICKER
+local clickerBtn = Instance.new("TextButton")
+clickerBtn.Size = UDim2.new(1, -20, 0, 60)
+clickerBtn.Position = UDim2.new(0, 10, 0, 10)
+clickerBtn.Text = "🖱️ AUTO CLICKER (Tecla C)"
+clickerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+clickerBtn.TextColor3 = Color3.fromRGB(255,255,255)
+clickerBtn.Font = Enum.Font.GothamBold
+clickerBtn.TextSize = 18
+clickerBtn.Parent = clickerPage
+Instance.new("UICorner", clickerBtn).CornerRadius = UDim.new(0, 12)
+clickerBtn.MouseButton1Click:Connect(function()
+	autoClickerEnabled = not autoClickerEnabled
+	clickerBtn.Text = autoClickerEnabled and "🖱️ CLICKER: ON" or "🖱️ AUTO CLICKER"
+	clickerBtn.BackgroundColor3 = autoClickerEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+-- ABA VISÃO
+local espBtn = Instance.new("TextButton")
+espBtn.Size = UDim2.new(1, -20, 0, 60)
+espBtn.Position = UDim2.new(0, 10, 0, 10)
+espBtn.Text = "👁️ ESP WALLHACK"
+espBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+espBtn.TextColor3 = Color3.fromRGB(255,255,255)
+espBtn.Font = Enum.Font.GothamBold
+espBtn.TextSize = 18
+espBtn.Parent = visionPage
+Instance.new("UICorner", espBtn).CornerRadius = UDim.new(0, 12)
+local espEnabled = false
+espBtn.MouseButton1Click:Connect(function()
+	espEnabled = not espEnabled
+	espBtn.Text = espEnabled and "👁️ ESP: ON" or "👁️ ESP WALLHACK"
+	espBtn.BackgroundColor3 = espEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local fullbrightBtn = Instance.new("TextButton")
+fullbrightBtn.Size = UDim2.new(1, -20, 0, 60)
+fullbrightBtn.Position = UDim2.new(0, 10, 0, 80)
+fullbrightBtn.Text = "💡 FULLBRIGHT"
+fullbrightBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+fullbrightBtn.TextColor3 = Color3.fromRGB(255,255,255)
+fullbrightBtn.Font = Enum.Font.GothamBold
+fullbrightBtn.TextSize = 18
+fullbrightBtn.Parent = visionPage
+Instance.new("UICorner", fullbrightBtn).CornerRadius = UDim.new(0, 12)
+local fullbrightEnabled = false
+fullbrightBtn.MouseButton1Click:Connect(function()
+	fullbrightEnabled = not fullbrightEnabled
+	fullbrightBtn.Text = fullbrightEnabled and "💡 ON" or "💡 FULLBRIGHT"
+	fullbrightBtn.BackgroundColor3 = fullbrightEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	game:GetService("Lighting").Brightness = fullbrightEnabled and 2 or 1
+	game:GetService("Lighting").ClockTime = fullbrightEnabled and 14 or 12
+end)
+
+-- ABA DESEMPENHO
+local lowGraphicsBtn = Instance.new("TextButton")
+lowGraphicsBtn.Size = UDim2.new(1, -20, 0, 60)
+lowGraphicsBtn.Position = UDim2.new(0, 10, 0, 10)
+lowGraphicsBtn.Text = "📊 GRÁFICOS BAIXOS"
+lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+lowGraphicsBtn.Font = Enum.Font.GothamBold
+lowGraphicsBtn.TextSize = 18
+lowGraphicsBtn.Parent = performancePage
+Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 12)
+local lowGraphicsEnabled = false
+lowGraphicsBtn.MouseButton1Click:Connect(function()
+	lowGraphicsEnabled = not lowGraphicsEnabled
+	lowGraphicsBtn.Text = lowGraphicsEnabled and "📊 ON" or "📊 GRÁFICOS BAIXOS"
+	lowGraphicsBtn.BackgroundColor3 = lowGraphicsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	settings().Rendering.QualityLevel = lowGraphicsEnabled and Enum.QualityLevel.Level01 or Enum.QualityLevel.Automatic
+end)
+
+local removeTexturesBtn = Instance.new("TextButton")
+removeTexturesBtn.Size = UDim2.new(1, -20, 0, 60)
+removeTexturesBtn.Position = UDim2.new(0, 10, 0, 80)
+removeTexturesBtn.Text = "🖼️ REMOVER TEXTURAS"
+removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeTexturesBtn.Font = Enum.Font.GothamBold
+removeTexturesBtn.TextSize = 18
+removeTexturesBtn.Parent = performancePage
+Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 12)
+removeTexturesBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(workspace:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.Material = Enum.Material.SmoothPlastic
 		end
 	end
+	removeTexturesBtn.Text = "✅ REMOVIDO"
+	removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+end)
+
+-- ABA MISC
+local infJumpBtn = Instance.new("TextButton")
+infJumpBtn.Size = UDim2.new(1, -20, 0, 60)
+infJumpBtn.Position = UDim2.new(0, 10, 0, 10)
+infJumpBtn.Text = "🦘 INFINITE JUMP"
+infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+infJumpBtn.TextColor3 = Color3.fromRGB(255,255,255)
+infJumpBtn.Font = Enum.Font.GothamBold
+infJumpBtn.TextSize = 18
+infJumpBtn.Parent = miscPage
+Instance.new("UICorner", infJumpBtn).CornerRadius = UDim.new(0, 12)
+local infJumpEnabled = false
+infJumpBtn.MouseButton1Click:Connect(function()
+	infJumpEnabled = not infJumpEnabled
+	infJumpBtn.Text = infJumpEnabled and "🦘 ON" or "🦘 INFINITE JUMP"
+	infJumpBtn.BackgroundColor3 = infJumpEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+UserInputService.JumpRequest:Connect(function()
+	if infJumpEnabled and LocalPlayer.Character then
+		local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+	end
+end)
+
+local antiAfkBtn = Instance.new("TextButton")
+antiAfkBtn.Size = UDim2.new(1, -20, 0, 60)
+antiAfkBtn.Position = UDim2.new(0, 10, 0, 80)
+antiAfkBtn.Text = "⏰ ANTI-AFK"
+antiAfkBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+antiAfkBtn.TextColor3 = Color3.fromRGB(255,255,255)
+antiAfkBtn.Font = Enum.Font.GothamBold
+antiAfkBtn.TextSize = 18
+antiAfkBtn.Parent = miscPage
+Instance.new("UICorner", antiAfkBtn).CornerRadius = UDim.new(0, 12)
+local antiAfkEnabled = false
+antiAfkBtn.MouseButton1Click:Connect(function()
+	antiAfkEnabled = not antiAfkEnabled
+	antiAfkBtn.Text = antiAfkEnabled and "⏰ ON" or "⏰ ANTI-AFK"
+	antiAfkBtn.BackgroundColor3 = antiAfkEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	if antiAfkEnabled then
+		game:GetService("Players").LocalPlayer.Idled:Connect(function()
+			game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+		end)
+	end
+end)
+
+local function updatePlayersList()
+	-- Função vazia por enquanto
 end
 
 local function setTab(which)
