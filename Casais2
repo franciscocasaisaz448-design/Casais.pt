@@ -420,7 +420,7 @@ RunService.RenderStepped:Connect(function() updateTracers() end)
 closeBtn.MouseButton1Click:Connect(function() frame.Visible = false panelVisible = false end)
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Insert then
+    if input.KeyCode == Enum.KeyCode.Insert or input.KeyCode == Enum.KeyCode.M then
         frame.Visible = not frame.Visible
         panelVisible = frame.Visible
         if panelVisible and not currentTab then
@@ -431,4 +431,11 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 end)
 
 _G.FlySystem.init()
-print("✅ CASAIS SCRIPTER PRO | Pressione INSERT para abrir")
+
+-- Abrir painel automaticamente na primeira vez
+task.wait(0.5)
+frame.Visible = true
+panelVisible = true
+if tabContents["👥 Players"] then tabContents["👥 Players"].Visible = true currentTab = "👥 Players" end
+
+print("✅ CASAIS SCRIPTER PRO | Pressione M ou INSERT para abrir/fechar")
