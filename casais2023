@@ -1871,14 +1871,12 @@ tracerGui.IgnoreGuiInset = true
 tracerGui.Parent = game.CoreGui
 
 RunService.RenderStepped:Connect(function()
-	if not espEnabled then 
-		espFolder:ClearAllChildren()
-		tracerGui:ClearAllChildren()
-		return 
-	end
-	
 	espFolder:ClearAllChildren()
 	tracerGui:ClearAllChildren()
+	
+	if not espEnabled then 
+		return 
+	end
 	
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player == LocalPlayer then continue end
