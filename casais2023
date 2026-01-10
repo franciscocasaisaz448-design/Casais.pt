@@ -1861,13 +1861,24 @@ local espFolder = Instance.new("Folder")
 espFolder.Name = "ESPFolder"
 espFolder.Parent = game.CoreGui
 
+local tracerFolder = Instance.new("Folder")
+tracerFolder.Name = "TracerFolder"
+tracerFolder.Parent = game.CoreGui
+
+local tracerGui = Instance.new("ScreenGui")
+tracerGui.Name = "TracerGui"
+tracerGui.IgnoreGuiInset = true
+tracerGui.Parent = game.CoreGui
+
 RunService.RenderStepped:Connect(function()
 	if not espEnabled then 
 		espFolder:ClearAllChildren()
+		tracerGui:ClearAllChildren()
 		return 
 	end
 	
 	espFolder:ClearAllChildren()
+	tracerGui:ClearAllChildren()
 	
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player == LocalPlayer then continue end
@@ -1891,17 +1902,24 @@ RunService.RenderStepped:Connect(function()
 		
 		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 		
-		-- TRACERS
+		-- TRACERS COM GUI
 		if tracersEnabled and onScreen and screenPos.Z > 0 then
-			pcall(function()
-				local line = Drawing.new("Line")
-				line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-				line.To = Vector2.new(screenPos.X, screenPos.Y)
-				line.Color = Color3.fromRGB(139, 92, 246)
-				line.Thickness = 2
-				line.Transparency = 1
-				line.Visible = true
-			end)
+			local centerX = Camera.ViewportSize.X / 2
+			local centerY = Camera.ViewportSize.Y
+			
+			local deltaX = screenPos.X - centerX
+			local deltaY = screenPos.Y - centerY
+			local dist = math.sqrt(deltaX * deltaX + deltaY * deltaY)
+			local angle = math.deg(math.atan2(deltaY, deltaX))
+			
+			local line = Instance.new("Frame")
+			line.Size = UDim2.new(0, dist, 0, 2)
+			line.Position = UDim2.new(0, centerX, 0, centerY)
+			line.AnchorPoint = Vector2.new(0, 0.5)
+			line.Rotation = angle
+			line.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+			line.BorderSizePixel = 0
+			line.Parent = tracerGui
 		end
 		
 		-- NOME, VIDA, DISTANCIA
