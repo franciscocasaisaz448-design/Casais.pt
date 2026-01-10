@@ -1917,7 +1917,7 @@ RunService.RenderStepped:Connect(function()
 		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 		
 		-- TRACERS
-		if tracersEnabled and onScreen and screenPos.Z > 0 then
+		if tracersEnabled and espEnabled and onScreen and screenPos.Z > 0 then
 			local startX = Camera.ViewportSize.X / 2
 			local startY = Camera.ViewportSize.Y
 			local endX = screenPos.X
@@ -1935,6 +1935,7 @@ RunService.RenderStepped:Connect(function()
 			line.Rotation = angle
 			line.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 			line.BorderSizePixel = 0
+			line.ZIndex = 1
 			line.Parent = tracerGui
 		end
 		
