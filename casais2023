@@ -265,8 +265,7 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
-local tabPerformance = makeTab("📊 DESEMPENHO", 6)
-local tabMisc = makeTab("⚙️ MISC", 7)
+local tabMisc = makeTab("⚙️ MISC", 6)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -295,7 +294,6 @@ local movementPage = makePage()
 local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
-local performancePage = makePage()
 local miscPage = makePage()
 
 local aimbotEnabled = false
@@ -2264,151 +2262,6 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
-performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
-
-local perfCard = Instance.new("Frame")
-perfCard.Size = UDim2.new(1, 0, 0, 200)
-perfCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfCard.Parent = performancePage
-Instance.new("UICorner", perfCard).CornerRadius = UDim.new(0, 12)
-local perfStroke = Instance.new("UIStroke", perfCard)
-perfStroke.Color = Color3.fromRGB(255, 165, 0)
-perfStroke.Thickness = 2
-perfStroke.Transparency = 0.7
-
-local perfIcon = Instance.new("TextLabel")
-perfIcon.Size = UDim2.new(0, 40, 0, 40)
-perfIcon.Position = UDim2.new(0, 12, 0, 12)
-perfIcon.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-perfIcon.BackgroundTransparency = 0.8
-perfIcon.Text = "📊"
-perfIcon.Font = Enum.Font.GothamBold
-perfIcon.TextSize = 20
-perfIcon.TextColor3 = Color3.fromRGB(255,255,255)
-perfIcon.Parent = perfCard
-Instance.new("UICorner", perfIcon).CornerRadius = UDim.new(0, 10)
-
-local perfTitle = Instance.new("TextLabel")
-perfTitle.Size = UDim2.new(1, -70, 0, 20)
-perfTitle.Position = UDim2.new(0, 60, 0, 15)
-perfTitle.BackgroundTransparency = 1
-perfTitle.Font = Enum.Font.GothamBold
-perfTitle.TextSize = 15
-perfTitle.TextColor3 = Color3.fromRGB(255,255,255)
-perfTitle.TextXAlignment = Enum.TextXAlignment.Left
-perfTitle.Text = "OTIMIZAÇÃO DE DESEMPENHO"
-perfTitle.Parent = perfCard
-
-local perfSubtitle = Instance.new("TextLabel")
-perfSubtitle.Size = UDim2.new(1, -70, 0, 16)
-perfSubtitle.Position = UDim2.new(0, 60, 0, 35)
-perfSubtitle.BackgroundTransparency = 1
-perfSubtitle.Font = Enum.Font.Gotham
-perfSubtitle.TextSize = 11
-perfSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
-perfSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-perfSubtitle.Text = "Melhore o FPS do jogo"
-perfSubtitle.Parent = perfCard
-
-local lowGraphicsBtn = Instance.new("TextButton")
-lowGraphicsBtn.Size = UDim2.new(0.48, -5, 0, 38)
-lowGraphicsBtn.Position = UDim2.new(0, 12, 0, 65)
-lowGraphicsBtn.Text = "💻 GRÁFICOS BAIXOS"
-lowGraphicsBtn.Font = Enum.Font.GothamBold
-lowGraphicsBtn.TextSize = 12
-lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-lowGraphicsBtn.Parent = perfCard
-Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 8)
-lowGraphicsBtn.MouseButton1Click:Connect(function()
-	local lighting = game:GetService("Lighting")
-	lighting.GlobalShadows = false
-	lighting.FogEnd = 9e9
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v:IsA("Part") or v:IsA("MeshPart") then
-			v.Material = Enum.Material.SmoothPlastic
-			v.Reflectance = 0
-		end
-	end
-end)
-
-local removeTexturesBtn = Instance.new("TextButton")
-removeTexturesBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeTexturesBtn.Position = UDim2.new(0.52, 0, 0, 65)
-removeTexturesBtn.Text = "🖼️ REMOVER TEXTURAS"
-removeTexturesBtn.Font = Enum.Font.GothamBold
-removeTexturesBtn.TextSize = 12
-removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeTexturesBtn.Parent = perfCard
-Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 8)
-removeTexturesBtn.MouseButton1Click:Connect(function()
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v:Destroy()
-		end
-	end
-end)
-
-local removeFXBtn = Instance.new("TextButton")
-removeFXBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeFXBtn.Position = UDim2.new(0, 12, 0, 113)
-removeFXBtn.Text = "✨ REMOVER EFEITOS"
-removeFXBtn.Font = Enum.Font.GothamBold
-removeFXBtn.TextSize = 12
-removeFXBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-removeFXBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeFXBtn.Parent = perfCard
-Instance.new("UICorner", removeFXBtn).CornerRadius = UDim.new(0, 8)
-removeFXBtn.MouseButton1Click:Connect(function()
-	for _, v in pairs(game:GetDescendants()) do
-		if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-			v:Destroy()
-		end
-	end
-end)
-
-local boostFPSBtn = Instance.new("TextButton")
-boostFPSBtn.Size = UDim2.new(0.48, -5, 0, 38)
-boostFPSBtn.Position = UDim2.new(0.52, 0, 0, 113)
-boostFPSBtn.Text = "🚀 BOOST FPS"
-boostFPSBtn.Font = Enum.Font.GothamBold
-boostFPSBtn.TextSize = 12
-boostFPSBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
-boostFPSBtn.TextColor3 = Color3.fromRGB(255,255,255)
-boostFPSBtn.Parent = perfCard
-Instance.new("UICorner", boostFPSBtn).CornerRadius = UDim.new(0, 8)
-boostFPSBtn.MouseButton1Click:Connect(function()
-	local lighting = game:GetService("Lighting")
-	lighting.GlobalShadows = false
-	lighting.FogEnd = 9e9
-	settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v:IsA("Part") or v:IsA("MeshPart") then
-			v.Material = Enum.Material.SmoothPlastic
-			v.Reflectance = 0
-			v.CastShadow = false
-		elseif v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 1
-		elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-			v.Enabled = false
-		end
-	end
-end)
-
-local perfInfo = Instance.new("TextLabel")
-perfInfo.Size = UDim2.new(1, 0, 0, 90)
-perfInfo.Position = UDim2.new(0, 0, 0, 210)
-perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfInfo.Font = Enum.Font.Gotham
-perfInfo.TextSize = 12
-perfInfo.TextColor3 = Color3.fromRGB(180,180,200)
-perfInfo.TextWrapped = true
-perfInfo.Text = "  💡 DICAS:\n\n  • Gráficos Baixos: Reduz qualidade visual\n  • Remover Texturas: Remove imagens de objetos\n  • Boost FPS: Aplica todas otimizações"
-perfInfo.Parent = performancePage
-Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
-
 local function updatePlayersList()
 	for _, child in ipairs(playersList:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
@@ -2440,11 +2293,9 @@ local function setTab(which)
 	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
 	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
-	tabPerformance.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabPerformance.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; performancePage.Visible=false; miscPage.Visible=false
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
@@ -2465,10 +2316,6 @@ local function setTab(which)
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
-	elseif which=="PERFORMANCE" then 
-		tabPerformance.BackgroundColor3=Color3.fromRGB(139, 92, 246)
-		tabPerformance.TextColor3=Color3.fromRGB(255,255,255)
-		performancePage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
@@ -2480,7 +2327,6 @@ tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
 tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
 tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
 tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
-tabPerformance.MouseButton1Click:Connect(function() setTab("PERFORMANCE") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 closeBtn.MouseButton1Click:Connect(function() 
