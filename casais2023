@@ -1900,19 +1900,21 @@ RunService.RenderStepped:Connect(function()
 		
 		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 		
-		-- TRACERS COM GUI
+		-- TRACERS
 		if tracersEnabled and onScreen and screenPos.Z > 0 then
-			local centerX = Camera.ViewportSize.X / 2
-			local centerY = Camera.ViewportSize.Y
+			local startX = Camera.ViewportSize.X / 2
+			local startY = Camera.ViewportSize.Y
+			local endX = screenPos.X
+			local endY = screenPos.Y
 			
-			local deltaX = screenPos.X - centerX
-			local deltaY = screenPos.Y - centerY
+			local deltaX = endX - startX
+			local deltaY = endY - startY
 			local dist = math.sqrt(deltaX * deltaX + deltaY * deltaY)
 			local angle = math.deg(math.atan2(deltaY, deltaX))
 			
 			local line = Instance.new("Frame")
 			line.Size = UDim2.new(0, dist, 0, 2)
-			line.Position = UDim2.new(0, centerX, 0, centerY)
+			line.Position = UDim2.new(0, startX, 0, startY)
 			line.AnchorPoint = Vector2.new(0, 0.5)
 			line.Rotation = angle
 			line.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
