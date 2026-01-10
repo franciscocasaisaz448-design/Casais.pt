@@ -402,15 +402,6 @@ RunService.Heartbeat:Connect(function()
 end)
 
 -- CONTEÚDO DAS ABAS
-local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1, -20, 0, 100)
-infoLabel.BackgroundColor3 = Color3.fromRGB(28,28,38)
-infoLabel.Text = "👥 JOGADORES\n\nLista de jogadores online aparecerá aqui"
-infoLabel.TextColor3 = Color3.fromRGB(255,255,255)
-infoLabel.Font = Enum.Font.GothamBold
-infoLabel.TextSize = 16
-infoLabel.Parent = playersPage
-Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 12)
 Instance.new("UIPadding", playersPage).PaddingTop = UDim.new(0, 10)
 
 -- ABA MOVIMENTO
@@ -629,7 +620,77 @@ antiAfkBtn.MouseButton1Click:Connect(function()
 end)
 
 local function updatePlayersList()
-	-- Função vazia por enquanto
+	for _, btn in pairs(playerButtons) do btn:Destroy() end
+	playerButtons = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p == LocalPlayer then continue end
+		local card = Instance.new("Frame")
+		card.Size = UDim2.new(1, -20, 0, 80)
+		card.BackgroundColor3 = Color3.fromRGB(28,28,38)
+		card.Parent = playersPage
+		Instance.new("UICorner", card).CornerRadius = UDim.new(0, 12)
+		
+		local avatar = Instance.new("ImageLabel")
+		avatar.Size = UDim2.fromOffset(60, 60)
+		avatar.Position = UDim2.fromOffset(10, 10)
+		avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..p.UserId.."&width=60&height=60"
+		avatar.BackgroundColor3 = Color3.fromRGB(40,40,50)
+		avatar.Parent = card
+		Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 8)
+		
+		local name = Instance.new("TextLabel")
+		name.Size = UDim2.new(1, -160, 0, 30)
+		name.Position = UDim2.fromOffset(80, 10)
+		name.Text = p.Name
+		name.TextColor3 = Color3.fromRGB(255,255,255)
+		name.Font = Enum.Font.GothamBold
+		name.TextSize = 16
+		name.TextXAlignment = Enum.TextXAlignment.Left
+		name.BackgroundTransparency = 1
+		name.Parent = card
+		
+		local btnSpec = Instance.new("TextButton")
+		btnSpec.Size = UDim2.fromOffset(70, 25)
+		btnSpec.Position = UDim2.fromOffset(80, 45)
+		btnSpec.Text = "👁️ Spec"
+		btnSpec.BackgroundColor3 = Color3.fromRGB(59, 130, 246)
+		btnSpec.TextColor3 = Color3.fromRGB(255,255,255)
+		btnSpec.Font = Enum.Font.GothamBold
+		btnSpec.TextSize = 12
+		btnSpec.Parent = card
+		Instance.new("UICorner", btnSpec).CornerRadius = UDim.new(0, 6)
+		btnSpec.MouseButton1Click:Connect(function()
+			if spectating == p then stopSpectate() else startSpectate(p) end
+		end)
+		
+		local btnTP = Instance.new("TextButton")
+		btnTP.Size = UDim2.fromOffset(70, 25)
+		btnTP.Position = UDim2.fromOffset(160, 45)
+		btnTP.Text = "📍 TP"
+		btnTP.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+		btnTP.TextColor3 = Color3.fromRGB(255,255,255)
+		btnTP.Font = Enum.Font.GothamBold
+		btnTP.TextSize = 12
+		btnTP.Parent = card
+		Instance.new("UICorner", btnTP).CornerRadius = UDim.new(0, 6)
+		btnTP.MouseButton1Click:Connect(function() instantTPTo(p) end)
+		
+		local btnFriend = Instance.new("TextButton")
+		btnFriend.Size = UDim2.fromOffset(70, 25)
+		btnFriend.Position = UDim2.fromOffset(240, 45)
+		btnFriend.Text = "❤️ Amigo"
+		btnFriend.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+		btnFriend.TextColor3 = Color3.fromRGB(255,255,255)
+		btnFriend.Font = Enum.Font.GothamBold
+		btnFriend.TextSize = 12
+		btnFriend.Parent = card
+		Instance.new("UICorner", btnFriend).CornerRadius = UDim.new(0, 6)
+		btnFriend.MouseButton1Click:Connect(function()
+			LocalPlayer:RequestFriendship(p)
+		end)
+		
+		playerButtons[p] = card
+	end
 end
 
 local function setTab(which)
