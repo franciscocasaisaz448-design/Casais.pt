@@ -1,3 +1,15 @@
+[file name]: image.png
+[file content begin]
+attempt to call a nil value
+
+Stack Begin
+Script 'CoreGui.17048.2664372'
+Stack End        COMECAR
+
+1Pegue a pluma
+
+[file content end]
+
 -- ⚡ CASAIS SCRIPTER - Admin Panel PRO ⚡
 -- 🎯 Script Organizado e Otimizado
 
@@ -173,7 +185,7 @@ end
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
-gui.Parent = LocalPlayer.PlayerGui
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 -- Frame principal
 local frame = Instance.new("Frame")
@@ -263,9 +275,6 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
-local tabPerformance = makeTab("⚡ PERFORMANCE", 6)
-local tabMisc = makeTab("⚙️ MISC", 7)
-local tabVision = makeTab("👁️ VISÃO", 5)
 local tabMisc = makeTab("⚙️ MISC", 6)
 
 -- Container das páginas
@@ -300,23 +309,22 @@ local movementPage = makePage()
 local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
-local performancePage = makePage()
 local miscPage = makePage()
 
 -- Definir página inicial
 playersPage.Visible = true
 
 -- ═══════════════════════════════════════════════════════════════
---                      SISTEMA ESP MELHORADO
+--                      SISTEMA ESP
 -- ═══════════════════════════════════════════════════════════════
 
-local espEnabled = true
+local espEnabled = false
 local espBoxEnabled = false
 local espMaxDistance = 1000
 local espHighlights = {}
 local espBoxes = {}
 local tracersEnabled = false
-local tracerLines = {}
+local tracersList = {}
 local nametagsEnabled = false
 local nametagsGuis = {}
 
@@ -462,15 +470,15 @@ local function updateESP()
 end
 
 -- ═══════════════════════════════════════════════════════════════
---                      TRACERS MELHORADOS
+--                      SISTEMA TRACERS
 -- ═══════════════════════════════════════════════════════════════
 
 local function updateTracers()
     -- Limpar tracers antigos
-    for _, line in pairs(tracerLines) do
+    for _, line in pairs(tracersList) do
         if line then line:Remove() end
     end
-    tracerLines = {}
+    tracersList = {}
     
     if not tracersEnabled or not Drawing then return end
     
@@ -478,14 +486,13 @@ local function updateTracers()
         if player ~= LocalPlayer and player.Character then
             local distance = getPlayerDistance(player)
             if distance <= espMaxDistance then
-                -- Tracer para o centro do torso do personagem
                 local hrp = player.Character:FindFirstChild("HumanoidRootPart")
                 if hrp then
                     local screenPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
                     if onScreen and screenPos.Z > 0 then
                         pcall(function()
                             local line = Drawing.new("Line")
-                            line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+                            line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
                             line.To = Vector2.new(screenPos.X, screenPos.Y)
                             
                             -- Cor baseada na distância
@@ -500,7 +507,7 @@ local function updateTracers()
                             line.Thickness = 2
                             line.Transparency = 1
                             line.Visible = true
-                            table.insert(tracerLines, line)
+                            table.insert(tracersList, line)
                         end)
                     end
                 end
@@ -510,7 +517,7 @@ local function updateTracers()
 end
 
 -- ═══════════════════════════════════════════════════════════════
---                      NAMETAGS MELHORADOS
+--                      SISTEMA NAMETAGS
 -- ═══════════════════════════════════════════════════════════════
 
 local function updateNametags()
@@ -794,6 +801,12 @@ closeBtn.MouseButton1Click:Connect(function()
     showPanel(false)
 end)
 
+-- ═══════════════════════════════════════════════════════════════
+--                      PÁGINA DO AIMBOT
+-- ═══════════════════════════════════════════════════════════════
+
+aimbotPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
 local aimbotMainCard = Instance.new("Frame")
 aimbotMainCard.Size = UDim2.new(1, 0, 0, 220)
 aimbotMainCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
@@ -1030,38 +1043,6 @@ keyBindBtn.MouseButton1Click:Connect(function()
 	keyBindBtn.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 end)
 
-UserInputService.InputBegan:Connect(function(input, gpe)
-	if waitingForKey and not gpe then
-		if input.UserInputType == Enum.UserInputType.Keyboard then
-			aimbotKey = input.KeyCode
-			aimbotKeyName = input.KeyCode.Name
-			keyBindBtn.Text = "⏱️ " .. aimbotKeyName
-			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-			waitingForKey = false
-		elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-			aimbotKey = Enum.UserInputType.MouseButton1
-			aimbotKeyName = "Botão Esquerdo"
-			keyBindBtn.Text = "⏱️ " .. aimbotKeyName
-			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-			waitingForKey = false
-		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-			aimbotKey = Enum.UserInputType.MouseButton2
-			aimbotKeyName = "Botão Direito"
-			keyBindBtn.Text = "⏱️ " .. aimbotKeyName
-			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-			waitingForKey = false
-		end
-	elseif waitingForClickerKey and not gpe then
-		if input.UserInputType == Enum.UserInputType.Keyboard then
-			autoClickerKey = input.KeyCode
-			autoClickerKeyName = input.KeyCode.Name
-			clickerKeyBtn.Text = "TECLA: " .. autoClickerKeyName
-			clickerKeyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-			waitingForClickerKey = false
-		end
-	end
-end)
-
 local aimbotInfo = Instance.new("TextLabel")
 aimbotInfo.Size = UDim2.new(1, 0, 0, 90)
 aimbotInfo.Position = UDim2.new(0, 0, 0, 230)
@@ -1073,6 +1054,10 @@ aimbotInfo.TextWrapped = true
 aimbotInfo.Text = "  COMO USAR:\n\n  • Ative o Aimbot e ajuste FOV/Suavidade\n  • Escolha o alvo (Cabeça/Corpo) e tecla\n  • Segure a tecla para mirar automaticamente"
 aimbotInfo.Parent = aimbotPage
 Instance.new("UICorner", aimbotInfo).CornerRadius = UDim.new(0, 12)
+
+-- ═══════════════════════════════════════════════════════════════
+--                      PÁGINA DO CLICKER
+-- ═══════════════════════════════════════════════════════════════
 
 clickerPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
@@ -1236,6 +1221,10 @@ clickerInfo.TextWrapped = true
 clickerInfo.Text = "  COMO USAR:\n\n  • Ative o Auto Clicker e ajuste velocidade\n  • Escolha a tecla de ativação\n  • Segure a tecla para clicar automaticamente"
 clickerInfo.Parent = clickerPage
 Instance.new("UICorner", clickerInfo).CornerRadius = UDim.new(0, 12)
+
+-- ═══════════════════════════════════════════════════════════════
+--                      PÁGINA DE JOGADORES
+-- ═══════════════════════════════════════════════════════════════
 
 playersPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
@@ -1425,93 +1414,79 @@ local function createPlayerButton(player)
 	playerButtons[player] = btn
 end
 
-local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos, callback)
-	local valueLabel = Instance.new("TextLabel")
-	valueLabel.Size = UDim2.new(0, 60, 0, 25)
-	valueLabel.Position = UDim2.new(0, 10, 0, yPos)
-	valueLabel.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
-	valueLabel.Font = Enum.Font.GothamBold
-	valueLabel.TextSize = 14
-	valueLabel.TextColor3 = Color3.fromRGB(255,255,255)
-	valueLabel.Text = tostring(defaultVal)
-	valueLabel.Parent = parent
-	Instance.new("UICorner", valueLabel).CornerRadius = UDim.new(0, 6)
+-- ═══════════════════════════════════════════════════════════════
+--                      PÁGINA DE MOVIMENTO
+-- ═══════════════════════════════════════════════════════════════
 
-	local btnPrev = Instance.new("TextButton")
-	btnPrev.Size = UDim2.new(0, 50, 0, 25)
-	btnPrev.Position = UDim2.new(0, 80, 0, yPos)
-	btnPrev.Text = "<"
-	btnPrev.Font = Enum.Font.GothamBold
-	btnPrev.TextSize = 16
-	btnPrev.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
-	btnPrev.TextColor3 = Color3.fromRGB(255,255,255)
-	btnPrev.Parent = parent
-	Instance.new("UICorner", btnPrev).CornerRadius = UDim.new(0, 6)
+movementPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
-	local btnNext = Instance.new("TextButton")
-	btnNext.Size = UDim2.new(0, 50, 0, 25)
-	btnNext.Position = UDim2.new(1, -60, 0, yPos)
-	btnNext.Text = ">"
-	btnNext.Font = Enum.Font.GothamBold
-	btnNext.TextSize = 16
-	btnNext.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
-	btnNext.TextColor3 = Color3.fromRGB(255,255,255)
-	btnNext.Parent = parent
-	Instance.new("UICorner", btnNext).CornerRadius = UDim.new(0, 6)
+local topRow = Instance.new("Frame")
+topRow.Size = UDim2.new(1, 0, 0, 200)
+topRow.BackgroundTransparency = 1
+topRow.Parent = movementPage
 
-	local speedBar = Instance.new("Frame")
-	speedBar.Size = UDim2.new(1, -200, 0, 8)
-	speedBar.Position = UDim2.new(0, 140, 0, yPos + 8)
-	speedBar.BackgroundColor3 = Color3.fromRGB(40,40,50)
-	speedBar.Parent = parent
-	Instance.new("UICorner", speedBar).CornerRadius = UDim.new(1, 0)
+local speedCard = Instance.new("Frame")
+speedCard.Size = UDim2.new(0.48, -5, 1, 0)
+speedCard.Position = UDim2.new(0, 0, 0, 0)
+speedCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+speedCard.Parent = topRow
+Instance.new("UICorner", speedCard).CornerRadius = UDim.new(0, 12)
+local speedStroke = Instance.new("UIStroke", speedCard)
+speedStroke.Color = Color3.fromRGB(120, 80, 220)
+speedStroke.Thickness = 2
+speedStroke.Transparency = 0.7
 
-	local speedFill = Instance.new("Frame")
-	speedFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
-	speedFill.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
-	speedFill.Parent = speedBar
-	Instance.new("UICorner", speedFill).CornerRadius = UDim.new(1, 0)
+local speedIcon = Instance.new("TextLabel")
+speedIcon.Size = UDim2.new(0, 40, 0, 40)
+speedIcon.Position = UDim2.new(0, 12, 0, 12)
+speedIcon.BackgroundColor3 = Color3.fromRGB(120, 80, 220)
+speedIcon.BackgroundTransparency = 0.8
+speedIcon.Text = "🏃"
+speedIcon.Font = Enum.Font.GothamBold
+speedIcon.TextSize = 22
+speedIcon.TextColor3 = Color3.fromRGB(255,255,255)
+speedIcon.Parent = speedCard
+Instance.new("UICorner", speedIcon).CornerRadius = UDim.new(0, 10)
 
-	btnPrev.MouseButton1Click:Connect(function()
-		local currentVal = tonumber(valueLabel.Text) or defaultVal
-		if currentVal > minVal then
-			local newVal = math.max(minVal, currentVal - math.ceil((maxVal - minVal) / 10))
-			valueLabel.Text = tostring(newVal)
-			speedFill.Size = UDim2.new((newVal - minVal) / (maxVal - minVal), 0, 1, 0)
-			callback(newVal)
-		end
-	end)
+local speedTitle = Instance.new("TextLabel")
+speedTitle.Size = UDim2.new(1, -140, 0, 20)
+speedTitle.Position = UDim2.new(0, 60, 0, 15)
+speedTitle.BackgroundTransparency = 1
+speedTitle.Font = Enum.Font.GothamBold
+speedTitle.TextSize = 15
+speedTitle.TextColor3 = Color3.fromRGB(255,255,255)
+speedTitle.TextXAlignment = Enum.TextXAlignment.Left
+speedTitle.Text = "VELOCIDADE"
+speedTitle.Parent = speedCard
 
-	btnNext.MouseButton1Click:Connect(function()
-		local currentVal = tonumber(valueLabel.Text) or defaultVal
-		if currentVal < maxVal then
-			local newVal = math.min(maxVal, currentVal + math.ceil((maxVal - minVal) / 10))
-			valueLabel.Text = tostring(newVal)
-			speedFill.Size = UDim2.new((newVal - minVal) / (maxVal - minVal), 0, 1, 0)
-			callback(newVal)
-		end
-	end)
-end
+local speedSubtitle = Instance.new("TextLabel")
+speedSubtitle.Size = UDim2.new(1, -140, 0, 16)
+speedSubtitle.Position = UDim2.new(0, 60, 0, 35)
+speedSubtitle.BackgroundTransparency = 1
+speedSubtitle.Font = Enum.Font.Gotham
+speedSubtitle.TextSize = 11
+speedSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+speedSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+speedSubtitle.Text = "Controle sua velocidade"
+speedSubtitle.Parent = speedCard
 
 local speedBoostActive = false
 local speedConnection = nil
 local currentSpeed = 16
 
 local speedToggle = Instance.new("TextButton")
-speedToggle.Size = UDim2.new(0, 150, 0, 40)
-speedToggle.Position = UDim2.new(1, -160, 0, 15)
-speedToggle.Text = "ATIVAR SPEED"
+speedToggle.Size = UDim2.new(0, 100, 0, 32)
+speedToggle.Position = UDim2.new(1, -110, 0, 14)
+speedToggle.Text = "ATIVAR"
+speedToggle.TextSize = 13
 speedToggle.Font = Enum.Font.GothamBold
-speedToggle.TextSize = 15
 speedToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 speedToggle.TextColor3 = Color3.fromRGB(255,255,255)
-speedToggle.Parent = movementPage
-speedToggle.ZIndex = 10
-Instance.new("UICorner", speedToggle).CornerRadius = UDim.new(0, 8)
-
+speedToggle.Parent = speedCard
+Instance.new("UICorner", speedToggle).CornerRadius = UDim.new(0, 10)
 speedToggle.MouseButton1Click:Connect(function()
 	speedBoostActive = not speedBoostActive
-	speedToggle.Text = speedBoostActive and "DESATIVAR" or "ATIVAR SPEED"
+	speedToggle.Text = speedBoostActive and "DESATIVAR" or "ATIVAR"
 	speedToggle.BackgroundColor3 = speedBoostActive and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(200, 50, 50)
 
 	if speedBoostActive then
@@ -1636,64 +1611,6 @@ local function createSliderSpeed(parent, labelText, yPos)
 	end)
 end
 
-movementPage:FindFirstChildOfClass("UIListLayout"):Destroy()
-
-local topRow = Instance.new("Frame")
-topRow.Size = UDim2.new(1, 0, 0, 200)
-topRow.BackgroundTransparency = 1
-topRow.Parent = movementPage
-
-local speedCard = Instance.new("Frame")
-speedCard.Size = UDim2.new(0.48, -5, 1, 0)
-speedCard.Position = UDim2.new(0, 0, 0, 0)
-speedCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-speedCard.Parent = topRow
-Instance.new("UICorner", speedCard).CornerRadius = UDim.new(0, 12)
-local speedStroke = Instance.new("UIStroke", speedCard)
-speedStroke.Color = Color3.fromRGB(120, 80, 220)
-speedStroke.Thickness = 2
-speedStroke.Transparency = 0.7
-
-local speedIcon = Instance.new("TextLabel")
-speedIcon.Size = UDim2.new(0, 40, 0, 40)
-speedIcon.Position = UDim2.new(0, 12, 0, 12)
-speedIcon.BackgroundColor3 = Color3.fromRGB(120, 80, 220)
-speedIcon.BackgroundTransparency = 0.8
-speedIcon.Text = "🏃"
-speedIcon.Font = Enum.Font.GothamBold
-speedIcon.TextSize = 22
-speedIcon.TextColor3 = Color3.fromRGB(255,255,255)
-speedIcon.Parent = speedCard
-Instance.new("UICorner", speedIcon).CornerRadius = UDim.new(0, 10)
-
-local speedTitle = Instance.new("TextLabel")
-speedTitle.Size = UDim2.new(1, -140, 0, 20)
-speedTitle.Position = UDim2.new(0, 60, 0, 15)
-speedTitle.BackgroundTransparency = 1
-speedTitle.Font = Enum.Font.GothamBold
-speedTitle.TextSize = 15
-speedTitle.TextColor3 = Color3.fromRGB(255,255,255)
-speedTitle.TextXAlignment = Enum.TextXAlignment.Left
-speedTitle.Text = "VELOCIDADE"
-speedTitle.Parent = speedCard
-
-local speedSubtitle = Instance.new("TextLabel")
-speedSubtitle.Size = UDim2.new(1, -140, 0, 16)
-speedSubtitle.Position = UDim2.new(0, 60, 0, 35)
-speedSubtitle.BackgroundTransparency = 1
-speedSubtitle.Font = Enum.Font.Gotham
-speedSubtitle.TextSize = 11
-speedSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
-speedSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-speedSubtitle.Text = "Controle sua velocidade"
-speedSubtitle.Parent = speedCard
-
-speedToggle.Parent = speedCard
-speedToggle.Size = UDim2.new(0, 100, 0, 32)
-speedToggle.Position = UDim2.new(1, -110, 0, 14)
-speedToggle.Text = "ATIVAR"
-speedToggle.TextSize = 13
-
 createSliderSpeed(speedCard, "", 100)
 
 local speedHint = Instance.new("TextLabel")
@@ -1753,6 +1670,74 @@ flySubtitle.TextColor3 = Color3.fromRGB(150,150,160)
 flySubtitle.TextXAlignment = Enum.TextXAlignment.Left
 flySubtitle.Text = "Voe livremente pelo mapa"
 flySubtitle.Parent = flyCard
+
+local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos, callback)
+	local valueLabel = Instance.new("TextLabel")
+	valueLabel.Size = UDim2.new(0, 60, 0, 25)
+	valueLabel.Position = UDim2.new(0, 10, 0, yPos)
+	valueLabel.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+	valueLabel.Font = Enum.Font.GothamBold
+	valueLabel.TextSize = 14
+	valueLabel.TextColor3 = Color3.fromRGB(255,255,255)
+	valueLabel.Text = tostring(defaultVal)
+	valueLabel.Parent = parent
+	Instance.new("UICorner", valueLabel).CornerRadius = UDim.new(0, 6)
+
+	local btnPrev = Instance.new("TextButton")
+	btnPrev.Size = UDim2.new(0, 50, 0, 25)
+	btnPrev.Position = UDim2.new(0, 80, 0, yPos)
+	btnPrev.Text = "<"
+	btnPrev.Font = Enum.Font.GothamBold
+	btnPrev.TextSize = 16
+	btnPrev.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+	btnPrev.TextColor3 = Color3.fromRGB(255,255,255)
+	btnPrev.Parent = parent
+	Instance.new("UICorner", btnPrev).CornerRadius = UDim.new(0, 6)
+
+	local btnNext = Instance.new("TextButton")
+	btnNext.Size = UDim2.new(0, 50, 0, 25)
+	btnNext.Position = UDim2.new(1, -60, 0, yPos)
+	btnNext.Text = ">"
+	btnNext.Font = Enum.Font.GothamBold
+	btnNext.TextSize = 16
+	btnNext.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+	btnNext.TextColor3 = Color3.fromRGB(255,255,255)
+	btnNext.Parent = parent
+	Instance.new("UICorner", btnNext).CornerRadius = UDim.new(0, 6)
+
+	local speedBar = Instance.new("Frame")
+	speedBar.Size = UDim2.new(1, -200, 0, 8)
+	speedBar.Position = UDim2.new(0, 140, 0, yPos + 8)
+	speedBar.BackgroundColor3 = Color3.fromRGB(40,40,50)
+	speedBar.Parent = parent
+	Instance.new("UICorner", speedBar).CornerRadius = UDim.new(1, 0)
+
+	local speedFill = Instance.new("Frame")
+	speedFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
+	speedFill.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+	speedFill.Parent = speedBar
+	Instance.new("UICorner", speedFill).CornerRadius = UDim.new(1, 0)
+
+	btnPrev.MouseButton1Click:Connect(function()
+		local currentVal = tonumber(valueLabel.Text) or defaultVal
+		if currentVal > minVal then
+			local newVal = math.max(minVal, currentVal - math.ceil((maxVal - minVal) / 10))
+			valueLabel.Text = tostring(newVal)
+			speedFill.Size = UDim2.new((newVal - minVal) / (maxVal - minVal), 0, 1, 0)
+			callback(newVal)
+		end
+	end)
+
+	btnNext.MouseButton1Click:Connect(function()
+		local currentVal = tonumber(valueLabel.Text) or defaultVal
+		if currentVal < maxVal then
+			local newVal = math.min(maxVal, currentVal + math.ceil((maxVal - minVal) / 10))
+			valueLabel.Text = tostring(newVal)
+			speedFill.Size = UDim2.new((newVal - minVal) / (maxVal - minVal), 0, 1, 0)
+			callback(newVal)
+		end
+	end)
+end
 
 createSlider(flyCard, "Velocidade", 10, 100, 50, 100, function(value)
 	_G.FlySystem.speed = value
@@ -1854,252 +1839,8 @@ infoText.Text = "• F: Ativar/Desativar Fly\n• WASD: Movimento | Space: Subir
 infoText.Parent = infoCard
 
 -- ═══════════════════════════════════════════════════════════════
---                      SISTEMA ESP MELHORADO
+--                      PÁGINA DE VISÃO
 -- ═══════════════════════════════════════════════════════════════
-
-local espEnabled = true
-local espBoxEnabled = false
-local espMaxDistance = 1000
-local espHighlights = {}
-local espBoxes = {}
-local tracersEnabled = false
-local tracerLines = {}
-
-local function getPlayerDistance(player)
-    if not LocalPlayer.Character or not player.Character then return math.huge end
-    local myPos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    local theirPos = player.Character:FindFirstChild("HumanoidRootPart")
-    if not myPos or not theirPos then return math.huge end
-    return (myPos.Position - theirPos.Position).Magnitude
-end
-
-local function createESPBox(player)
-    if not Drawing then return end
-    
-    local box = {
-        topLeft = Drawing.new("Line"),
-        topRight = Drawing.new("Line"),
-        bottomLeft = Drawing.new("Line"),
-        bottomRight = Drawing.new("Line")
-    }
-    
-    for _, line in pairs(box) do
-        line.Thickness = 2
-        line.Color = Color3.fromRGB(0, 255, 0)
-        line.Transparency = 1
-        line.Visible = false
-    end
-    
-    return box
-end
-
-local function updateESPBox(player, box)
-    if not player.Character or not box then return end
-    
-    local char = player.Character
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    local head = char:FindFirstChild("Head")
-    
-    if not hrp or not head then
-        for _, line in pairs(box) do
-            line.Visible = false
-        end
-        return
-    end
-    
-    local distance = getPlayerDistance(player)
-    if distance > espMaxDistance then
-        for _, line in pairs(box) do
-            line.Visible = false
-        end
-        return
-    end
-    
-    local headPos, headOnScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
-    local rootPos, rootOnScreen = Camera:WorldToViewportPoint(hrp.Position - Vector3.new(0, 3, 0))
-    
-    if headOnScreen and rootOnScreen and headPos.Z > 0 and rootPos.Z > 0 then
-        local height = math.abs(headPos.Y - rootPos.Y)
-        local width = height * 0.6
-        
-        local x1 = headPos.X - width/2
-        local x2 = headPos.X + width/2
-        local y1 = headPos.Y
-        local y2 = rootPos.Y
-        
-        -- Top line
-        box.topLeft.From = Vector2.new(x1, y1)
-        box.topLeft.To = Vector2.new(x2, y1)
-        
-        -- Bottom line
-        box.bottomLeft.From = Vector2.new(x1, y2)
-        box.bottomLeft.To = Vector2.new(x2, y2)
-        
-        -- Left line
-        box.topRight.From = Vector2.new(x1, y1)
-        box.topRight.To = Vector2.new(x1, y2)
-        
-        -- Right line
-        box.bottomRight.From = Vector2.new(x2, y1)
-        box.bottomRight.To = Vector2.new(x2, y2)
-        
-        for _, line in pairs(box) do
-            line.Visible = espBoxEnabled and espEnabled
-        end
-    else
-        for _, line in pairs(box) do
-            line.Visible = false
-        end
-    end
-end
-
-local function updateESP()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local distance = getPlayerDistance(player)
-            if distance <= espMaxDistance then
-                local char = player.Character
-                local highlight = espHighlights[player]
-                
-                if not highlight then
-                    highlight = Instance.new("Highlight")
-                    highlight.Adornee = char
-                    highlight.FillTransparency = 0.5
-                    highlight.OutlineTransparency = 0
-                    highlight.Parent = char
-                    espHighlights[player] = highlight
-                end
-                
-                -- Cor baseada na distância
-                if distance < 50 then
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                    highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
-                elseif distance < 200 then
-                    highlight.FillColor = Color3.fromRGB(255, 255, 0)
-                    highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
-                else
-                    highlight.FillColor = Color3.fromRGB(0, 255, 0)
-                    highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
-                end
-                
-                highlight.Enabled = espEnabled
-                
-                -- Atualizar box ESP
-                if not espBoxes[player] then
-                    espBoxes[player] = createESPBox(player)
-                end
-                updateESPBox(player, espBoxes[player])
-            else
-                -- Remover ESP se muito longe
-                if espHighlights[player] then
-                    espHighlights[player]:Destroy()
-                    espHighlights[player] = nil
-                end
-                if espBoxes[player] then
-                    for _, line in pairs(espBoxes[player]) do
-                        line:Remove()
-                    end
-                    espBoxes[player] = nil
-                end
-            end
-        end
-    end
-end
-
--- ═══════════════════════════════════════════════════════════════
---                      SISTEMA TRACERS CORRIGIDO
--- ═══════════════════════════════════════════════════════════════
-
-local function updateTracers()
-    -- Limpar tracers antigos
-    for _, line in pairs(tracerLines) do
-        if line then line:Remove() end
-    end
-    tracerLines = {}
-    
-    if not tracersEnabled or not Drawing then return end
-    
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            local distance = getPlayerDistance(player)
-            if distance <= espMaxDistance then
-                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    local screenPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
-                    if onScreen and screenPos.Z > 0 then
-                        pcall(function()
-                            local line = Drawing.new("Line")
-                            line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                            line.To = Vector2.new(screenPos.X, screenPos.Y)
-                            
-                            -- Cor baseada na distância
-                            if distance < 50 then
-                                line.Color = Color3.fromRGB(255, 0, 0)
-                            elseif distance < 200 then
-                                line.Color = Color3.fromRGB(255, 255, 0)
-                            else
-                                line.Color = Color3.fromRGB(0, 255, 0)
-                            end
-                            
-                            line.Thickness = 2
-                            line.Transparency = 1
-                            line.Visible = true
-                            table.insert(tracerLines, line)
-                        end)
-                    end
-                end
-            end
-        end
-    end
-end
-
-RunService.Heartbeat:Connect(function()
-    if espEnabled then
-        updateESP()
-        -- Limpar highlights de jogadores que saíram
-        for player, highlight in pairs(espHighlights) do
-            if not player or not player.Parent or not player.Character then
-                if highlight then highlight:Destroy() end
-                espHighlights[player] = nil
-            end
-        end
-        -- Limpar boxes de jogadores que saíram
-        for player, box in pairs(espBoxes) do
-            if not player or not player.Parent or not player.Character then
-                if box then
-                    for _, line in pairs(box) do
-                        line:Remove()
-                    end
-                end
-                espBoxes[player] = nil
-            end
-        end
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    updateTracers()
-end)
-
-Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function()
-		wait(0.5)
-		if espEnabled then updateESP() end
-	end)
-end)
-
-Players.PlayerRemoving:Connect(function(player)
-    if espHighlights[player] then
-        espHighlights[player]:Destroy()
-        espHighlights[player] = nil
-    end
-    if espBoxes[player] then
-        for _, line in pairs(espBoxes[player]) do
-            line:Remove()
-        end
-        espBoxes[player] = nil
-    end
-end)
 
 visionPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
@@ -2156,10 +1897,10 @@ espSubtitle.Parent = espCard
 local espToggle = Instance.new("TextButton")
 espToggle.Size = UDim2.new(0, 80, 0, 28)
 espToggle.Position = UDim2.new(1, -90, 0, 12)
-espToggle.Text = "ON"
+espToggle.Text = "OFF"
 espToggle.Font = Enum.Font.GothamBold
 espToggle.TextSize = 12
-espToggle.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+espToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 espToggle.TextColor3 = Color3.fromRGB(255,255,255)
 espToggle.Parent = espCard
 Instance.new("UICorner", espToggle).CornerRadius = UDim.new(0, 8)
@@ -2167,7 +1908,6 @@ espToggle.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     espToggle.Text = espEnabled and "ON" or "OFF"
     espToggle.BackgroundColor3 = espEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    if espEnabled then updateESP() end
 end)
 
 local espDistanceSlider = Instance.new("Frame")
@@ -2317,636 +2057,1022 @@ fullbrightBtn.MouseButton1Click:Connect(function()
 end)
 
 local removeBlurBtn = Instance.new("TextButton")
-removeBlurBtn.Size = UDim2.new(0.48, -5, 0, 32)
+removeBlurBtn.Size.Size = UDim2.new(0.48, -5 = UDim2.new(0.48, -5, 0, 32)
+removeBlurBtn.Position =, 0, 32 UDim2.new(0)
 removeBlurBtn.Position = UDim2.new(0, 12, 0, 100)
+removeBlurBtn, 12, 0, 100)
 removeBlurBtn.Text = "🌫️ BLUR"
-removeBlurBtn.Font = Enum.Font.GothamBold
-removeBlurBtn.TextSize = 11
-removeBlurBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
-removeBlurBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeBlurBtn.Font = Enum.Text = "🌫️ BLUR"
+removeBlurBtn.Font.Font.GothamBold = Enum.Font.GothamBold
+removeBlurBtn.Text
+removeBlurBtn.TextSize =Size = 11
+removeBlurBtn.BackgroundColor3 = 11
+removeBlurBtn.BackgroundColor3 = Color3.fromRGB(100 Color3.fromRGB(100, 50, 150)
+remove, 50, 150)
+removeBlurBtn.TextColor3BlurBtn.TextColor3 = Color3.fromRGB(255, = Color3.fromRGB(255,255,255)
+removeBlurBtn255,255)
 removeBlurBtn.Parent = visualCard
-Instance.new("UICorner", removeBlurBtn).CornerRadius = UDim.new(0, 8)
-removeBlurBtn.MouseButton1Click:Connect(function()
-	for _, obj in pairs(game:GetService("Lighting"):GetChildren()) do
-		if obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("ColorCorrectionEffect") then
-			obj:Destroy()
+Instance.new.Parent = visualCard
+("UICorner", removeInstance.new("UICorner", removeBlurBtn).CornerBlurBtn).CornerRadius =Radius = UDim.new(0, 8)
+removeBlur UDim.new(0, 8)
+removeBlurBtn.MouseButton1ClickBtn.MouseButton1Click:Connect:Connect(function()
+(function()
+	for _, obj in pairs(game:GetService("	for _, obj in pairs(game:GetService("Lighting"):GetChildren()) do
+		if obj:IsLighting"):GetChildren()) do
+		if obj:IsA("BlurA("BlurEffect") or objEffect") or obj:IsA(":IsA("BloomEffectBloomEffect") or obj:IsA("ColorCorrectionEffect")") or obj:IsA("ColorCorrectionEffect") then
+ then
+			obj:			obj:Destroy()
+		endDestroy()
 		end
 	end
 end)
 
--- Adicionar card de tracers na seção de visão
-local visionBottomRow = Instance.new("Frame")
-visionBottomRow.Size = UDim2.new(1, 0, 0, 100)
+local visionBottomRow =
+	end
+end)
+
+local Instance.new("Frame")
+visionBottomRow.Size = UDim visionBottomRow = Instance.new("Frame")
+visionBottomRow.Size =2.new(1, 0, 0,  UDim2.new(1, 100)
+visionBottomRow.BackgroundTrans0, 0, 100)
 visionBottomRow.BackgroundTransparency = 1
-visionBottomRow.Position = UDim2.new(0, 0, 0, 150)
+visionBottomRow.Position = UDim2.new(0,parency = 1
+visionBottomRow.Position = UDim2 0, 0, 150.new(0, 0, 0, 150)
+visionBottomRow.Parent = vision)
 visionBottomRow.Parent = visionPage
 
 local tracersCard = Instance.new("Frame")
-tracersCard.Size = UDim2.new(1, 0, 1, 0)
-tracersCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-tracersCard.Parent = visionBottomRow
-Instance.new("UICorner", tracersCard).CornerRadius = UDim.new(0, 12)
-local tracersStroke = Instance.new("UIStroke", tracersCard)
-tracersStroke.Color = Color3.fromRGB(139, 92, 246)
-tracersStroke.Thickness = 2
-tracersStroke.Transparency = 0.7
-
-local tracersIcon = Instance.new("TextLabel")
-tracersIcon.Size = UDim2.new(0, 30, 0, 30)
-tracersIcon.Position = UDim2.new(0, 12, 0, 12)
-tracersIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-tracersIcon.BackgroundTransparency = 0.8
-tracersIcon.Text = "📏"
-tracersIcon.Font = Enum.Font.GothamBold
-tracersIcon.TextSize = 16
-tracersIcon.TextColor3 = Color3.fromRGB(255,255,255)
-tracersIcon.Parent = tracersCard
-Instance.new("UICorner", tracersIcon).CornerRadius = UDim.new(0, 8)
-
-local tracersTitle = Instance.new("TextLabel")
-tracersTitle.Size = UDim2.new(1, -120, 0, 16)
-tracersTitle.Position = UDim2.new(0, 50, 0, 14)
-tracersTitle.BackgroundTransparency = 1
-tracersTitle.Font = Enum.Font.GothamBold
-tracersTitle.TextSize = 13
-tracersTitle.TextColor3 = Color3.fromRGB(255,255,255)
-tracersTitle.TextXAlignment = Enum.TextXAlignment.Left
-tracersTitle.Text = "TRACERS - LINHAS PARA JOGADORES"
-tracersTitle.Parent = tracersCard
-
-local tracersBtn = Instance.new("TextButton")
-tracersBtn.Size = UDim2.new(0, 70, 0, 26)
-tracersBtn.Position = UDim2.new(1, -80, 0, 12)
-tracersBtn.Text = "OFF"
-tracersBtn.Font = Enum.Font.GothamBold
-tracersBtn.TextSize = 11
-tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
-tracersBtn.Parent = tracersCard
-Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
-tracersBtn.MouseButton1Click:Connect(function()
-    tracersEnabled = not tracersEnabled
-    tracersBtn.Text = tracersEnabled and "ON" or "OFF"
-    tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local tracerLines = {}
-local nametagsGuis = {}
-
-RunService.RenderStepped:Connect(function()
-	for _, line in pairs(tracerLines) do
-		if line then line:Remove() end
-	end
-	tracerLines = {}
-	if tracersEnabled then
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local part = player.Character:FindFirstChild("HumanoidRootPart")
-				if part then
-					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-					if onScreen and screenPos.Z > 0 then
-						if Drawing then
-							pcall(function()
-								local line = Drawing.new("Line")
-								line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-								line.To = Vector2.new(screenPos.X, screenPos.Y)
-								line.Color = Color3.fromRGB(139, 92, 246)
-								line.Thickness = 2
-								line.Transparency = 1
-								line.Visible = true
-								table.insert(tracerLines, line)
-							end)
-						end
-					end
-				end
-			end
-		end
-	end
-
-	for player, gui in pairs(nametagsGuis) do
-		if gui then gui:Destroy() end
-	end
-	nametagsGuis = {}
-
-	if nametagsEnabled then
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local head = player.Character:FindFirstChild("Head")
-				if head then
-					local billboard = Instance.new("BillboardGui")
-					billboard.Adornee = head
-					billboard.Size = UDim2.new(0, 200, 0, 50)
-					billboard.StudsOffset = Vector3.new(0, 2, 0)
-					billboard.AlwaysOnTop = true
-					billboard.Parent = head
-
-					local nameLabel = Instance.new("TextLabel")
-					nameLabel.Size = UDim2.new(1, 0, 1, 0)
-					nameLabel.BackgroundTransparency = 1
-					nameLabel.Text = player.Name
-					nameLabel.Font = Enum.Font.GothamBold
-					nameLabel.TextSize = 14
-					nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-					nameLabel.TextStrokeTransparency = 0.5
-					nameLabel.Parent = billboard
-
-					nametagsGuis[player] = billboard
-				end
-			end
-		end
-	end
-end)
-
-local visionBottomRow = Instance.new("Frame")
-visionBottomRow.Size = UDim2.new(1, 0, 0, 100)
-visionBottomRow.BackgroundTransparency = 1
-visionBottomRow.Position = UDim2.new(0, 0, 0, 150)
-visionBottomRow.Parent = visionPage
+Page
 
 local tracersCard = Instance.new("Frame")
-tracersCard.Size = UDim2.new(0.48, -5, 1, 0)
-tracersCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+tractracersCard.Size = UDim2.new(0.48, -5,ersCard.Size = UDim2.new(0.48, - 1, 0)
+tracersCard.BackgroundColor3 = Color5, 1, 0)
+tracersCard.BackgroundColor3 = Color3.from3.fromRGB(28,28,38)
+tracersCard.ParentRGB(28,28,38)
 tracersCard.Parent = visionBottomRow
-Instance.new("UICorner", tracersCard).CornerRadius = UDim.new(0, 12)
+Instance.new(" = visionBottomRow
+Instance.new("UICorner", tracersCard).CornerRadius = UDim.new(UICorner", tracersCard).CornerRadius = UDim0, 12)
+local tracersStroke = Instance.new.new(0, 12)
 local tracersStroke = Instance.new("UIStroke", tracersCard)
-tracersStroke.Color = Color3.fromRGB(139, 92, 246)
+tracersStroke.Color = Color3.fromRGB(139, 92, 246("UIStroke", tracersCard)
+tracersStroke.Color = Color3.fromRGB(139)
 tracersStroke.Thickness = 2
-tracersStroke.Transparency = 0.7
+, 92, 246)
+tracersStroke.Thickness = 2
+tracersStroke.Transparency = 0tracersStroke.Transparency = 0.7
 
 local tracersIcon = Instance.new("TextLabel")
-tracersIcon.Size = UDim2.new(0, 30, 0, 30)
-tracersIcon.Position = UDim2.new(0, 12, 0, 12)
-tracersIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-tracersIcon.BackgroundTransparency = 0.8
-tracersIcon.Text = "📏"
+trac.7
+
+local tracersIcon = Instance.new("TextLabel")
+tracersIcon.Size =ersIcon.Size = UDim2.new(0, 30, 0,  UDim2.new30)
+tracersIcon.Position = U(0, 30, 0, 30)
+tracersIcon.PositionDim2.new(0, 12 = UDim2.new(, 0, 12)
+tracersIcon.Back0, 12, 0, 12)
+tracersgroundColor3 = Color3.fromRGB(139, Icon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+tracers92, 246)
+tracersIcon.BackgroundTransparency =Icon.BackgroundTransparency = 0.8
+t 0.8
+tracersIcon.Text = "📏racersIcon.Text = "📏"
+tracersIcon.Font = Enum.Font.GothamBold"
 tracersIcon.Font = Enum.Font.GothamBold
 tracersIcon.TextSize = 16
-tracersIcon.TextColor3 = Color3.fromRGB(255,255,255)
+tracersIcon.Text
+tracersIcon.TextSize = 16
+tracersIcon.TextColor3 = ColorColor3 = Color3.fromRGB(255,255,255)
+tracersIcon3.fromRGB(255,255,255)
 tracersIcon.Parent = tracersCard
-Instance.new("UICorner", tracersIcon).CornerRadius = UDim.new(0, 8)
+Instance.Parent = tracersCard
+Instance.new(".new("UICorner", tracersIcon).CornerRadius =UICorner", tracersIcon).CornerRadius = UDim.new(0, 8)
 
-local tracersTitle = Instance.new("TextLabel")
-tracersTitle.Size = UDim2.new(1, -120, 0, 16)
-tracersTitle.Position = UDim2.new(0, 50, 0, 14)
+local tracersTitle = UDim.new(0, 8)
+
+local tracers Instance.new("TextLabel")
+tracersTitle.Size =Title = Instance.new("TextLabel")
+tracersTitle.Size = UDim2.new UDim2.new(1, -120, 0, 16)
+tracersTitle.Position = UDim2(1, -120, 0, 16)
+tracersTitle.Position = UDim2.new(0, 50, 0,.new(0, 50, 0, 14 14)
+tracersTitle.BackgroundTransparency = 1
+tracersTitle.Font)
 tracersTitle.BackgroundTransparency = 1
 tracersTitle.Font = Enum.Font.GothamBold
+t = Enum.Font.GothamBold
 tracersTitle.TextSize = 13
-tracersTitle.TextColor3 = Color3.fromRGB(255,255,255)
+tracersracersTitle.TextSize = 13
+tracersTitle.TextTitle.TextColor3 = Color3.fromRGB(255,255Color3 = Color3.fromRGB(255,255,255)
+tracersTitle.TextXAlignment = Enum.TextXAlignment,255)
 tracersTitle.TextXAlignment = Enum.TextXAlignment.Left
-tracersTitle.Text = "TRACERS"
+tracers.Left
+tracersTitle.TextTitle.Text = "TRAC = "TRACERS"
 tracersTitle.Parent = tracersCard
 
-local tracersBtn = Instance.new("TextButton")
+local tracersERS"
+tracersTitle.Parent = tracersCard
+
+localBtn = Instance.new("TextButton")
+tracersBtn.Size = UDim2.new(0 tracersBtn = Instance.new("TextButton")
 tracersBtn.Size = UDim2.new(0, 70, 0, 26)
-tracersBtn.Position = UDim2.new(1, -80, 0, 12)
-tracersBtn.Text = "OFF"
-tracersBtn.Font = Enum.Font.GothamBold
+tracersBtn.Position = U, 70, 0, 26)
+tracersBtn.Position = UDim2.new(1, -80Dim2.new(1, -80, 0, 12)
+tracersBtn.Text, 0, 12)
+tracersBtn.Text = " = "OFF"
+tracersBtn.Font = Enum.Font.GothOFF"
+tracersBtn.Font =amBold
+tracersBtn.TextSize Enum.Font.GothamBold
 tracersBtn.TextSize = 11
-tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
+trac = 11
+tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, ersBtn.BackgroundColor3 = Color3.fromRGB(60,70)
+tracersBtn.TextColor3 = Color3 60, 70)
+tracersBtn.TextColor3 =.fromRGB(255,255,255)
 tracersBtn.Parent = tracersCard
+Instance.new("UIC Color3.fromRGB(255,255,255)
+tracersBtn.Parent = tracersorner", tracersBtn).CornerRadius = UDim.new(0Card
 Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
+trac, 8)
 tracersBtn.MouseButton1Click:Connect(function()
-    tracersEnabled = not tracersEnabled
+    tracersEnabled = not traersBtn.MouseButton1Click:Connect(function()
+    tracerscersEnabled
+    tracersBtn.Text = tracersEnabled and "Enabled = not tracersEnabled
     tracersBtn.Text = tracersEnabled and "ON" or "OFF"
-    tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+    tracersBtnON" or "OFF"
+    tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90)0, 160, 90) or Color3.fromRGB( or Color3.fromRGB(60, 60, 70)
+end)
+
+local nametags60, 60, 70)
 end)
 
 local nametagsCard = Instance.new("Frame")
-nametagsCard.Size = UDim2.new(0.48, -5, 1, 0)
-nametagsCard.Position = UDim2.new(0.52, 0, 0, 0)
-nametagsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-nametagsCard.Parent = visionBottomRow
-Instance.new("UICorner", nametagsCard).CornerRadius = UDim.new(0, 12)
-local nametagsStroke = Instance.new("UIStroke", nametagsCard)
+nametagsCard = Instance.new("FrameCard.Size = UDim2.new(0.")
+nametagsCard.Size = UDim2.new(0.48, -5, 1, 048, -5, 1, 0)
+nametags)
+nametagsCard.Position = UDim2.new(0.52Card.Position = UDim2.new(0.52, 0, 0, 0)
+, 0, 0, 0)
+nametagsCard.BackgroundColor3 = Color3.fromnametagsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+RGB(28,28,38)
+nametagsCard.Parent = visionnametagsCard.Parent = visionBottomRow
+Instance.new("BottomRow
+Instance.new("UICorner", nametagsCard).CornerRadius = UUICorner", nametagsCard).CornerRadius = UDim.new(0, Dim.new(0, 12)
+local nametags12)
+local nametagsStroke = Instance.new("UIStroke",Stroke = Instance.new("UIStroke", nametagsCard)
+nametagsStroke.Color = Color3.fromRGB(255, 100 nametagsCard)
 nametagsStroke.Color = Color3.fromRGB(255, 100, 150)
 nametagsStroke.Thickness = 2
-nametagsStroke.Transparency = 0.7
+nam, 150)
+nametagsStroke.Thickness = 2
+nametagsStroke.TransparencyetagsStroke.Transparency = 0.7
 
 local nametagsIcon = Instance.new("TextLabel")
+namet = 0.7
+
+local nametagsIcon = Instance.newagsIcon.Size = UDim2.new(0, 30,("TextLabel")
 nametagsIcon.Size = UDim2.new(0, 30, 0, 30)
 nametagsIcon.Position = UDim2.new(0, 12, 0, 12)
+nam 0, 30)
+nametagsIcon.Position = UDim2.new(0, 12etagsIcon.BackgroundColor3 = Color3.fromRGB, 0, 12)
 nametagsIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 150)
-nametagsIcon.BackgroundTransparency = 0.8
+nametagsIcon.Back(255, 100, 150)
+nametagsIcon.BackgroundTransparency = 0groundTransparency = 0.8
 nametagsIcon.Text = "🏷️"
-nametagsIcon.Font = Enum.Font.GothamBold
+nametagsIcon.Font = Enum.Font.Goth.8
+nametagsIcon.Text = "🏷️"
+nametagsIcon.Font = Enum.FontamBold
 nametagsIcon.TextSize = 16
-nametagsIcon.TextColor3 = Color3.fromRGB(255,255,255)
+.GothamBold
+nametagsIcon.TextSize = 16
+nametagsIconnametagsIcon.TextColor3 = Color3.fromRGB(255,255,255)
+nametagsIcon.Parent =.TextColor3 = Color3.fromRGB(255,255,255)
 nametagsIcon.Parent = nametagsCard
-Instance.new("UICorner", nametagsIcon).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", namet nametagsCard
+Instance.new("UICorner", nametagsIcon).CornerRadiusagsIcon).CornerRadius = UDim.new(0 = UDim.new(0, 8)
+
+local nametags, 8)
 
 local nametagsTitle = Instance.new("TextLabel")
+nametagsTitle.Size = UDim2.new(1, -Title = Instance.new("TextLabel")
 nametagsTitle.Size = UDim2.new(1, -120, 0, 16)
-nametagsTitle.Position = UDim2.new(0, 50, 0, 14)
-nametagsTitle.BackgroundTransparency = 1
+nametagsTitle.Position = U120, 0, 16)
+nametagsTitle.Position = UDim2.new(Dim2.new(0, 50, 0, 14)
+nametagsTitle.Back0, 50, 0, 14)
+nametagsTitle.BackgroundTransgroundTransparency = 1
+nametagsTitle.Font = Enum.Font.GothamBoldparency = 1
 nametagsTitle.Font = Enum.Font.GothamBold
+nametags
 nametagsTitle.TextSize = 13
-nametagsTitle.TextColor3 = Color3.fromRGB(255,255,255)
+nametagsTitle.TextColor3 = Color3.fromRGB(255,Title.TextSize = 13
+nametagsTitle.TextColor3 = Color255,255)
+nametagsTitle.TextXAlignment = Enum.TextXAlignment.Left
+nametags3.fromRGB(255,255,255)
 nametagsTitle.TextXAlignment = Enum.TextXAlignment.Left
 nametagsTitle.Text = "NAMETAGS"
-nametagsTitle.Parent = nametagsCard
+nametagsTitle.Parent = namTitle.Text = "NAMETAGS"
+nametagsTitle.ParentetagsCard
+
+local nametagsBtn = Instance.new("Text = nametagsCard
 
 local nametagsBtn = Instance.new("TextButton")
+nametagsBtn.Size = UDim2.newButton")
 nametagsBtn.Size = UDim2.new(0, 70, 0, 26)
-nametagsBtn.Position = UDim2.new(1, -80, 0, 12)
+nametagsBtn.Position = U(0, 70, 0, 26)
+nametDim2.new(1, -80, 0, 12agsBtn.Position = UDim2.new(1, -80, 0, 12)
+nametagsBtn.Text = ")
 nametagsBtn.Text = "OFF"
-nametagsBtn.Font = Enum.Font.GothamBold
+nametagsBtnOFF"
+nametagsBtn.Font = Enum.Font.GothamB.Font = Enum.Font.GothamBold
 nametagsBtn.TextSize = 11
-nametagsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+nametagsBtn.BackgroundColor3old
+nametagsBtn.TextSize = 11
+namet = Color3.fromRGB(60, 60, 70)
+agsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+nametagsBtn.TextColor3 = Color3.fromRGB(255nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
+nametagsBtn.Parent = nametagsCard,255,255)
 nametagsBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsBtn).CornerRadius = UDim.new(0, 8)
-local nametagsEnabled = false
+Instance.new("UICor
+Instance.new("UICorner", nametagsBtn).Corner", nametagsBtn).CornerRadius = UDim.newnerRadius = UDim.new(0, 8)
 nametagsBtn.MouseButton1Click:Connect(function()
-	nametagsEnabled = not nametagsEnabled
-	nametagsBtn.Text = nametagsEnabled and "ON" or "OFF"
-	nametagsBtn.BackgroundColor3 = nametagsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	namet(0, 8)
+nametagsBtn.MouseButton1Click:Connect(function()
+	agsEnabled = not nametagsEnabled
+	nametagsBtnnametagsEnabled = not nametagsEnabled
+	nametagsBtn.Text = nametagsEnabled.Text = nametagsEnabled and "ON" or "OFF"
+	nametagsBtn.BackgroundColor3 = and "ON" or "OFF"
+	nametagsBtn.Back nametagsEnabled and Color3.fromRGB(0, 160groundColor3 = nametagsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(, 90) or Color3.fromRGB(60, 6060, 60, 70)
 end)
 
-local nametagsDistBtn = Instance.new("TextButton")
-nametagsDistBtn.Size = UDim2.new(0.48, -5, 0, 28)
-nametagsDistBtn.Position = UDim2.new(0, 12, 0, 60)
-nametagsDistBtn.Text = "📍 DIST"
-nametagsDistBtn.Font = Enum.Font.GothamBold
-nametagsDistBtn.TextSize = 10
-nametagsDistBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsDistBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsDistBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsDistBtn).CornerRadius = UDim.new(0, 8)
-
-local nametagsHealthBtn = Instance.new("TextButton")
-nametagsHealthBtn.Size = UDim2.new(0.48, -5, 0, 28)
-nametagsHealthBtn.Position = UDim2.new(0.52, 0, 0, 60)
-nametagsHealthBtn.Text = "❤️ VIDA"
-nametagsHealthBtn.Font = Enum.Font.GothamBold
-nametagsHealthBtn.TextSize = 10
-nametagsHealthBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsHealthBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsHealthBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsHealthBtn).CornerRadius = UDim.new(0, 8)
+local vision, 70)
+end)
 
 local visionInfo = Instance.new("TextLabel")
-visionInfo.Size = UDim2.new(1, 0, 0, 70)
-visionInfo.Position = UDim2.new(0, 0, 0, 260)
+visionInfo.Size = UDim2.new(1Info = Instance.new("TextLabel")
+visionInfo.Size = UDim, 0, 0, 70)
+visionInfo.Position = U2.new(1, 0, 0, 70)
+visionInfo.Position = UDim2.new(0, 0Dim2.new(0, 0, 0, 260)
+visionInfo.BackgroundColor3 =, 0, 260)
 visionInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
 visionInfo.Font = Enum.Font.Gotham
-visionInfo.TextSize = 11
+vision Color3.fromRGB(28,28,38)
+visionInfo.Font = Enum.Font.Gotham
+visionInfo.TextSize = 11Info.TextSize = 11
+visionInfo.TextColor3 = Color
 visionInfo.TextColor3 = Color3.fromRGB(180,180,200)
+visionInfo3.fromRGB(180,180,200)
 visionInfo.TextWrapped = true
-visionInfo.Text = "  💡 DICAS:\n  • ESP mostra jogadores através de paredes | • Fullbright ilumina tudo\n  • Tracers desenha linhas | • Nametags mostra informações"
+visionInfo.Text = "  💡 DIC.TextWrapped = true
+visionInfo.Text = "  💡 DICAS:\n  • ESPAS:\n  • ESP mostra jogadores através mostra jogadores através de paredes | • Fullbright ilumina tudo\n  • T de paredes | • Fullbright ilumina tudo\n  • Tracers desenha linracers desenha linhas | • Nametags mostra informaçõeshas | • Nametags mostra informações"
+visionInfo.Parent ="
 visionInfo.Parent = visionPage
-Instance.new("UICorner", visionInfo).CornerRadius = UDim.new(0, 12)
+Instance.new("UICor visionPage
+Instance.new("UICorner", visionInfo).Corner", visionInfo).CornerRadius = UDim.new(0, 12)
+
+--nerRadius = UDim.new(0, 12)
+
+-- ═════════════════════════ ═══════════════════════════════════════════════════════════════════════
+--══════════════════════════════
+--                      PÁGINA MISC
+--                      PÁGINA MISC
+ ═════════════════════════════════-- ═══════════════════════════════════════════════════════════════
+
+m══════════════════════════════
+
+miscPage:FindFirstChildOfClass("UIListLayoutiscPage:FindFirstChildOfClass("UIListLayout"):"):Destroy()
 
 local miscTopRow = Instance.new("Frame")
-miscTopRow.Size = UDim2.new(1, 0, 0, 180)
-miscTopRow.BackgroundTransparency = 1
+Destroy()
+
+local miscTopRowmiscTopRow.Size = UDim2.new(1 = Instance.new("Frame")
+miscTopRow.Size = UDim, 0, 0, 180)
+misc2.new(1, 0, 0, 180)
+miscTopRow.BackgroundTransparencyTopRow.BackgroundTransparency = 1
 miscTopRow.Parent = miscPage
 
+ = 1
+miscTopRow.Parent = miscPagelocal characterCard = Instance.new("Frame")
+characterCard.Size = UDim2.new(0.
+
 local characterCard = Instance.new("Frame")
-characterCard.Size = UDim2.new(0.48, -5, 1, 0)
-characterCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+characterCard.Size = UDim2.new(0.48, -5, 48, -5, 1, 0)
+characterCard.Back1, 0)
+characterCard.BackgroundColor3 = Color3.fromRGBgroundColor3 = Color3.fromRGB(28,28,38)
 characterCard.Parent = miscTopRow
-Instance.new("UICorner", characterCard).CornerRadius = UDim.new(0, 12)
+Instance.new(28,28,38)
+characterCard.Parent = miscTopRow
+Instance.new("UICorner", characterCard).Corner("UICorner", characterCard).CornerRadius = UDimRadius = UDim.new(0, 12)
+local charStroke = Instance.new("UIStroke.new(0, 12)
 local charStroke = Instance.new("UIStroke", characterCard)
+charStroke.Color = Color3", characterCard)
 charStroke.Color = Color3.fromRGB(255, 100, 100)
-charStroke.Thickness = 2
+char.fromRGB(255, 100, 100)
+charStroke.Stroke.Thickness = 2
+charStroke.Transparency =Thickness = 2
 charStroke.Transparency = 0.7
 
-local charIcon = Instance.new("TextLabel")
+local charIcon = Instance 0.7
+
+local charIcon = Instance.new("TextLabel.new("TextLabel")
+charIcon.Size = UDim2.new(0, 35, ")
 charIcon.Size = UDim2.new(0, 35, 0, 35)
-charIcon.Position = UDim2.new(0, 12, 0, 12)
-charIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-charIcon.BackgroundTransparency = 0.8
+charIcon.Position = UDim0, 35)
+charIcon.Position = UDim2.new(0, 12, 02.new(0, 12, 0, 12)
+, 12)
+charIcon.BackgroundColor3 = ColorcharIcon.BackgroundColor3 = Color3.fromRGB(255,3.fromRGB(255, 100,  100, 100)
+charIcon.BackgroundTransparency = 100)
+charIcon.BackgroundTransparency = 0.0.8
+charIcon.Text = "🛡️"
+8
 charIcon.Text = "🛡️"
 charIcon.Font = Enum.Font.GothamBold
-charIcon.TextSize = 18
+charIcon.Font = Enum.Font.GothamBold
+charIcon.TextSize = charIcon.TextSize = 18
+charIcon.TextColor3 = Color318
 charIcon.TextColor3 = Color3.fromRGB(255,255,255)
+charIcon.Parent.fromRGB(255,255,255)
 charIcon.Parent = characterCard
-Instance.new("UICorner", charIcon).CornerRadius = UDim.new(0, 8)
+Instance.new(" = characterCard
+Instance.new("UICorner", charIconUICorner", charIcon).CornerRadius = U).CornerRadius = UDim.new(0, 8)
+
+Dim.new(0, 8)
 
 local charTitle = Instance.new("TextLabel")
-charTitle.Size = UDim2.new(1, -60, 0, 18)
-charTitle.Position = UDim2.new(0, 55, 0, 15)
+charTitle.Size = UDimlocal charTitle = Instance.new("TextLabel")
+charTitle2.new(1, -60, 0, .Size = UDim2.new(1, -60, 0, 18)
+charTitle.Position = UDim2.new(0, 55, 0, 1518)
+charTitle.Position = UDim2.new(0,)
+charTitle.BackgroundTransparency = 1
+charTitle.Font 55, 0, 15)
 charTitle.BackgroundTransparency = 1
 charTitle.Font = Enum.Font.GothamBold
+charTitle.Text = Enum.Font.GothamBold
 charTitle.TextSize = 14
+charTitle.TextColor3 = Color3.fromSize = 14
 charTitle.TextColor3 = Color3.fromRGB(255,255,255)
-charTitle.TextXAlignment = Enum.TextXAlignment.Left
-charTitle.Text = "PERSONAGEM"
+RGB(255,255,255)
+charTitle.TextXAlignment = Enum.TextXAlignment.LeftcharTitle.TextXAlignment = Enum.TextXAlignment.Left
+char
+charTitle.Text = "PERSONTitle.Text = "PERSONAGEM"
+charTitle.ParentAGEM"
 charTitle.Parent = characterCard
 
-local charSubtitle = Instance.new("TextLabel")
-charSubtitle.Size = UDim2.new(1, -60, 0, 14)
-charSubtitle.Position = UDim2.new(0, 55, 0, 32)
-charSubtitle.BackgroundTransparency = 1
+local charSubtitle = = characterCard
+
+local charSub Instance.new("TextLabel")
+charSubtitle.Size = UDim2.new(title = Instance.new("TextLabel")
+charSubtitle.Size = UDim2.new(1, -60, 0, 141, -60, 0, 14)
+charSubtitle.Position = UDim2.new(0,)
+charSubtitle.Position = UDim2.new(0, 55 55, 0, 32)
+charSubtitle, 0, 32)
+charSubtitle.BackgroundTransparency.BackgroundTransparency = 1
+charSubtitle.Font = Enum.Font.G = 1
 charSubtitle.Font = Enum.Font.Gotham
+charotham
 charSubtitle.TextSize = 10
-charSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+Subtitle.TextSize = 10
+charSubtitle.TextColor3 = Color3.fromRGB(charSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+charSubtitle.Text150,150,160)
 charSubtitle.TextXAlignment = Enum.TextXAlignment.Left
 charSubtitle.Text = "Modificações do personagem"
-charSubtitle.Parent = characterCard
+charSubtitle.ParentXAlignment = Enum.TextXAlignment.Left
+charSubtitle.Text = "Modificações do personagem"
+charSubtitle = characterCard
 
--- Remover godmode e funcionalidades que não funcionam
+local infJumpBtn = Instance.new(".Parent = characterCard
+
 local infJumpBtn = Instance.new("TextButton")
-infJumpBtn.Size = UDim2.new(1, -24, 0, 38)
+infTextButton")
+infJumpBtn.Size = UDim2.new(1JumpBtn.Size = UDim2.new(1, -24, 0, 38)
+infJumpBtn.Position = UDim2.new(0, -24, 0, 38)
 infJumpBtn.Position = UDim2.new(0, 12, 0, 60)
-infJumpBtn.Text = "🦘 INF JUMP"
+infJumpBtn.Text = ", 12, 0, 60)
+infJumpBtn.Text = "🦘 INF🦘 INF JUMP"
+infJumpBtn.Font = Enum.Font.Goth JUMP"
 infJumpBtn.Font = Enum.Font.GothamBold
+infJumpBtn.TextamBold
 infJumpBtn.TextSize = 13
 infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+Size = 13
+infJumpBtn.BackgroundColor3 = Color3.fromRGB(60, 60infJumpBtn.TextColor3 = Color3.fromRGB(255,, 70)
 infJumpBtn.TextColor3 = Color3.fromRGB(255,255,255)
+infJumpBtn.Parent =255,255)
 infJumpBtn.Parent = characterCard
-Instance.new("UICorner", infJumpBtn).CornerRadius = UDim.new(0, 8)
+Instance.new(" characterCard
+Instance.new("UICorner", infJumpBtn).CornerRadius = UDimUICorner", infJumpBtn).CornerRadius = UDim.new(0, 8)
+local infJumpEnabled = false
+.new(0, 8)
 local infJumpEnabled = false
 infJumpBtn.MouseButton1Click:Connect(function()
-    infJumpEnabled = not infJumpEnabled
-    infJumpBtn.Text = infJumpEnabled and "🦘 ON" or "🦘 INF JUMP"
-    infJumpBtn.BackgroundColor3 = infJumpEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+    infinfJumpBtn.MouseButton1Click:Connect(function()
+    infJumpEnabled = not infJumpJumpEnabled = not infJumpEnabled
+    infJumpBtn.Text = infJumpEnabled and "Enabled
+    infJumpBtn.Text = infJumpEnabled and "🦘🦘 ON" or "🦘 INF JUMP"
+    infJumpBtn.BackgroundColor3 = infJumpEnabled and Color3 ON" or "🦘 INF JUMP"
+    infJumpBtn.BackgroundColor3 = infJumpEnabled and Color3.fromRGB(0, .fromRGB(0, 160, 90) or Color3160, 90) or Color3.fromRGB(60.fromRGB(60, 60, 70)
+end)
+User, 60, 70)
 end)
 UserInputService.JumpRequest:Connect(function()
+    if infJumpEnabledInputService.JumpRequest:Connect(function()
     if infJumpEnabled and LocalPlayer.Character then
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+        local hum = LocalPlayer.Character:FindFirst and LocalPlayer.Character then
+        local hum = LocalPlayer.CharacterChildOfClass("Humanoid")
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end:FindFirstChildOfClass("Humanoid")
+        if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping
     end
 end)
 
 local bhopBtn = Instance.new("TextButton")
-bhopBtn.Size = UDim2.new(1, -24, 0, 38)
+bhopBtn.Size =) end
+    end
+end)
+
+local bhopBtn = Instance.new("TextButton")
+b UDim2.new(1, -24, 0, hopBtn.Size = UDim2.new(1, -24, 0, 38)
+bhopBtn.Position = UDim38)
 bhopBtn.Position = UDim2.new(0, 12, 0, 108)
-bhopBtn.Text = "🐇 BHOP"
+bhop2.new(0, 12, 0, 108)
+Btn.Text = "🐇 BHOP"
+bhopBtn.Font = Enum.Font.GothamBbhopBtn.Text = "🐇 BHOP"
 bhopBtn.Font = Enum.Font.GothamBold
 bhopBtn.TextSize = 13
-bhopBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+bhopBtn.BackgroundColor3 = Color3.fromRGB(old
+bhopBtn.TextSize = 13
+bhopBtn.BackgroundColor3 = Color60, 60, 70)
+bhopBtn.TextColor3 = Color3.fromRGB(60, 60, 70)
 bhopBtn.TextColor3 = Color3.fromRGB(255,255,255)
-bhopBtn.Parent = characterCard
+bhopBtn.P3.fromRGB(255,255,255)
+bhopBtn.Parent = characterCardarent = characterCard
+Instance.new("UICorner", bhop
 Instance.new("UICorner", bhopBtn).CornerRadius = UDim.new(0, 8)
 local bhopEnabled = false
+Btn).CornerRadius = UDim.new(0, 8)
+local bhopEnabled = false
 bhopBtn.MouseButton1Click:Connect(function()
-    bhopEnabled = not bhopEnabled
-    bhopBtn.Text = bhopEnabled and "🐇 ON" or "🐇 BHOP"
-    bhopBtn.BackgroundColor3 = bhopEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+    bhopEnabledbhopBtn.MouseButton1Click:Connect(function()
+    bhopEnabled = not bhop = not bhopEnabled
+    bhopBtn.Text = bhopEnabled and "Enabled
+    bhopBtn.Text = bhopEnabled and "🐇 ON" or "🐇 BH🐇 ON" or "🐇 BHOP"
+    bhopBtn.BackgroundColor3 = bhopEnabled and Color3.fromRGB(0, 160, OP"
+    bhopBtn.BackgroundColor3 = bhopEnabled and Color3.fromRGB(90) or Color3.fromRGB(60, 60, 0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
-RunService.Heartbeat:Connect(function()
+RunService.Heart70)
+end)
+RunService.Heartbeat:Connect(functionbeat:Connect(function()
+    if bhopEnabled and LocalPlayer.()
     if bhopEnabled and LocalPlayer.Character then
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        local hum = LocalPlayer.Character then
+        local humCharacter:FindFirstChildOfClass("Humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum and hum.MoveDirection.Magnitude > ")
         if hum and hum.MoveDirection.Magnitude > 0 then
-            hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            hum:ChangeState(Enum.Human0 then
+            hum:ChangeState(Enum.HumanoidStateoidStateType.Jumping)
         end
     end
 end)
 
-local utilityCard = Instance.new("Frame")
+local utilityCard = Instance.new("FrameType.Jumping)
+        end
+    end
+end)
+
+local utility")
+utilityCard.Size = UDim2.new(0.48, -5, Card = Instance.new("Frame")
 utilityCard.Size = UDim2.new(0.48, -5, 1, 0)
+utilityCard.Position = UDim2.new(0.521, 0)
 utilityCard.Position = UDim2.new(0.52, 0, 0, 0)
+utilityCard.BackgroundColor3 = Color3.from, 0, 0, 0)
 utilityCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+utilityCard.Parent = miscRGB(28,28,38)
 utilityCard.Parent = miscTopRow
-Instance.new("UICorner", utilityCard).CornerRadius = UDim.new(0, 12)
-local utilStroke = Instance.new("UIStroke", utilityCard)
+Instance.new("UICorTopRow
+Instance.new("UICorner", utilityCard).CornerRadius = Uner", utilityCard).CornerRadius = UDim.new(0, 12)
+local utilDim.new(0, 12)
+local utilStroke = Instance.new("UIStroke = Instance.new("UIStroke", utilityCard)
+utilStroke.Color = Color3.fromRGB(100,Stroke", utilityCard)
 utilStroke.Color = Color3.fromRGB(100, 200, 255)
 utilStroke.Thickness = 2
-utilStroke.Transparency = 0.7
+utilStroke.Transparency =  200, 255)
+utilStroke.Thickness = 2
+utilStroke.Transparency0.7
+
+local utilIcon = Instance.new("TextLabel")
+utilIcon.Size = = 0.7
 
 local utilIcon = Instance.new("TextLabel")
 utilIcon.Size = UDim2.new(0, 35, 0, 35)
+utilIcon UDim2.new(0, 35, 0, 35)
 utilIcon.Position = UDim2.new(0, 12, 0, 12)
-utilIcon.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+util.Position = UDim2.new(0, 12, 0, 12)
+utilIcon.BackgroundColor3 = Color3.fromRGB(100Icon.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+utilIcon.BackgroundTransparency, 200, 255)
 utilIcon.BackgroundTransparency = 0.8
+util = 0.8
 utilIcon.Text = "⚙️"
-utilIcon.Font = Enum.Font.GothamBold
+utilIcon.Font = Enum.FontIcon.Text = "⚙️"
+utilIcon.Font = Enum.Font.Goth.GothamBold
+utilIcon.TextSize = 18
+amBold
 utilIcon.TextSize = 18
 utilIcon.TextColor3 = Color3.fromRGB(255,255,255)
-utilIcon.Parent = utilityCard
+utilIcon.Parent =utilIcon.TextColor3 = Color3.fromRGB(255,255,255)
+utilIcon.P utilityCard
+Instance.new("UICorner", utilIcon).CornerRadius = Uarent = utilityCard
 Instance.new("UICorner", utilIcon).CornerRadius = UDim.new(0, 8)
 
+local utilTitle = Instance.newDim.new(0, 8)
+
 local utilTitle = Instance.new("TextLabel")
-utilTitle.Size = UDim2.new(1, -60, 0, 18)
+("TextLabel")
+utilTitle.Size = UDim2.new(1, -60, 0, utilTitle.Size = UDim2.new(1, -60, 0, 18)
+utilTitle.Position = UDim2.new(0, 55, 0,18)
 utilTitle.Position = UDim2.new(0, 55, 0, 15)
+utilTitle.BackgroundTrans 15)
 utilTitle.BackgroundTransparency = 1
+utilTitle.Font = Enumparency = 1
 utilTitle.Font = Enum.Font.GothamBold
+utilTitle.Text.Font.GothamBold
+utilTitle.TextSize = 14
 utilTitle.TextSize = 14
 utilTitle.TextColor3 = Color3.fromRGB(255,255,255)
+Color3 = Color3.fromRGB(255,255,255)
 utilTitle.TextXAlignment = Enum.TextXAlignment.Left
+utilTitle.Text = "UTILutilTitle.TextXAlignment = Enum.TextXAlignment.Left
 utilTitle.Text = "UTILIDADES"
 utilTitle.Parent = utilityCard
 
+local utilSubtitle =IDADES"
+utilTitle.Parent = utilityCard
+
 local utilSubtitle = Instance.new("TextLabel")
+utilSubtitle.Size = U Instance.new("TextLabel")
 utilSubtitle.Size = UDim2.new(1, -60, 0, 14)
-utilSubtitle.Position = UDim2.new(0, 55, 0, 32)
-utilSubtitle.BackgroundTransparency = 1
+utilDim2.new(1, -60, 0, Subtitle.Position = UDim2.new(0, 55, 0,14)
+utilSubtitle.Position = UDim2.new(0 32)
+utilSubtitle.BackgroundTransparency, 55, 0, 32)
+util = 1
+utilSubSubtitle.BackgroundTransparencytitle.Font = Enum.Font.Gotham
+utilSubtitle = 1
 utilSubtitle.Font = Enum.Font.Gotham
 utilSubtitle.TextSize = 10
+utilSubtitle.Text.TextSize = 10
 utilSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
+utilSubtitle.TextXAlignmentColor3 = Color3.fromRGB(150,150,160)
 utilSubtitle.TextXAlignment = Enum.TextXAlignment.Left
+utilSubtitle.Text = "Ferramentas = Enum.TextXAlignment.Left
 utilSubtitle.Text = "Ferramentas úteis"
+utilSubtitle.Parent = úteis"
 utilSubtitle.Parent = utilityCard
 
+local antiAfkBtn utilityCard
+
 local antiAfkBtn = Instance.new("TextButton")
+antiAfkBtn.Size = Instance.new("TextButton")
 antiAfkBtn.Size = UDim2.new(1, -24, 0, 38)
-antiAfkBtn.Position = UDim2.new(0, 12, 0, 60)
+antiAfkBtn.Position = UDim = UDim2.new(1, -24, 0, 38)
+antiAfkBtn.P2.new(0, 12, 0, 60)
+antiAfkBtn.Text =osition = UDim2.new(0, 12, 0, 60)
 antiAfkBtn.Text = "⏰ ANTI-AFK"
+antiAfkBtn.Font = Enum "⏰ ANTI-AFK"
 antiAfkBtn.Font = Enum.Font.GothamBold
 antiAfkBtn.TextSize = 13
+antiAfkBtn.BackgroundColor3 = Color3.Font.GothamBold
+antiAfkBtn.TextSize = 13
 antiAfkBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-antiAfkBtn.TextColor3 = Color3.fromRGB(255,255,255)
+anti.fromRGB(60, 60, 70)
+antiAfkBtn.TextColor3 = Color3.fromRGB(255,255,AfkBtn.TextColor3 = Color3.fromRGB(255,255,255)
+antiAf255)
 antiAfkBtn.Parent = utilityCard
+Instance.new("UICorner", antiAfkkBtn.Parent = utilityCard
 Instance.new("UICorner", antiAfkBtn).CornerRadius = UDim.new(0, 8)
+local antiAfkEnabledBtn).CornerRadius = UDim.new(0, 8)
 local antiAfkEnabled = false
 local antiAfkConnection
+antiAfkBtn.M = false
+local antiAfkConnection
 antiAfkBtn.MouseButton1Click:Connect(function()
+	antiAfkEnabled =ouseButton1Click:Connect(function()
 	antiAfkEnabled = not antiAfkEnabled
-	antiAfkBtn.Text = antiAfkEnabled and "⏰ ON" or "⏰ ANTI-AFK"
-	antiAfkBtn.BackgroundColor3 = antiAfkEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+ not antiAfkEnabled
+	antiAfkBtn.Text = antiAfkEnabled and "⏰	antiAfkBtn.Text = antiAfkEnabled and "⏰ ON" or " ON" or "⏰ ANTI-AFK"
+	antiAfkBtn.BackgroundColor⏰ ANTI-AFK"
+	antiAfkBtn.BackgroundColor3 = antiAfkEnabled and Color3.fromRGB(0, 1603 = antiAfkEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60,, 90) or Color3.fromRGB(60, 60 60, 70)
 	if antiAfkEnabled then
-		antiAfkConnection = game:GetService("VirtualUser"):CaptureController()
-		game:GetService("Players").LocalPlayer.Idled:Connect(function()
-			game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+	, 70)
+	if antiAfkEnabled then
+		game:GetService("	game:GetService("Players").LocalPlayer.Idled:Connect(function()
+			game:GetService("VirtualUser"Players").LocalPlayer.Idled:Connect(function()
+			game:GetService("VirtualUser"):Button2Down(Vector2.new):Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+			wait(1(0,0), workspace.CurrentCamera.CFrame)
+			wait)
+			game:GetService("VirtualUser"):Button2(1)
+			game:GetService("VirtualUser"):Button2Up(Vector2.new(Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 		end)
 	end
 end)
 
-local removeBlurBtn = Instance.new("TextButton")
-removeBlurBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeBlurBtn.Position = UDim2.new(0, 12, 0, 108)
-removeBlurBtn.Text = "🌫️ BLUR"
-removeBlurBtn.Font = Enum.Font.GothamBold
-removeBlurBtn.TextSize = 12
-removeBlurBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
-removeBlurBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeBlurBtn.Parent = utilityCard
-Instance.new("UICorner", removeBlurBtn).CornerRadius = UDim.new(0, 8)
-removeBlurBtn.MouseButton1Click:Connect(function()
-	for _, obj in pairs(game:GetService("Lighting"):GetChildren()) do
-		if obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("ColorCorrectionEffect") then
-			obj:Destroy()
-		end
+local chatSpamBtn = Instance.new("TextButton0,0), workspace.CurrentCamera.CFrame)
+		end)
 	end
 end)
 
 local chatSpamBtn = Instance.new("TextButton")
-chatSpamBtn.Size = UDim2.new(0.48, -5, 0, 38)
-chatSpamBtn.Position = UDim2.new(0.52, 0, 0, 108)
+chatSpamBtn.Size")
+chatSpamBtn.Size = UDim2.new(1, = UDim2.new(1, -24, 0, 38)
+chatSpam -24, 0, 38)
+chatSpamBtn.Position = UDim2.new(0, Btn.Position = UDim2.new(0, 12, 0, 108)
+chatSpamBtn.Text = "💬 SPAM"
+chatSpamBtn12, 0, 108)
 chatSpamBtn.Text = "💬 SPAM"
 chatSpamBtn.Font = Enum.Font.GothamBold
-chatSpamBtn.TextSize = 12
-chatSpamBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+chatSpamBtn.TextSize = 13
+.Font = Enum.Font.GothamBold
+chatSpamBtn.TextSize = 13
+chatSpamBtn.BackgroundColor3 = Color3.fromchatSpamBtn.BackgroundColor3 = Color3.fromRGB(60,RGB(60, 60, 70)
+chatSpamBtn.TextColor3 = Color3 60, 70)
 chatSpamBtn.TextColor3 = Color3.fromRGB(255,255,255)
 chatSpamBtn.Parent = utilityCard
-Instance.new("UICorner", chatSpamBtn).CornerRadius = UDim.new(0, 8)
+Instance.new(".fromRGB(255,255,255)
+chatSpamBtn.Parent = utilityCard
+Instance.new("UICorner", chatSpamBtn).CornerRadius = UDim.newUICorner", chatSpamBtn).CornerRadius = UDim.new(0, 8)
+local chat(0, 8)
 local chatSpamEnabled = false
+local chatSpamSpamEnabled = false
 local chatSpamConnection
+chatSpamBtn.MouseButton1Click:Connection
 chatSpamBtn.MouseButton1Click:Connect(function()
 	chatSpamEnabled = not chatSpamEnabled
+	chatSpamBtnConnect(function()
+	chatSpamEnabled = not chatSpamEnabled
 	chatSpamBtn.Text = chatSpamEnabled and "💬 ON" or "💬 SPAM"
-	chatSpamBtn.BackgroundColor3 = chatSpamEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+	.Text = chatSpamEnabled and "💬 ON" or "💬 SPAM"
+	chatSpamBtn.BackgroundColor3 = chatSpamEnabled and Color3.fromRGB(0, chatSpamBtn.BackgroundColor3 = chatSpamEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 160, 90) or Color3.fromRGB(60, 60, 70)
 	if chatSpamEnabled then
-		chatSpamConnection = RunService.Heartbeat:Connect(function()
-			game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Admin Panel PRO", "All")
-			wait(2)
+		chatSpamConnection = RunService.60, 70)
+	if chatSpamEnabled then
+		chatSpamConnection = RunHeartbeat:Connect(function()
+			local chatService = game:GetService("ReplicatedService.Heartbeat:Connect(function()
+			local chatService = gameStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+			if chatService then
+				chatService.S:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+			if chatService then
+				chatayMessageRequest:FireServer("AdminService.SayMessageRequest: Panel PRO ativo!", "All")
+			end
+			wait(5FireServer("Admin Panel PRO ativo!", "All")
+			end
+			wait(5)
 		end)
 	else
-		if chatSpamConnection then
-			chatSpamConnection:Disconnect()
+		if chatSp)
+		end)
+	else
+amConnection then
+					if chatSpamConnection then
+chatSpamConnection			chatSpamConnection:Disconnect()
+			chatSpamConnection = nil
 		end
 	end
 end)
 
-local infoCard = Instance.new("Frame")
-infoCard.Size = UDim2.new(1, 0, 0, 110)
-infoCard.Position = UDim2.new(0, 0, 0, 190)
+local:Disconnect()
+			chatSpamConnection = nil
+		end
+	end
+end)
+
+local infoCard = Instance.new infoCard = Instance.new("Frame")
+infoCard.Size = UDim2.new(1, 0("Frame")
+infoCard.Size = UDim2.new(1, 0, 0,, 0, 110)
+infoCard.Position = UDim2.new(0, 0, 110)
+infoCard.Position = UDim2.new(0, 0, 0,  0, 190)
+infoCard.BackgroundColor3 = Color3.fromRGB(28,190)
 infoCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
+infoCard28,38)
 infoCard.Parent = miscPage
-Instance.new("UICorner", infoCard).CornerRadius = UDim.new(0, 12)
-local infoStroke = Instance.new("UIStroke", infoCard)
-infoStroke.Color = Color3.fromRGB(139, 92, 246)
+Instance.new("UICorner", info.Parent = miscPage
+Instance.new("UICorner", infoCard).CornerRadius = UDimCard).CornerRadius = UDim.new(0, 12)
+local infoStroke = Instance.new(".new(0, 12)
+local infoStroke = Instance.new("UIStroke", infoUIStroke", infoCard)
+infoStroke.Color = Color3.fromRGB(139, 92,Card)
+infoStroke.Color = Color3.fromRGB(139, 92, 246 246)
+infoStroke.Thickness = 2
+infoStroke.Transparency = 0.7)
 infoStroke.Thickness = 2
 infoStroke.Transparency = 0.7
 
 local infoIconLabel = Instance.new("TextLabel")
-infoIconLabel.Size = UDim2.new(0, 40, 0, 40)
-infoIconLabel.Position = UDim2.new(0, 12, 0, 12)
-infoIconLabel.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+infoIconLabel.Size = U
+
+local infoIconLabel = Instance.new("TextLabel")
+infoIconLabel.Size = UDim2.new(0, 40Dim2.new(0, 40, 0, 40)
+infoIconLabel.Position, 0, 40)
+infoIconLabel.Position = UDim2.new(0, 12, 0, 12 = UDim2.new(0, 12, 0, 12)
+infoIconLabel.BackgroundColor3 = Color3.fromRGB(139, 92)
+infoIconLabel.BackgroundColor3 = Color3.fromRGB(, 246)
 infoIconLabel.BackgroundTransparency = 0.8
+infoIconLabel139, 92, 246)
+infoIconLabel.BackgroundTransparency = 0.8.Text = "ℹ️"
+infoIconLabel.Font = Enum.Font.GothamBold
+
 infoIconLabel.Text = "ℹ️"
 infoIconLabel.Font = Enum.Font.GothamBold
 infoIconLabel.TextSize = 20
+infoIconLabel.TextColor3 = Color3infoIconLabel.TextSize = 20
 infoIconLabel.TextColor3 = Color3.fromRGB(255,255,255)
 infoIconLabel.Parent = infoCard
-Instance.new("UICorner", infoIconLabel).CornerRadius = UDim.new(0, 10)
+Instance.new.fromRGB(255,255,255)
+infoIconLabel.Parent("UICorner", infoIconLabel).CornerRadius = UDim.new(0,  = infoCard
+Instance.new("UICorner", infoIconLabel).CornerRadius = U10)
+
+local infoTitleLabel = Instance.new("TextLabel")
+infoTitleLabel.Size = UDimDim.new(0, 10)
 
 local infoTitleLabel = Instance.new("TextLabel")
 infoTitleLabel.Size = UDim2.new(1, -70, 0, 20)
+infoTitleLabel2.new(1, -70, 0, 20)
 infoTitleLabel.Position = UDim2.new(0, 60, 0, 15)
-infoTitleLabel.BackgroundTransparency = 1
+infoTitleLabel.Back.Position = UDim2.new(0, 60, 0, 15)
+infoTitlegroundTransparency = 1
 infoTitleLabel.Font = Enum.Font.GothamBold
+Label.BackgroundTransparency = 1
+infoTitleLabel.Font = Enum.Font.GothamBinfoTitleLabel.TextSize = 15
+infoTitleLabel.TextColor3 = Color3old
 infoTitleLabel.TextSize = 15
-infoTitleLabel.TextColor3 = Color3.fromRGB(255,255,255)
+infoTitleLabel.TextColor3 = Color3.fromRGB(255,255.fromRGB(255,255,255)
 infoTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 infoTitleLabel.Text = "ATALHOS DO TECLADO"
+info,255)
+infoTitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+infoTitleLabel.Text = "ATALHOS DO TECTitleLabel.Parent = infoCard
+
+local infoText = Instance.new("TextLabel")
+LADO"
 infoTitleLabel.Parent = infoCard
 
--- ═══════════════════════════════════════════════════════════════
---                    EVENTOS DE ENTRADA
--- ═══════════════════════════════════════════════════════════════
+local infoText = Instance.new("TextLabel")
+infoText.Size = UDim2.new(1, -24, 0, 60)
+infoText.Position = UDim2.new(infoText.Size = UDim2.new(1, -24, 0, 60)
+infoText.Position = UDim20, 12, 0, 45)
+infoText.BackgroundTrans.new(0, 12, 0, 45)
+infoText.BackgroundTransparency = 1
+infoText.Font = Enumparency = 1
+infoText.Font = Enum.Font.Gotham
+infoText.TextSize = 12.Font.Gotham
+infoText.TextSize = 12
+infoText.TextColor3 = Color
+infoText.TextColor3 = Color3.fromRGB(180,180,200)
+infoText.TextWrapped =3.fromRGB(180,180,200)
+infoText.TextWrapped = true
+infoText true
+infoText.TextXAlignment = Enum.TextXAlignment.Left
+infoText.TextYAlignment = Enum.TextYAlignment.T.TextXAlignment = Enum.TextXAlignment.Left
+infoText.TextYAlignment = Enum.TextYAlignment.Top
+infoText.Text = "• M: Abrir/Fechar Menu\n•op
+infoText.Text = "• M: Abrir/Fechar Menu\n• F: Ativar/Desativar Fly\n F: Ativar/Desativar Fly\n• P: Destravar mouse\n• P: Destravar mouse\n• ESP: Liga/Desliga visualização• ESP: Liga/Desliga visualização de jogadores"
+infoText.Parent = infoCard
 
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    
-    -- Atalhos do teclado
-    if input.KeyCode == Enum.KeyCode.M then 
-        showPanel(not panelVisible)
-    elseif input.KeyCode == Enum.KeyCode.F then
-        _G.FlySystem:toggleFly()
-    elseif input.KeyCode == Enum.KeyCode.P then
-        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-        UserInputService.MouseIconEnabled = true
-    end
+-- ═════════════════════ de jogadores"
+infoText.Parent = infoCard
+
+-- ═══════════════════════════════════════════════════════════════
+══════════════════════════════════════════
+--                    EVENTOS DE ENTRADA
+-- ═════--                    EVENTOS DE ENTRADA
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+UserInputService.InputBegan══════════════════════════════════════════
+
+UserInputService.InputBegan:Connect:Connect(function(input, gpe)
+	if gpe then return end
+	
+	-- Tecl(function(input, gpe)
+	if gpe then return end
+	
+	-- Teclas deas de bind
+	if waitingForKey and not gpe then
+ bind
+	if waitingForKey and not gpe then
+		if input.UserInputType == Enum.UserInputType.Keyboard then		if input.UserInputType == Enum.UserInputType.Keyboard then
+			aimbotKey = input
+			aimbotKey = input.KeyCode
+			aimbotKeyName = input.KeyCode.Name
+			key.KeyCode
+			aimbotKeyName = input.KeyCode.Name
+			keyBindBtn.Text = "⏱️ "BindBtn.Text = "⏱️ " .. aimbotKeyName
+			keyBindBtn.BackgroundColor .. aimbotKeyName
+			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+			wait3 = Color3.fromRGB(60, 60, 70)
+			waitingForKey = false
+		elseifingForKey = false
+		elseif input.UserInputType == Enum.UserInputType.M input.UserInputType == Enum.UserInputType.MouseButton1 then
+			aimbotKey = Enum.UserInputType.MouseButtonouseButton1 then
+			aimbotKey = Enum.UserInputType.MouseButton1
+			aimbotKeyName = "Botão Esquerdo"
+			keyBindBtn.Text = "1
+			aimbotKeyName = "Botão Esquerdo"
+			keyBind⏱️ " .. aimbotKeyName
+			keyBindBtn.BackgroundColor3 = ColorBtn.Text = "⏱️ " .. aimbotKeyName
+			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+			waiting3.fromRGB(60, 60, 70)
+			waitingForKey =ForKey = false
+		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then false
+		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+			aimbotKey = Enum.UserInputType.MouseButton2
+			aimbotKeyName =
+			aimbotKey = Enum.UserInputType.MouseButton2
+			aimbotKey "Botão Direito"
+			keyBindBtn.Text = "⏱️ " ..Name = "Botão Direito"
+			keyBindBtn.Text = "⏱️ " .. aimbotKeyName
+			keyBindBtn.BackgroundColor3 = Color3.fromRGB( aimbotKeyName
+			keyBindBtn.BackgroundColor3 = Color3.fromRGB(60,60, 60, 70)
+			waitingForKey = false
+		end
+	else 60, 70)
+			waitingForKey = false
+		end
+	elseif waitingForClickerKey and not gpe then
+		if input.UserInputType == Enum.UserInputType.Keyif waitingForClickerKey and not gpe then
+		if input.UserInputType == Enum.UserInputboard then
+			autoClickerKey = input.KeyCode
+			autoClickerKeyName =Type.Keyboard then
+			autoClickerKey = input.KeyCode
+			autoClickerKeyName = input.KeyCode.Name
+			clickerKeyBtn.Text = "TECLA: input.KeyCode.Name
+			clickerKeyBtn.Text = "TECLA: " .. " .. autoClickerKeyName
+			clickerKeyBtn.BackgroundColor3 = Color autoClickerKeyName
+			clickerKeyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+			waitingForClickerKey = false
+		end
+3.fromRGB(60, 60, 70)
+			waitingForClickerKey = false	end
+	
+	-- Atalhos do teclado
+	if input.KeyCode == Enum.KeyCode.M then
+		end
+	end
+	
+	-- Atalhos do teclado
+	if input.KeyCode == Enum.KeyCode.M then 
+		showPanel(not panelVisible)
+	elseif input.KeyCode == 
+		showPanel(not panelVisible)
+	elseif input.KeyCode == Enum.KeyCode.F then
+ Enum.KeyCode.F then
+		_G.FlySystem:toggleFly()
+		if fly		_G.FlySystem:toggleFly()
+		if flyToggle then
+			flyToggle.Text = _G.FlySystem.flying and "FLY: ON" or "FLToggle then
+			flyToggle.Text = _G.FlySystem.flying and "FLYY: OFF"
+			flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.from: ON" or "FLY: OFF"
+			flyToggle.BackgroundColor3 = _G.FlySystem.flying and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60,RGB(0, 160, 90) or Color3.fromRGB(60, 60,  60, 70)
+		end
+	elseif input.KeyCode == Enum.KeyCode.P then
+70)
+		end
+	elseif input.KeyCode == Enum.KeyCode.P then
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled =		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.M true
+	end
+end)
+
+-- ═════════════════════════════════════════ouseIconEnabled = true
+	end
 end)
 
 -- ═══════════════════════════════════════════════════════════════
---                      INICIALIZAÇÃO
--- ═══════════════════════════════════════════════════════════════
+--                    EVENTOS DE JOGADORES
+-- ═══════════════════════════════════
+--                    EVENTOS DE JOGADORES
+-- ═══════════════════════════════════════════════════════════════════════
 
--- Inicializar sistemas
-_G.FlySystem:init()
-setTab("PLAYERS")
+-- Atualizar lista de jogadores
+local function updatePlayersList()
+	for _, btn in pairs(playerButtons) do
+		if btn══════════════════════════════════════════
 
--- Mensagens de inicialização
-print("✅ CASAIS SCRIPTER - Admin Panel PRO carregado!")
-print("🔑 Pressione M para abrir o menu")
-print("🎯 Pressione F para ativar/desativar Fly")
-print("📌 Pressione P para destravar o mouse")
-print("⚡ Script criado por CASAIS SCRIPTER")
-
--- ═══════════════════════════════════════════════════════════════
---                      SISTEMA DE PERFORMANCE
--- ═══════════════════════════════════════════════════════════════
-
-local performanceSettings = {
-    lowGraphics = false,
-    disableParticles = false,
-    reduceShadows = false,
-    optimizeFPS = false,
-    disableAnimations = false
-}
-
-local function applyPerformanceSettings()
-    local lighting = game:GetService("Lighting")
-    local workspace = game:GetService("Workspace")
-    
-    if performanceSettings.lowGraphics then
-        -- Reduzir qualidade gráfica
-        settings().Rendering.QualityLevel = 1
-        lighting.GlobalShadows = false
-        lighting.FogEnd = 9e9
-        lighting.Brightness = 2
-    end
-    
-    if performanceSettings.disableParticles then
-        -- Desabilitar partículas
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("ParticleEmitter") or obj:IsA("Fire") or obj:IsA("Smoke") or obj:IsA("Sparkles") then
-                obj.Enabled = false
-            end
-        end
-    end
-    
-    if performanceSettings.reduceShadows then
-        -- Reduzir sombras
-        lighting.GlobalShadows = false
-        lighting.ShadowSoftness = 0
-    end
-    
-    if performanceSettings.disableAnimations then
-        -- Desabilitar animações desnecessárias
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                for _, obj in pairs(player.Character:GetDescendants()) do
-                    if obj:IsA("AnimationTrack") then
-                        obj:Stop()
-                    end
-                end
-            end
-        end
-    end
+-- Atualizar lista de jogadores
+local function updatePlayersList()
+	for _, btn and btn.Parent then
+			btn:Destroy()
+	end
+	end
+	playerButtons = {}
+	
+	for _, player in pairs(Players:GetPlayers()) do
+ in pairs(playerButtons) do
+		if btn and btn.Parent then
+			btn:Destroy()
+	end
+	end
+	playerButtons = {}
+	
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer then
+			create		if player ~= LocalPlayer then
+			createPlayerButton(player)
+		end
+	end
 end
 
+Players.PlayerAdded:PlayerButton(player)
+		end
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	createConnect(function(player)
+	createPlayerButton(player)
+	
+	player.CharacterAdded:Connect(function()
+		wait(0.5)
+PlayerButton(player)
+	
+	player.CharacterAdded:Connect(function()
+		wait(0.5)
+		if espEnabled then 
+			updateESP() 
+		end
+	end)
+end)
+
+Players.PlayerRemoving:Connect(function		if espEnabled then 
+			updateESP() 
+		end
+	end)
+end)
+
+(player)
+	if playerButtons[player] then
+		playerButtons[player]:Destroy()
+		playerButtons[player] = nil
+	end
+	
+	if espHighPlayers.PlayerRemoving:Connect(function(player)
+	if playerButtons[player] then
+		playerButtons[player]:Destroy()
+		playerButtons[player] = nil
+	end
+	
+	if espHighlights[player] then
+		espHighlights[player] then
+		espHighlights[player]:Destroy()
+		espHighlights[player] = nil
+	endlights[player]:Destroy()
+		espHighlights[player] = nil
+	end
+	
+	if espBoxes
+	
+	if espBoxes[player] then
+		for _, line in pairs(espBoxes[player]) do
+			line[player] then
+		for _, line in pairs(espBoxes[player]) do
+			line:Remove()
+		end
+		espBoxes[player] = nil
+	end
+end)
+
+-- ═════════════════════════════════════:Remove()
+		end
+		espBoxes[player] = nil
+	end
+end)
+
 -- ═══════════════════════════════════════════════════════════════
---                      LOOPS PRINCIPAIS
--- ═══════════════════════════════════════════════════════════════
+--                      LOO══════════════════════════
+--                      LOOPS DE ATUALIZAÇÃO
+-- ═════════════════════════════════════════════════PS DE ATUALIZAÇÃO
+-- ═════════════════════════════════════════════════════════════════════════════
 
 RunService.Heartbeat:Connect(function()
     if espEnabled then
         updateESP()
-        -- Limpar highlights de jogadores que saíram
+        -- Limpar highlights de jogadores que sa
+
+RunService.Heartbeat:Connect(function()
+    if espEnabled then
+        updateESP()
+        -- Limpar highlights de jogadores que saíramíram
+        for player, highlight in pairs(espHighlights) do
+            if not player or not player.Parent or not
         for player, highlight in pairs(espHighlights) do
             if not player or not player.Parent or not player.Character then
+                if highlight then highlight:Destroy() end
+                espHighlights player.Character then
                 if highlight then highlight:Destroy() end
                 espHighlights[player] = nil
             end
         end
         -- Limpar boxes de jogadores que saíram
+        for player,[player] = nil
+            end
+        end
+        -- Limpar boxes de jogadores que saí box in pairs(espBoxes) do
+            if not player or not player.Parent or not player.ram
         for player, box in pairs(espBoxes) do
-            if not player or not player.Parent or not player.Character then
+            if not player or not player.Parent or not playerCharacter then
+                if box then
+                    for _, line in pairs(box) do
+                        line:Remove()
+                    end
+.Character then
                 if box then
                     for _, line in pairs(box) do
                         line:Remove()
@@ -2955,370 +3081,52 @@ RunService.Heartbeat:Connect(function()
                 espBoxes[player] = nil
             end
         end
+                   end
+                espBoxes[player] = nil
+            end
+        end
     end
+ end
 end)
 
 RunService.RenderStepped:Connect(function()
+    updateTracend)
+
+RunService.RenderStepped:Connect(function()
     updateTracers()
-updateNametags()
+    updateNametags()
 end)
 
--- ═══════════════════════════════════════════════════════════════
---                    CONTROLE DO PAINEL
--- ═══════════════════════════════════════════════════════════════
-
-local function showPanel(show)
-    if panelVisible == show then return end
-    panelVisible = show
-    frame.Visible = show
-    
-    if show then
-        prevMouseBehavior = UserInputService.MouseBehavior
-        prevMouseIconEnabled = UserInputService.MouseIconEnabled
-        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-        UserInputService.MouseIconEnabled = true
-    else
-        if prevMouseBehavior then 
-            UserInputService.MouseBehavior = prevMouseBehavior 
-        end
-        if prevMouseIconEnabled ~= nil then 
-            UserInputService.MouseIconEnabled = prevMouseIconEnabled 
-        end
-    end
-end
-
--- Botão fechar
-closeBtn.MouseButton1Click:Connect(function() 
-    showPanel(false)
+-- ═════════════════════════════════════════════════════════ers()
+    updateNametags()
 end)
 
--- ═══════════════════════════════════════════════════════════════
---                      PÁGINA DE VISÃO
--- ═══════════════════════════════════════════════════════════════
-
-local espCard = Instance.new("Frame")
-espCard.Size = UDim2.new(1, 0, 0, 180)
-espCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-espCard.Parent = visionPage
-Instance.new("UICorner", espCard).CornerRadius = UDim.new(0, 12)
-local espStroke = Instance.new("UIStroke", espCard)
-espStroke.Color = Color3.fromRGB(0, 255, 150)
-espStroke.Thickness = 2
-espStroke.Transparency = 0.7
-
-local espIcon = Instance.new("TextLabel")
-espIcon.Size = UDim2.new(0, 35, 0, 35)
-espIcon.Position = UDim2.new(0, 12, 0, 12)
-espIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
-espIcon.BackgroundTransparency = 0.8
-espIcon.Text = "👁️"
-espIcon.Font = Enum.Font.GothamBold
-espIcon.TextSize = 18
-espIcon.TextColor3 = Color3.fromRGB(255,255,255)
-espIcon.Parent = espCard
-Instance.new("UICorner", espIcon).CornerRadius = UDim.new(0, 8)
-
-local espTitle = Instance.new("TextLabel")
-espTitle.Size = UDim2.new(1, -130, 0, 18)
-espTitle.Position = UDim2.new(0, 55, 0, 15)
-espTitle.BackgroundTransparency = 1
-espTitle.Font = Enum.Font.GothamBold
-espTitle.TextSize = 14
-espTitle.TextColor3 = Color3.fromRGB(255,255,255)
-espTitle.TextXAlignment = Enum.TextXAlignment.Left
-espTitle.Text = "ESP WALLHACK PRO"
-espTitle.Parent = espCard
-
-local espToggle = Instance.new("TextButton")
-espToggle.Size = UDim2.new(0, 80, 0, 28)
-espToggle.Position = UDim2.new(1, -90, 0, 12)
-espToggle.Text = "ON"
-espToggle.Font = Enum.Font.GothamBold
-espToggle.TextSize = 12
-espToggle.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
-espToggle.TextColor3 = Color3.fromRGB(255,255,255)
-espToggle.Parent = espCard
-Instance.new("UICorner", espToggle).CornerRadius = UDim.new(0, 8)
-espToggle.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
-    espToggle.Text = espEnabled and "ON" or "OFF"
-    espToggle.BackgroundColor3 = espEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local espDistanceSlider = Instance.new("Frame")
-espDistanceSlider.Size = UDim2.new(1, -24, 0, 32)
-espDistanceSlider.Position = UDim2.new(0, 12, 0, 60)
-espDistanceSlider.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-espDistanceSlider.Parent = espCard
-Instance.new("UICorner", espDistanceSlider).CornerRadius = UDim.new(0, 8)
-
-local distanceLabel = Instance.new("TextLabel")
-distanceLabel.Size = UDim2.new(0.5, 0, 1, 0)
-distanceLabel.BackgroundTransparency = 1
-distanceLabel.Font = Enum.Font.GothamBold
-distanceLabel.TextSize = 12
-distanceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-distanceLabel.Text = "DISTÂNCIA: " .. espMaxDistance
-distanceLabel.Parent = espDistanceSlider
-
-local distanceDown = Instance.new("TextButton")
-distanceDown.Size = UDim2.new(0, 30, 0, 24)
-distanceDown.Position = UDim2.new(1, -70, 0, 4)
-distanceDown.Text = "-"
-distanceDown.Font = Enum.Font.GothamBold
-distanceDown.TextSize = 16
-distanceDown.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
-distanceDown.TextColor3 = Color3.fromRGB(255, 255, 255)
-distanceDown.Parent = espDistanceSlider
-Instance.new("UICorner", distanceDown).CornerRadius = UDim.new(0, 4)
-
-local distanceUp = Instance.new("TextButton")
-distanceUp.Size = UDim2.new(0, 30, 0, 24)
-distanceUp.Position = UDim2.new(1, -35, 0, 4)
-distanceUp.Text = "+"
-distanceUp.Font = Enum.Font.GothamBold
-distanceUp.TextSize = 16
-distanceUp.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
-distanceUp.TextColor3 = Color3.fromRGB(255, 255, 255)
-distanceUp.Parent = espDistanceSlider
-Instance.new("UICorner", distanceUp).CornerRadius = UDim.new(0, 4)
-
-distanceDown.MouseButton1Click:Connect(function()
-    espMaxDistance = math.max(100, espMaxDistance - 100)
-    distanceLabel.Text = "DISTÂNCIA: " .. espMaxDistance
-end)
-
-distanceUp.MouseButton1Click:Connect(function()
-    espMaxDistance = math.min(1000, espMaxDistance + 100)
-    distanceLabel.Text = "DISTÂNCIA: " .. espMaxDistance
-end)
-
-local espBoxBtn = Instance.new("TextButton")
-espBoxBtn.Size = UDim2.new(0.32, -5, 0, 32)
-espBoxBtn.Position = UDim2.new(0, 12, 0, 100)
-espBoxBtn.Text = "□ BOXES"
-espBoxBtn.Font = Enum.Font.GothamBold
-espBoxBtn.TextSize = 11
-espBoxBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-espBoxBtn.TextColor3 = Color3.fromRGB(255,255,255)
-espBoxBtn.Parent = espCard
-Instance.new("UICorner", espBoxBtn).CornerRadius = UDim.new(0, 8)
-espBoxBtn.MouseButton1Click:Connect(function()
-    espBoxEnabled = not espBoxEnabled
-    espBoxBtn.Text = espBoxEnabled and "■ ON" or "□ BOXES"
-    espBoxBtn.BackgroundColor3 = espBoxEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local tracersBtn = Instance.new("TextButton")
-tracersBtn.Size = UDim2.new(0.32, -5, 0, 32)
-tracersBtn.Position = UDim2.new(0.34, 0, 0, 100)
-tracersBtn.Text = "📏 TRACERS"
-tracersBtn.Font = Enum.Font.GothamBold
-tracersBtn.TextSize = 11
-tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
-tracersBtn.Parent = espCard
-Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
-tracersBtn.MouseButton1Click:Connect(function()
-    tracersEnabled = not tracersEnabled
-    tracersBtn.Text = tracersEnabled and "📏 ON" or "📏 TRACERS"
-    tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local nametagsBtn = Instance.new("TextButton")
-nametagsBtn.Size = UDim2.new(0.32, -5, 0, 32)
-nametagsBtn.Position = UDim2.new(0.68, 0, 0, 100)
-nametagsBtn.Text = "🏷️ NAMES"
-nametagsBtn.Font = Enum.Font.GothamBold
-nametagsBtn.TextSize = 11
-nametagsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsBtn.Parent = espCard
-Instance.new("UICorner", nametagsBtn).CornerRadius = UDim.new(0, 8)
-nametagsBtn.MouseButton1Click:Connect(function()
-    nametagsEnabled = not nametagsEnabled
-    nametagsBtn.Text = nametagsEnabled and "🏷️ ON" or "🏷️ NAMES"
-    nametagsBtn.BackgroundColor3 = nametagsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local visionInfo = Instance.new("TextLabel")
-visionInfo.Size = UDim2.new(1, 0, 0, 80)
-visionInfo.Position = UDim2.new(0, 0, 0, 190)
-visionInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
-visionInfo.Font = Enum.Font.Gotham
-visionInfo.TextSize = 11
-visionInfo.TextColor3 = Color3.fromRGB(180,180,200)
-visionInfo.TextWrapped = true
-visionInfo.Text = "  💡 DICAS:\n  • ESP mostra jogadores até " .. espMaxDistance .. " studs | • Boxes desenham caixas\n  • Tracers ligam ao centro do personagem | • Names mostram nome, distância e vida\n  • Cores: Vermelho=Perto, Amarelo=Médio, Verde=Longe"
-visionInfo.Parent = visionPage
-Instance.new("UICorner", visionInfo).CornerRadius = UDim.new(0, 12)
-
--- ═══════════════════════════════════════════════════════════════
---                      PÁGINA DE PERFORMANCE
--- ═══════════════════════════════════════════════════════════════
-
-local perfCard1 = Instance.new("Frame")
-perfCard1.Size = UDim2.new(1, 0, 0, 200)
-perfCard1.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfCard1.Parent = performancePage
-Instance.new("UICorner", perfCard1).CornerRadius = UDim.new(0, 12)
-local perfStroke1 = Instance.new("UIStroke", perfCard1)
-perfStroke1.Color = Color3.fromRGB(255, 165, 0)
-perfStroke1.Thickness = 2
-perfStroke1.Transparency = 0.7
-
-local perfIcon = Instance.new("TextLabel")
-perfIcon.Size = UDim2.new(0, 35, 0, 35)
-perfIcon.Position = UDim2.new(0, 12, 0, 12)
-perfIcon.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
-perfIcon.BackgroundTransparency = 0.8
-perfIcon.Text = "⚡"
-perfIcon.Font = Enum.Font.GothamBold
-perfIcon.TextSize = 18
-perfIcon.TextColor3 = Color3.fromRGB(255,255,255)
-perfIcon.Parent = perfCard1
-Instance.new("UICorner", perfIcon).CornerRadius = UDim.new(0, 8)
-
-local perfTitle = Instance.new("TextLabel")
-perfTitle.Size = UDim2.new(1, -60, 0, 18)
-perfTitle.Position = UDim2.new(0, 55, 0, 15)
-perfTitle.BackgroundTransparency = 1
-perfTitle.Font = Enum.Font.GothamBold
-perfTitle.TextSize = 14
-perfTitle.TextColor3 = Color3.fromRGB(255,255,255)
-perfTitle.TextXAlignment = Enum.TextXAlignment.Left
-perfTitle.Text = "OTIMIZAÇÃO DE PERFORMANCE"
-perfTitle.Parent = perfCard1
-
-local lowGraphicsBtn = Instance.new("TextButton")
-lowGraphicsBtn.Size = UDim2.new(0.48, -5, 0, 35)
-lowGraphicsBtn.Position = UDim2.new(0, 12, 0, 60)
-lowGraphicsBtn.Text = "🎮 GRÁFICOS BAIXOS"
-lowGraphicsBtn.Font = Enum.Font.GothamBold
-lowGraphicsBtn.TextSize = 12
-lowGraphicsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-lowGraphicsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-lowGraphicsBtn.Parent = perfCard1
-Instance.new("UICorner", lowGraphicsBtn).CornerRadius = UDim.new(0, 8)
-lowGraphicsBtn.MouseButton1Click:Connect(function()
-    performanceSettings.lowGraphics = not performanceSettings.lowGraphics
-    lowGraphicsBtn.Text = performanceSettings.lowGraphics and "🎮 ON" or "🎮 GRÁFICOS BAIXOS"
-    lowGraphicsBtn.BackgroundColor3 = performanceSettings.lowGraphics and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    applyPerformanceSettings()
-end)
-
-local disableParticlesBtn = Instance.new("TextButton")
-disableParticlesBtn.Size = UDim2.new(0.48, -5, 0, 35)
-disableParticlesBtn.Position = UDim2.new(0.52, 0, 0, 60)
-disableParticlesBtn.Text = "✨ SEM PARTÍCULAS"
-disableParticlesBtn.Font = Enum.Font.GothamBold
-disableParticlesBtn.TextSize = 12
-disableParticlesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-disableParticlesBtn.TextColor3 = Color3.fromRGB(255,255,255)
-disableParticlesBtn.Parent = perfCard1
-Instance.new("UICorner", disableParticlesBtn).CornerRadius = UDim.new(0, 8)
-disableParticlesBtn.MouseButton1Click:Connect(function()
-    performanceSettings.disableParticles = not performanceSettings.disableParticles
-    disableParticlesBtn.Text = performanceSettings.disableParticles and "✨ ON" or "✨ SEM PARTÍCULAS"
-    disableParticlesBtn.BackgroundColor3 = performanceSettings.disableParticles and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    applyPerformanceSettings()
-end)
-
-local reduceShadowsBtn = Instance.new("TextButton")
-reduceShadowsBtn.Size = UDim2.new(0.48, -5, 0, 35)
-reduceShadowsBtn.Position = UDim2.new(0, 12, 0, 105)
-reduceShadowsBtn.Text = "🌑 SEM SOMBRAS"
-reduceShadowsBtn.Font = Enum.Font.GothamBold
-reduceShadowsBtn.TextSize = 12
-reduceShadowsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-reduceShadowsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-reduceShadowsBtn.Parent = perfCard1
-Instance.new("UICorner", reduceShadowsBtn).CornerRadius = UDim.new(0, 8)
-reduceShadowsBtn.MouseButton1Click:Connect(function()
-    performanceSettings.reduceShadows = not performanceSettings.reduceShadows
-    reduceShadowsBtn.Text = performanceSettings.reduceShadows and "🌑 ON" or "🌑 SEM SOMBRAS"
-    reduceShadowsBtn.BackgroundColor3 = performanceSettings.reduceShadows and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    applyPerformanceSettings()
-end)
-
-local optimizeFPSBtn = Instance.new("TextButton")
-optimizeFPSBtn.Size = UDim2.new(0.48, -5, 0, 35)
-optimizeFPSBtn.Position = UDim2.new(0.52, 0, 0, 105)
-optimizeFPSBtn.Text = "📈 OTIMIZAR FPS"
-optimizeFPSBtn.Font = Enum.Font.GothamBold
-optimizeFPSBtn.TextSize = 12
-optimizeFPSBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-optimizeFPSBtn.TextColor3 = Color3.fromRGB(255,255,255)
-optimizeFPSBtn.Parent = perfCard1
-Instance.new("UICorner", optimizeFPSBtn).CornerRadius = UDim.new(0, 8)
-optimizeFPSBtn.MouseButton1Click:Connect(function()
-    performanceSettings.optimizeFPS = not performanceSettings.optimizeFPS
-    optimizeFPSBtn.Text = performanceSettings.optimizeFPS and "📈 ON" or "📈 OTIMIZAR FPS"
-    optimizeFPSBtn.BackgroundColor3 = performanceSettings.optimizeFPS and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    if performanceSettings.optimizeFPS then
-        settings().Rendering.QualityLevel = 1
-        game:GetService("Lighting").GlobalShadows = false
-    end
-end)
-
-local disableAnimBtn = Instance.new("TextButton")
-disableAnimBtn.Size = UDim2.new(1, -24, 0, 35)
-disableAnimBtn.Position = UDim2.new(0, 12, 0, 150)
-disableAnimBtn.Text = "🎭 DESABILITAR ANIMAÇÕES"
-disableAnimBtn.Font = Enum.Font.GothamBold
-disableAnimBtn.TextSize = 12
-disableAnimBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-disableAnimBtn.TextColor3 = Color3.fromRGB(255,255,255)
-disableAnimBtn.Parent = perfCard1
-Instance.new("UICorner", disableAnimBtn).CornerRadius = UDim.new(0, 8)
-disableAnimBtn.MouseButton1Click:Connect(function()
-    performanceSettings.disableAnimations = not performanceSettings.disableAnimations
-    disableAnimBtn.Text = performanceSettings.disableAnimations and "🎭 ON" or "🎭 DESABILITAR ANIMAÇÕES"
-    disableAnimBtn.BackgroundColor3 = performanceSettings.disableAnimations and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-    applyPerformanceSettings()
-end)
-
-local perfInfo = Instance.new("TextLabel")
-perfInfo.Size = UDim2.new(1, 0, 0, 80)
-perfInfo.Position = UDim2.new(0, 0, 0, 210)
-perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfInfo.Font = Enum.Font.Gotham
-perfInfo.TextSize = 11
-perfInfo.TextColor3 = Color3.fromRGB(180,180,200)
-perfInfo.TextWrapped = true
-perfInfo.Text = "  ⚡ DICAS DE PERFORMANCE:\n  • Gráficos Baixos: Reduz qualidade visual para mais FPS\n  • Sem Partículas: Remove efeitos visuais desnecessários\n  • Otimizar FPS: Aplica configurações automáticas para melhor performance"
-perfInfo.Parent = performancePage
-Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
-
--- ═══════════════════════════════════════════════════════════════
---                    EVENTOS DE ENTRADA
--- ═══════════════════════════════════════════════════════════════
-
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    
-    -- Atalhos do teclado
-    if input.KeyCode == Enum.KeyCode.M then 
-        showPanel(not panelVisible)
-    elseif input.KeyCode == Enum.KeyCode.F then
-        _G.FlySystem:toggleFly()
-    elseif input.KeyCode == Enum.KeyCode.P then
-        UserInputService.MouseBehavior = Enum.MouseBehavior.Default
-        UserInputService.MouseIconEnabled = true
-    end
-end)
-
--- ═══════════════════════════════════════════════════════════════
+-- ═══════════════════════════════════════
+--                      INICIALIZAÇÃO
+-- ═══════════════════════════════════════════════════════
 --                      INICIALIZAÇÃO
 -- ═══════════════════════════════════════════════════════════════
 
--- Inicializar sistemas                                                                                                 
+-- Inicializar sistemas
 _G.FlySystem:init()
 setTab("PLAYERS")
+updatePlayersList()
+
+-- Mensagens de══════════════════════════════════════
+
+-- Inicializar sistemas
+_G.FlySystem:init()
+setTab("PLAYERS")
+updatePlayersList()
 
 -- Mensagens de inicialização
 print("✅ CASAIS SCRIPTER - Admin Panel PRO carregado!")
+print("🔑 Pressione M para ab inicialização
+print("✅ CASAIS SCRIPTER - Admin Panel PRO carregado!")
 print("🔑 Pressione M para abrir o menu")
+print("🎯rir o menu")
 print("🎯 Pressione F para ativar/desativar Fly")
 print("📌 Pressione P para destravar o mouse")
-print("⚡ Script criado por CASAIS SCRIPTER")optimizeFPSBtn.MouseButton1Click:Connectfunction()
+print("⚡ Script cri Pressione F para ativar/desativar Fly")
+print("📌 Pressione P para destravar o mouse")
+print("⚡ Script criado por CASAado por CASAIS SCRIPTER")
