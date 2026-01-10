@@ -11,6 +11,18 @@ local spectating, savedSubject, savedCamType
 local selectedPlayer
 local playerButtons = {}
 
+local function mouse1click()
+    -- Simulate mouse click for auto clicker
+    if game:GetService("VirtualInputManager") then
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        task.wait(0.01)
+        vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    else
+        print("VirtualInputManager not available - auto clicker may not work")
+    end
+end
+
 local function getPrimaryPart(char)
 	if not char then return nil end
 	return char.PrimaryPart or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
@@ -152,6 +164,7 @@ local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
+print("✅ GUI criada")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(900, 620)
@@ -345,23 +358,6 @@ end
 RunService.RenderStepped:Connect(function()
 	pcall(function()
 		if aimbotEnabled then
-			-- Atualizar círculo FOV
-			if not fovCircle then
-				fovCircle = Drawing.new("Circle")
-				fovCircle.Thickness = 2
-				fovCircle.NumSides = 50
-				fovCircle.Filled = false
-				fovCircle.Transparency = 1
-				fovCircle.Color = Color3.fromRGB(255, 70, 70)
-			end
-			
-			if fovCircle then
-				local mousePos = UserInputService:GetMouseLocation()
-				fovCircle.Position = mousePos
-				fovCircle.Radius = aimbotFOV
-				fovCircle.Visible = true
-			end
-			
 			-- Verificar se tecla está pressionada
 			local isKeyPressed = false
 			if aimbotKey == Enum.UserInputType.MouseButton2 then
@@ -371,7 +367,7 @@ RunService.RenderStepped:Connect(function()
 			else
 				isKeyPressed = UserInputService:IsKeyDown(aimbotKey)
 			end
-			
+
 			-- Mirar no alvo
 			if isKeyPressed then
 				local target = getClosestPlayer()
@@ -385,10 +381,6 @@ RunService.RenderStepped:Connect(function()
 						Camera.CFrame = currentCFrame:Lerp(targetCFrame, 1 / smoothValue)
 					end
 				end
-			end
-		else
-			if fovCircle then 
-				fovCircle.Visible = false 
 			end
 		end
 	end)
@@ -1775,33 +1767,7 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
-local tracerLines = {}
-RunService.RenderStepped:Connect(function()
-	for _, line in pairs(tracerLines) do
-		if line then line:Remove() end
-	end
-	tracerLines = {}
-	if tracersEnabled then
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local part = player.Character:FindFirstChild("HumanoidRootPart")
-				if part then
-					local line = Drawing.new("Line")
-					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-					if onScreen then
-						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-						line.To = Vector2.new(screenPos.X, screenPos.Y)
-						line.Color = Color3.fromRGB(139, 92, 246)
-						line.Thickness = 2
-						line.Transparency = 1
-						line.Visible = true
-						table.insert(tracerLines, line)
-					end
-				end
-			end
-		end
-	end
-end)
+-- Tracers disabled for compatibility with mobile executors
 
 RunService.RenderStepped:Connect(function()
 	for player, gui in pairs(nametagsGuis) do
