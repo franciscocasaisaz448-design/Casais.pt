@@ -124,82 +124,166 @@ gui.ResetOnSpawn = false
 gui.Parent = LocalPlayer.PlayerGui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(600, 400)
-frame.Position = UDim2.new(0.5, -300, 0.5, -200)
-frame.BackgroundColor3 = Color3.fromRGB(20,20,30)
+frame.Size = UDim2.fromOffset(700, 450)
+frame.Position = UDim2.new(0.5, -350, 0.5, -225)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,35)
 frame.Active = true
 frame.Draggable = true
 frame.Visible = true
 frame.Parent = gui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 15)
 
+local stroke = Instance.new("UIStroke", frame)
+stroke.Color = Color3.fromRGB(139, 92, 246)
+stroke.Thickness = 2
+stroke.Transparency = 0.5
+
 local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 50)
+header.Size = UDim2.new(1, 0, 0, 60)
 header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 header.Parent = frame
-Instance.new("UICorner", header).CornerRadius = UDim.new(0, 15)
+local headerCorner = Instance.new("UICorner", header)
+headerCorner.CornerRadius = UDim.new(0, 15)
+
+local headerCover = Instance.new("Frame")
+headerCover.Size = UDim2.new(1, 0, 0, 15)
+headerCover.Position = UDim2.new(0, 0, 1, -15)
+headerCover.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+headerCover.BorderSizePixel = 0
+headerCover.Parent = header
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -60, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
+title.Size = UDim2.new(1, -70, 1, 0)
+title.Position = UDim2.new(0, 15, 0, 0)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
-title.TextSize = 20
+title.TextSize = 22
 title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Text = "⚡ CASAIS SCRIPTER"
+title.Text = "⚡ CASAIS SCRIPTER - ADMIN PANEL"
 title.Parent = header
 
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.fromOffset(40, 40)
-closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.Size = UDim2.fromOffset(45, 45)
+closeBtn.Position = UDim2.new(1, -52, 0, 7)
 closeBtn.Text = "✕"
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 18
+closeBtn.TextSize = 20
 closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
 closeBtn.TextColor3 = Color3.new(1,1,1)
 closeBtn.Parent = header
-Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
 
 local content = Instance.new("Frame")
-content.Size = UDim2.new(1, -20, 1, -70)
-content.Position = UDim2.new(0, 10, 0, 60)
+content.Size = UDim2.new(1, -30, 1, -80)
+content.Position = UDim2.new(0, 15, 0, 70)
 content.BackgroundTransparency = 1
 content.Parent = frame
 
+local layout = Instance.new("UIListLayout", content)
+layout.Padding = UDim.new(0, 10)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+
 local flyToggle = Instance.new("TextButton")
-flyToggle.Size = UDim2.new(1, 0, 0, 50)
-flyToggle.Position = UDim2.new(0, 0, 0, 0)
+flyToggle.Size = UDim2.new(1, 0, 0, 55)
 flyToggle.Text = "🚀 FLY: OFF"
 flyToggle.Font = Enum.Font.GothamBold
-flyToggle.TextSize = 16
-flyToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+flyToggle.TextSize = 18
+flyToggle.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 flyToggle.TextColor3 = Color3.new(1,1,1)
+flyToggle.LayoutOrder = 1
 flyToggle.Parent = content
-Instance.new("UICorner", flyToggle).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", flyToggle).CornerRadius = UDim.new(0, 12)
+local flyStroke = Instance.new("UIStroke", flyToggle)
+flyStroke.Color = Color3.fromRGB(80, 80, 100)
+flyStroke.Thickness = 1
+flyStroke.Transparency = 0.5
 
 local noclipToggle = Instance.new("TextButton")
-noclipToggle.Size = UDim2.new(1, 0, 0, 50)
-noclipToggle.Position = UDim2.new(0, 0, 0, 60)
+noclipToggle.Size = UDim2.new(1, 0, 0, 55)
 noclipToggle.Text = "🌫️ NOCLIP: OFF"
 noclipToggle.Font = Enum.Font.GothamBold
-noclipToggle.TextSize = 16
-noclipToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+noclipToggle.TextSize = 18
+noclipToggle.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 noclipToggle.TextColor3 = Color3.new(1,1,1)
+noclipToggle.LayoutOrder = 2
 noclipToggle.Parent = content
-Instance.new("UICorner", noclipToggle).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", noclipToggle).CornerRadius = UDim.new(0, 12)
+local noclipStroke = Instance.new("UIStroke", noclipToggle)
+noclipStroke.Color = Color3.fromRGB(80, 80, 100)
+noclipStroke.Thickness = 1
+noclipStroke.Transparency = 0.5
+
+local speedSliderFrame = Instance.new("Frame")
+speedSliderFrame.Size = UDim2.new(1, 0, 0, 70)
+speedSliderFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+speedSliderFrame.LayoutOrder = 3
+speedSliderFrame.Parent = content
+Instance.new("UICorner", speedSliderFrame).CornerRadius = UDim.new(0, 12)
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, -20, 0, 25)
+speedLabel.Position = UDim2.new(0, 10, 0, 8)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "⚡ VELOCIDADE FLY: 50"
+speedLabel.Font = Enum.Font.GothamBold
+speedLabel.TextSize = 15
+speedLabel.TextColor3 = Color3.fromRGB(255,255,255)
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedSliderFrame
+
+local speedSlider = Instance.new("Frame")
+speedSlider.Size = UDim2.new(1, -20, 0, 10)
+speedSlider.Position = UDim2.new(0, 10, 0, 45)
+speedSlider.BackgroundColor3 = Color3.fromRGB(50,50,65)
+speedSlider.Parent = speedSliderFrame
+Instance.new("UICorner", speedSlider).CornerRadius = UDim.new(1, 0)
+
+local speedFill = Instance.new("Frame")
+speedFill.Size = UDim2.new(0.495, 0, 1, 0)
+speedFill.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+speedFill.Parent = speedSlider
+Instance.new("UICorner", speedFill).CornerRadius = UDim.new(1, 0)
+
+local speedBtn = Instance.new("TextButton")
+speedBtn.Size = UDim2.new(0, 22, 0, 22)
+speedBtn.Position = UDim2.new(0.495, -11, 0.5, -11)
+speedBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+speedBtn.Text = ""
+speedBtn.Parent = speedSlider
+Instance.new("UICorner", speedBtn).CornerRadius = UDim.new(1, 0)
+
+local speedDragging = false
+speedBtn.MouseButton1Down:Connect(function() speedDragging = true end)
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then speedDragging = false end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if speedDragging then
+        local mousePos = UserInputService:GetMouseLocation().X
+        local sliderPos = speedSlider.AbsolutePosition.X
+        local sliderSize = speedSlider.AbsoluteSize.X
+        local relativePos = math.clamp((mousePos - sliderPos) / sliderSize, 0, 1)
+        _G.FlySystem.speed = math.floor(10 + (150 - 10) * relativePos)
+        speedFill.Size = UDim2.new(relativePos, 0, 1, 0)
+        speedBtn.Position = UDim2.new(relativePos, -11, 0.5, -11)
+        speedLabel.Text = "⚡ VELOCIDADE FLY: " .. _G.FlySystem.speed
+    end
+end)
 
 local infoLabel = Instance.new("TextLabel")
-infoLabel.Size = UDim2.new(1, 0, 0, 100)
-infoLabel.Position = UDim2.new(0, 0, 0, 120)
-infoLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+infoLabel.Size = UDim2.new(1, 0, 0, 120)
+infoLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = 14
-infoLabel.TextColor3 = Color3.fromRGB(200,200,200)
+infoLabel.TextColor3 = Color3.fromRGB(200,200,220)
 infoLabel.TextWrapped = true
-infoLabel.Text = "CONTROLES:\n\nM - Abrir/Fechar Menu\nF - Toggle Fly\nWASD - Movimento\nSpace - Subir | Ctrl - Descer"
+infoLabel.TextYAlignment = Enum.TextYAlignment.Top
+infoLabel.Text = "\n  📋 CONTROLES:\n\n  • M - Abrir/Fechar Menu\n  • F - Toggle Fly Rápido\n  • WASD - Movimento\n  • Space - Subir | Ctrl - Descer"
+infoLabel.LayoutOrder = 4
 infoLabel.Parent = content
-Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", infoLabel).CornerRadius = UDim.new(0, 12)
 
 -- Eventos
 pcall(function()
