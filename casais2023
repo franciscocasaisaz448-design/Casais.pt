@@ -1956,11 +1956,18 @@ RunService.RenderStepped:Connect(function()
 		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
 		
 		-- TRACERS
-		if tracersEnabled and espEnabled and onScreen and screenPos.Z > 0 then
+		if tracersEnabled and onScreen and screenPos.Z > 0 then
 			local startX = Camera.ViewportSize.X / 2
 			local startY = Camera.ViewportSize.Y
 			local endX = screenPos.X
 			local endY = screenPos.Y
+			
+			local color = Color3.fromRGB(139, 92, 246)
+			if espMode == "TEAM" then
+				color = isSameTeam(player) and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+			else
+				color = isPlayerBehindWall(player) and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(0, 255, 100)
+			end
 			
 			local deltaX = endX - startX
 			local deltaY = endY - startY
@@ -1968,14 +1975,17 @@ RunService.RenderStepped:Connect(function()
 			local angle = math.deg(math.atan2(deltaY, deltaX))
 			
 			local line = Instance.new("Frame")
-			line.Size = UDim2.new(0, dist, 0, 2)
+			line.Size = UDim2.new(0, dist, 0, 3)
 			line.Position = UDim2.new(0, startX, 0, startY)
 			line.AnchorPoint = Vector2.new(0, 0.5)
 			line.Rotation = angle
-			line.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+			line.BackgroundColor3 = color
 			line.BorderSizePixel = 0
 			line.ZIndex = 1
 			line.Parent = tracerGui
+			local gradient = Instance.new("UIGradient")
+			gradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0.8)})
+			gradient.Parent = line
 		end
 		
 		-- NOME, VIDA, DISTANCIA
