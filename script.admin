@@ -8,6 +8,7 @@ local Camera = workspace.CurrentCamera
 local panelVisible = false
 local spectating, savedSubject, savedCamType
 local playerButtons = {}
+local selectedPlayer = nil
 
 -- Sistemas
 local Aimbot = {enabled = false, fov = 100, smooth = 10, silentAim = false, key = Enum.KeyCode.LeftAlt, changingKey = false}
@@ -234,218 +235,219 @@ local function makeSlider(parent, text, min, max, step, default, callback)
 end
 
 -- PÁGINA PLAYER
+local leftPanel = Instance.new("Frame")
+leftPanel.Size = UDim2.new(0.45, -5, 1, 0)
+leftPanel.Position = UDim2.new(0, 0, 0, 0)
+leftPanel.BackgroundTransparency = 1
+leftPanel.Parent = playerPage
+
 local playerHeader = Instance.new("Frame")
-playerHeader.Size = UDim2.new(1, -20, 0, 60)
+playerHeader.Size = UDim2.new(1, 0, 0, 50)
 playerHeader.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-playerHeader.Parent = playerPage
+playerHeader.Parent = leftPanel
 Instance.new("UICorner", playerHeader).CornerRadius = UDim.new(0, 12)
-local headerGradient = Instance.new("UIGradient", playerHeader)
-headerGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(139, 92, 246)), ColorSequenceKeypoint.new(1, Color3.fromRGB(219, 39, 119))}
-headerGradient.Rotation = 45
 
 local playerCount = Instance.new("TextLabel")
-playerCount.Size = UDim2.new(0.5, -10, 1, 0)
+playerCount.Size = UDim2.new(1, -20, 1, 0)
+playerCount.Position = UDim2.new(0, 10, 0, 0)
 playerCount.BackgroundTransparency = 1
 playerCount.Font = Enum.Font.GothamBold
-playerCount.TextSize = 18
+playerCount.TextSize = 16
 playerCount.TextColor3 = Color3.new(1,1,1)
 playerCount.Text = "👥 Jogadores: 0"
 playerCount.TextXAlignment = Enum.TextXAlignment.Left
-playerCount.Position = UDim2.new(0, 20, 0, 0)
 playerCount.Parent = playerHeader
-local countStroke = Instance.new("UIStroke", playerCount)
-countStroke.Color = Color3.fromRGB(0,0,0)
-countStroke.Thickness = 1.5
-countStroke.Transparency = 0.5
 
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0.42, 0, 0, 40)
-searchBox.Position = UDim2.new(0.56, 0, 0.5, -20)
-searchBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
-searchBox.Font = Enum.Font.GothamBold
-searchBox.TextSize = 13
-searchBox.TextColor3 = Color3.fromRGB(30,30,30)
-searchBox.PlaceholderText = "🔍 Buscar jogador..."
+searchBox.Size = UDim2.new(1, 0, 0, 35)
+searchBox.Position = UDim2.new(0, 0, 0, 60)
+searchBox.BackgroundColor3 = Color3.fromRGB(40,40,50)
+searchBox.Font = Enum.Font.Gotham
+searchBox.TextSize = 12
+searchBox.TextColor3 = Color3.new(1,1,1)
+searchBox.PlaceholderText = "🔍 Buscar..."
 searchBox.PlaceholderColor3 = Color3.fromRGB(120,120,120)
 searchBox.Text = ""
-searchBox.ClearTextOnFocus = false
-searchBox.Parent = playerHeader
-Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 10)
+searchBox.Parent = leftPanel
+Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 8)
 local searchPadding = Instance.new("UIPadding", searchBox)
-searchPadding.PaddingLeft = UDim.new(0, 12)
+searchPadding.PaddingLeft = UDim.new(0, 10)
 
 local playerScroll = Instance.new("ScrollingFrame")
-playerScroll.Size = UDim2.new(1, -20, 1, -80)
-playerScroll.Position = UDim2.new(0, 0, 0, 70)
+playerScroll.Size = UDim2.new(1, 0, 1, -105)
+playerScroll.Position = UDim2.new(0, 0, 0, 105)
 playerScroll.BackgroundTransparency = 1
 playerScroll.BorderSizePixel = 0
-playerScroll.ScrollBarThickness = 6
+playerScroll.ScrollBarThickness = 4
 playerScroll.CanvasSize = UDim2.new(0,0,0,0)
 playerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-playerScroll.Parent = playerPage
+playerScroll.Parent = leftPanel
 local playerLayout = Instance.new("UIListLayout", playerScroll)
-playerLayout.Padding = UDim.new(0, 12)
-playerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+playerLayout.Padding = UDim.new(0, 5)
+
+local rightPanel = Instance.new("Frame")
+rightPanel.Size = UDim2.new(0.55, -5, 1, 0)
+rightPanel.Position = UDim2.new(0.45, 5, 0, 0)
+rightPanel.BackgroundColor3 = Color3.fromRGB(30,30,40)
+rightPanel.Parent = playerPage
+Instance.new("UICorner", rightPanel).CornerRadius = UDim.new(0, 12)
+
+local noSelection = Instance.new("TextLabel")
+noSelection.Size = UDim2.new(1, 0, 1, 0)
+noSelection.BackgroundTransparency = 1
+noSelection.Font = Enum.Font.GothamBold
+noSelection.TextSize = 14
+noSelection.TextColor3 = Color3.fromRGB(120,120,120)
+noSelection.Text = "Selecione um jogador"
+noSelection.Parent = rightPanel
+
+local actionPanel = Instance.new("Frame")
+actionPanel.Size = UDim2.new(1, 0, 1, 0)
+actionPanel.BackgroundTransparency = 1
+actionPanel.Visible = false
+actionPanel.Parent = rightPanel
+local actionLayout = Instance.new("UIListLayout", actionPanel)
+actionLayout.Padding = UDim.new(0, 10)
+actionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+local actionPadding = Instance.new("UIPadding", actionPanel)
+actionPadding.PaddingTop = UDim.new(0, 15)
+actionPadding.PaddingLeft = UDim.new(0, 15)
+actionPadding.PaddingRight = UDim.new(0, 15)
+
+local function updateActionPanel(player)
+    for _, child in ipairs(actionPanel:GetChildren()) do
+        if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
+            child:Destroy()
+        end
+    end
+    
+    local avatar = Instance.new("ImageLabel")
+    avatar.Size = UDim2.new(0, 100, 0, 100)
+    avatar.BackgroundColor3 = Color3.fromRGB(40,40,50)
+    avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=150&height=150&format=png"
+    avatar.Parent = actionPanel
+    Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 12)
+    
+    local name = Instance.new("TextLabel")
+    name.Size = UDim2.new(1, -30, 0, 30)
+    name.BackgroundTransparency = 1
+    name.Font = Enum.Font.GothamBold
+    name.TextSize = 18
+    name.TextColor3 = Color3.new(1,1,1)
+    name.Text = player.Name
+    name.Parent = actionPanel
+    
+    local function makeActionBtn(text, color, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -30, 0, 45)
+        btn.Text = text
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 14
+        btn.BackgroundColor3 = color
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.Parent = actionPanel
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+        btn.MouseButton1Click:Connect(callback)
+        return btn
+    end
+    
+    makeActionBtn("📍 Teleportar", Color3.fromRGB(59, 130, 246), function()
+        teleportTo(player)
+    end)
+    
+    local specBtn = makeActionBtn(spectating == player and "❌ Parar Spectate" or "👁️ Spectate", spectating == player and Color3.fromRGB(239, 68, 68) or Color3.fromRGB(168, 85, 247), function()
+        if spectating == player then
+            stopSpectate()
+            specBtn.Text = "👁️ Spectate"
+            specBtn.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
+        else
+            if spectating then return end
+            startSpectate(player)
+            specBtn.Text = "❌ Parar Spectate"
+            specBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+        end
+    end)
+    
+    makeActionBtn("❤️ Adicionar Amigo", Color3.fromRGB(34, 197, 94), function()
+        LocalPlayer:RequestFriendship(player)
+    end)
+    
+    makeActionBtn("📊 Ver Perfil", Color3.fromRGB(251, 146, 60), function()
+        game:GetService("GuiService"):InspectPlayerFromUserId(player.UserId)
+    end)
+end
 
 local function createPlayerCard(player)
     if player == LocalPlayer then return end
     
-    local card = Instance.new("Frame")
-    card.Name = player.Name
-    card.Size = UDim2.new(1, -10, 0, 160)
-    card.BackgroundColor3 = Color3.fromRGB(30,30,40)
-    card.Parent = playerScroll
-    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
-    local cardStroke = Instance.new("UIStroke", card)
-    cardStroke.Color = Color3.fromRGB(139, 92, 246)
-    cardStroke.Thickness = 2
-    cardStroke.Transparency = 0.7
-    
-    local cardGlow = Instance.new("ImageLabel")
-    cardGlow.Size = UDim2.new(1, 20, 1, 20)
-    cardGlow.Position = UDim2.new(0, -10, 0, -10)
-    cardGlow.BackgroundTransparency = 1
-    cardGlow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    cardGlow.ImageColor3 = Color3.fromRGB(139, 92, 246)
-    cardGlow.ImageTransparency = 0.9
-    cardGlow.ScaleType = Enum.ScaleType.Slice
-    cardGlow.SliceCenter = Rect.new(10, 10, 10, 10)
-    cardGlow.ZIndex = 0
-    cardGlow.Parent = card
-    
-    local topBar = Instance.new("Frame")
-    topBar.Size = UDim2.new(1, 0, 0, 4)
-    topBar.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-    topBar.BorderSizePixel = 0
-    topBar.Parent = card
-    local topGradient = Instance.new("UIGradient", topBar)
-    topGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(139, 92, 246)), ColorSequenceKeypoint.new(1, Color3.fromRGB(219, 39, 119))}
-    
-    local avatarFrame = Instance.new("Frame")
-    avatarFrame.Size = UDim2.new(0, 70, 0, 70)
-    avatarFrame.Position = UDim2.new(0, 15, 0, 15)
-    avatarFrame.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-    avatarFrame.Parent = card
-    Instance.new("UICorner", avatarFrame).CornerRadius = UDim.new(0, 12)
-    local avatarStroke = Instance.new("UIStroke", avatarFrame)
-    avatarStroke.Color = Color3.fromRGB(139, 92, 246)
-    avatarStroke.Thickness = 3
+    local btn = Instance.new("TextButton")
+    btn.Name = player.Name
+    btn.Size = UDim2.new(1, 0, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(40,40,50)
+    btn.Text = ""
+    btn.Parent = playerScroll
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
     
     local avatar = Instance.new("ImageLabel")
-    avatar.Size = UDim2.new(1, -6, 1, -6)
-    avatar.Position = UDim2.new(0, 3, 0, 3)
+    avatar.Size = UDim2.new(0, 35, 0, 35)
+    avatar.Position = UDim2.new(0, 8, 0.5, -17.5)
     avatar.BackgroundTransparency = 1
     avatar.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. player.UserId .. "&width=150&height=150&format=png"
-    avatar.Parent = avatarFrame
-    Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 10)
+    avatar.Parent = btn
+    Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 8)
     
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -105, 0, 28)
-    nameLabel.Position = UDim2.new(0, 95, 0, 15)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextSize = 16
-    nameLabel.TextColor3 = Color3.new(1,1,1)
-    nameLabel.Text = player.Name
-    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-    nameLabel.Parent = card
-    local nameStroke = Instance.new("UIStroke", nameLabel)
-    nameStroke.Color = Color3.fromRGB(139, 92, 246)
-    nameStroke.Thickness = 1
+    local name = Instance.new("TextLabel")
+    name.Size = UDim2.new(1, -55, 0, 20)
+    name.Position = UDim2.new(0, 50, 0, 8)
+    name.BackgroundTransparency = 1
+    name.Font = Enum.Font.GothamBold
+    name.TextSize = 13
+    name.TextColor3 = Color3.new(1,1,1)
+    name.Text = player.Name
+    name.TextXAlignment = Enum.TextXAlignment.Left
+    name.TextTruncate = Enum.TextTruncate.AtEnd
+    name.Parent = btn
     
-    local statusBadge = Instance.new("Frame")
-    statusBadge.Size = UDim2.new(0, 120, 0, 24)
-    statusBadge.Position = UDim2.new(0, 95, 0, 48)
-    statusBadge.BackgroundColor3 = Color3.fromRGB(45,45,55)
-    statusBadge.Parent = card
-    Instance.new("UICorner", statusBadge).CornerRadius = UDim.new(0, 8)
-    
-    local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(1, -10, 1, 0)
-    statusLabel.Position = UDim2.new(0, 5, 0, 0)
-    statusLabel.BackgroundTransparency = 1
-    statusLabel.Font = Enum.Font.GothamBold
-    statusLabel.TextSize = 11
-    statusLabel.TextColor3 = Color3.fromRGB(100,200,255)
-    statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-    statusLabel.Parent = statusBadge
+    local status = Instance.new("TextLabel")
+    status.Size = UDim2.new(1, -55, 0, 15)
+    status.Position = UDim2.new(0, 50, 0, 27)
+    status.BackgroundTransparency = 1
+    status.Font = Enum.Font.Gotham
+    status.TextSize = 10
+    status.TextColor3 = Color3.fromRGB(150,150,150)
+    status.Text = "..."
+    status.TextXAlignment = Enum.TextXAlignment.Left
+    status.Parent = btn
     
     spawn(function()
-        while card.Parent do
+        while btn.Parent do
             if player.Character then
                 local hrp = player.Character:FindFirstChild("HumanoidRootPart")
                 if hrp and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                     local dist = (LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
-                    statusLabel.Text = string.format("📍 %.0fm", dist)
-                    statusLabel.TextColor3 = dist < 50 and Color3.fromRGB(100,255,100) or Color3.fromRGB(100,200,255)
+                    status.Text = string.format("📍 %.0fm", dist)
                 else
-                    statusLabel.Text = "❌ Sem char"
-                    statusLabel.TextColor3 = Color3.fromRGB(255,100,100)
+                    status.Text = "❌ Sem personagem"
                 end
             else
-                statusLabel.Text = "❌ Sem char"
-                statusLabel.TextColor3 = Color3.fromRGB(255,100,100)
+                status.Text = "❌ Sem personagem"
             end
             wait(0.5)
         end
     end)
     
-    local btnFrame = Instance.new("Frame")
-    btnFrame.Size = UDim2.new(1, -20, 0, 65)
-    btnFrame.Position = UDim2.new(0, 10, 0, 90)
-    btnFrame.BackgroundTransparency = 1
-    btnFrame.Parent = card
-    local grid = Instance.new("UIGridLayout", btnFrame)
-    grid.CellSize = UDim2.new(0.48, 0, 0, 30)
-    grid.CellPadding = UDim2.new(0.02, 0, 0, 5)
-    
-    local function makeCardButton(text, color, callback)
-        local btn = Instance.new("TextButton")
-        btn.Text = text
-        btn.Font = Enum.Font.GothamBold
-        btn.TextSize = 12
-        btn.BackgroundColor3 = color
-        btn.TextColor3 = Color3.new(1,1,1)
-        btn.Parent = btnFrame
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
-        local btnGradient = Instance.new("UIGradient", btn)
-        btnGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, color), ColorSequenceKeypoint.new(1, Color3.fromRGB(math.max(0, color.R*255-30), math.max(0, color.G*255-30), math.max(0, color.B*255-30)))}
-        btnGradient.Rotation = 90
-        btn.MouseButton1Click:Connect(callback)
-        return btn
-    end
-    
-    local tpBtn = makeCardButton("📍 TP", Color3.fromRGB(59, 130, 246), function()
-        teleportTo(player)
-        tpBtn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-        tpBtn.Text = "✅ OK"
-        wait(1)
-        tpBtn.BackgroundColor3 = Color3.fromRGB(59, 130, 246)
-        tpBtn.Text = "📍 TP"
-    end)
-    
-    local specBtn = makeCardButton("👁️ Spec", Color3.fromRGB(168, 85, 247), function()
-        if spectating == player then
-            stopSpectate()
-            specBtn.Text = "👁️ Spec"
-            specBtn.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
-        else
-            startSpectate(player)
-            specBtn.Text = "❌ Stop"
-            specBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+    btn.MouseButton1Click:Connect(function()
+        selectedPlayer = player
+        for _, card in pairs(playerButtons) do
+            card.BackgroundColor3 = Color3.fromRGB(40,40,50)
         end
+        btn.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+        noSelection.Visible = false
+        actionPanel.Visible = true
+        updateActionPanel(player)
     end)
     
-    makeCardButton("❤️ Amigo", Color3.fromRGB(34, 197, 94), function()
-        LocalPlayer:RequestFriendship(player)
-    end)
-    
-    makeCardButton("📊 Perfil", Color3.fromRGB(251, 146, 60), function()
-        game:GetService("GuiService"):InspectPlayerFromUserId(player.UserId)
-    end)
-    
-    playerButtons[player] = card
+    playerButtons[player] = btn
 end
 
 local function updatePlayers(searchTerm)
