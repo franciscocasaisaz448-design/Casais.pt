@@ -8,21 +8,23 @@ local function safeWaitForChild(parent, childName, timeout)
     return child
 end
 
--- Hook para prevenir infinite yields
+-- Hook para prevenir infinite yields (compatível com Xeno)
 pcall(function()
-    local mt = getrawmetatable(game)
-    local oldNamecall = mt.__namecall
-    setreadonly(mt, false)
-    mt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        local args = {...}
-        if method == "WaitForChild" and #args >= 1 then
-            local timeout = args[2] or 5
-            return oldNamecall(self, args[1], timeout)
-        end
-        return oldNamecall(self, ...)
-    end)
-    setreadonly(mt, true)
+    if getrawmetatable and setreadonly and newcclosure and getnamecallmethod then
+        local mt = getrawmetatable(game)
+        local oldNamecall = mt.__namecall
+        setreadonly(mt, false)
+        mt.__namecall = newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            local args = {...}
+            if method == "WaitForChild" and #args >= 1 then
+                local timeout = args[2] or 5
+                return oldNamecall(self, args[1], timeout)
+            end
+            return oldNamecall(self, ...)
+        end)
+        setreadonly(mt, true)
+    end
 end)
 
 local Players = game:GetService("Players")
@@ -33,28 +35,37 @@ local Camera = workspace.CurrentCamera
 
 -- Proteções para compatibilidade com diferentes exploits
 local task = task or {wait = wait}
-local Drawing = Drawing or {new = function(type)
-    if type == "Circle" then
-        return {
-            Visible = false,
-            Position = Vector2.zero,
-            Radius = 0,
-            Thickness = 0,
-            Color = Color3.new(),
-            Filled = false,
-            NumSides = 0
-        }
-    elseif type == "Line" then
-        return {
-            From = Vector2.zero,
-            To = Vector2.zero,
-            Color = Color3.new(),
-            Thickness = 0,
-            Transparency = 0,
-            Visible = false
-        }
+
+-- Verificar se Drawing existe, senão criar fallback
+if not Drawing then
+    Drawing = {}
+    Drawing.new = function(type)
+        if type == "Circle" then
+            return {
+                Visible = false,
+                Position = Vector2.zero,
+                Radius = 0,
+                Thickness = 0,
+                Color = Color3.new(),
+                Filled = false,
+                NumSides = 0,
+                Remove = function() end
+            }
+        elseif type == "Line" then
+            return {
+                From = Vector2.zero,
+                To = Vector2.zero,
+                Color = Color3.new(),
+                Thickness = 0,
+                Transparency = 0,
+                Visible = false,
+                Remove = function() end
+            }
+        end
     end
-end}
+end
+
+-- Verificar se mouse1click existe
 if not mouse1click then
     mouse1click = function()
         pcall(function()
