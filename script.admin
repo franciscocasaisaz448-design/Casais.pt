@@ -149,6 +149,7 @@ end
 
 local playerPage = makePage()
 local assistPage = makePage()
+assistPage:GetPropertyChangedSignal("CanvasPosition"):Connect(function() end)
 local visionPage = makePage()
 local speedPage = makePage()
 local movementPage = makePage()
@@ -232,6 +233,281 @@ local function makeSlider(parent, text, min, max, step, default, callback)
             end
         end)
     end)
+    return frame
+end
+
+-- Funções para Cards Modernos
+local function makeModernCard(parent, title, icon, color)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -20, 0, 0)
+    card.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+    card.BorderSizePixel = 0
+    card.Parent = parent
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 14)
+    
+    local shadow = Instance.new("ImageLabel")
+    shadow.Size = UDim2.new(1, 20, 1, 20)
+    shadow.Position = UDim2.new(0, -10, 0, -10)
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    shadow.ImageTransparency = 0.7
+    shadow.ZIndex = 0
+    shadow.Parent = card
+    
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 0, 50)
+    header.BackgroundColor3 = color
+    header.BorderSizePixel = 0
+    header.Parent = card
+    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 14)
+    
+    local headerBottom = Instance.new("Frame")
+    headerBottom.Size = UDim2.new(1, 0, 0, 14)
+    headerBottom.Position = UDim2.new(0, 0, 1, -14)
+    headerBottom.BackgroundColor3 = color
+    headerBottom.BorderSizePixel = 0
+    headerBottom.Parent = header
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 40, 0, 40)
+    iconLabel.Position = UDim2.new(0, 12, 0, 5)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextSize = 24
+    iconLabel.TextColor3 = Color3.new(1, 1, 1)
+    iconLabel.Text = icon
+    iconLabel.Parent = header
+    
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -120, 1, 0)
+    titleLabel.Position = UDim2.new(0, 58, 0, 0)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 16
+    titleLabel.TextColor3 = Color3.new(1, 1, 1)
+    titleLabel.Text = title
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = header
+    
+    local statusDot = Instance.new("Frame")
+    statusDot.Size = UDim2.new(0, 12, 0, 12)
+    statusDot.Position = UDim2.new(1, -24, 0.5, -6)
+    statusDot.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+    statusDot.BorderSizePixel = 0
+    statusDot.Parent = header
+    Instance.new("UICorner", statusDot).CornerRadius = UDim.new(1, 0)
+    
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, 0, 1, -50)
+    content.Position = UDim2.new(0, 0, 0, 50)
+    content.BackgroundTransparency = 1
+    content.Parent = card
+    
+    local contentLayout = Instance.new("UIListLayout", content)
+    contentLayout.Padding = UDim.new(0, 10)
+    contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    
+    local contentPadding = Instance.new("UIPadding", content)
+    contentPadding.PaddingTop = UDim.new(0, 15)
+    contentPadding.PaddingBottom = UDim.new(0, 15)
+    contentPadding.PaddingLeft = UDim.new(0, 15)
+    contentPadding.PaddingRight = UDim.new(0, 15)
+    
+    spawn(function()
+        while card.Parent do
+            wait(0.1)
+            card.Size = UDim2.new(1, -20, 0, contentLayout.AbsoluteContentSize.Y + 80)
+        end
+    end)
+    
+    return card, content, statusDot
+end
+
+local function makeModernToggle(parent, text, icon, callback)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -30, 0, 50)
+    container.BackgroundColor3 = Color3.fromRGB(38, 38, 50)
+    container.BorderSizePixel = 0
+    container.Parent = parent
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 30, 0, 30)
+    iconLabel.Position = UDim2.new(0, 10, 0.5, -15)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextSize = 18
+    iconLabel.TextColor3 = Color3.fromRGB(139, 92, 246)
+    iconLabel.Text = icon
+    iconLabel.Parent = container
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -120, 1, 0)
+    label.Position = UDim2.new(0, 45, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 13
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Text = text
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = container
+    
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 50, 0, 28)
+    toggleBtn.Position = UDim2.new(1, -60, 0.5, -14)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 75)
+    toggleBtn.Text = ""
+    toggleBtn.Parent = container
+    Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(1, 0)
+    
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 22, 0, 22)
+    knob.Position = UDim2.new(0, 3, 0.5, -11)
+    knob.BackgroundColor3 = Color3.new(1, 1, 1)
+    knob.BorderSizePixel = 0
+    knob.Parent = toggleBtn
+    Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+    
+    local state = false
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        toggleBtn.BackgroundColor3 = state and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(60, 60, 75)
+        knob:TweenPosition(
+            state and UDim2.new(1, -25, 0.5, -11) or UDim2.new(0, 3, 0.5, -11),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quad,
+            0.2,
+            true
+        )
+        callback(state)
+    end)
+    
+    return container, toggleBtn
+end
+
+local function makeModernSlider(parent, text, icon, min, max, default, callback)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -30, 0, 70)
+    container.BackgroundColor3 = Color3.fromRGB(38, 38, 50)
+    container.BorderSizePixel = 0
+    container.Parent = parent
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 25, 0, 25)
+    iconLabel.Position = UDim2.new(0, 12, 0, 10)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextSize = 16
+    iconLabel.TextColor3 = Color3.fromRGB(139, 92, 246)
+    iconLabel.Text = icon
+    iconLabel.Parent = container
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, -50, 0, 25)
+    label.Position = UDim2.new(0, 42, 0, 10)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 12
+    label.TextColor3 = Color3.fromRGB(200, 200, 210)
+    label.Text = text
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = container
+    
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(0.4, -12, 0, 25)
+    valueLabel.Position = UDim2.new(0.6, 0, 0, 10)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.Font = Enum.Font.GothamBold
+    valueLabel.TextSize = 14
+    valueLabel.TextColor3 = Color3.fromRGB(139, 92, 246)
+    valueLabel.Text = tostring(default)
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+    valueLabel.Parent = container
+    
+    local sliderBg = Instance.new("TextButton")
+    sliderBg.Size = UDim2.new(1, -24, 0, 22)
+    sliderBg.Position = UDim2.new(0, 12, 0, 42)
+    sliderBg.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    sliderBg.Text = ""
+    sliderBg.Parent = container
+    Instance.new("UICorner", sliderBg).CornerRadius = UDim.new(1, 0)
+    
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+    fill.BorderSizePixel = 0
+    fill.Parent = sliderBg
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+    
+    local value = default
+    sliderBg.MouseButton1Down:Connect(function()
+        local mouse = LocalPlayer:GetMouse()
+        local function update()
+            local relX = math.clamp(mouse.X - sliderBg.AbsolutePosition.X, 0, sliderBg.AbsoluteSize.X)
+            local percent = relX / sliderBg.AbsoluteSize.X
+            value = math.floor(min + (max - min) * percent)
+            fill.Size = UDim2.new(percent, 0, 1, 0)
+            valueLabel.Text = tostring(value)
+            callback(value)
+        end
+        update()
+        local conn = mouse.Move:Connect(update)
+        local release
+        release = UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                conn:Disconnect()
+                release:Disconnect()
+            end
+        end)
+    end)
+    
+    return container
+end
+
+local function makeModernButton(parent, text, icon, color, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -30, 0, 45)
+    btn.BackgroundColor3 = color
+    btn.Text = ""
+    btn.BorderSizePixel = 0
+    btn.Parent = parent
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 30, 1, 0)
+    iconLabel.Position = UDim2.new(0, 10, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.TextSize = 18
+    iconLabel.TextColor3 = Color3.new(1, 1, 1)
+    iconLabel.Text = icon
+    iconLabel.Parent = btn
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -50, 1, 0)
+    label.Position = UDim2.new(0, 40, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 13
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Text = text
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = btn
+    
+    btn.MouseButton1Click:Connect(callback)
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(
+            math.min(255, color.R * 255 + 20),
+            math.min(255, color.G * 255 + 20),
+            math.min(255, color.B * 255 + 20)
+        )
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = color
+    end)
+    
+    return btn
 end
 
 -- PÁGINA PLAYER
