@@ -452,7 +452,7 @@ end
 
 local function updatePlayers(searchTerm)
     for _, child in ipairs(playerScroll:GetChildren()) do
-        if child:IsA("Frame") then child:Destroy() end
+        if child:IsA("TextButton") then child:Destroy() end
     end
     playerButtons = {}
     local count = 0
