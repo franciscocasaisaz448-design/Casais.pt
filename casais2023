@@ -2394,8 +2394,7 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
-local configsPageLayout = configsPage:FindFirstChildOfClass("UIListLayout")
-if configsPageLayout then configsPageLayout:Destroy() end
+configsPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
 local configNameBox = Instance.new("TextBox")
 configNameBox.Size = UDim2.new(1, 0, 0, 45)
