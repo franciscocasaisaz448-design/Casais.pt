@@ -236,19 +236,46 @@ end
 
 -- PÁGINA PLAYER
 playerPage:ClearAllChildren()
-local playerPageLayout = Instance.new("UIListLayout")
-playerPageLayout:Destroy()
 
 local leftPanel = Instance.new("Frame")
-leftPanel.Size = UDim2.new(0.45, -5, 1, 0)
+leftPanel.Size = UDim2.new(0.55, -5, 1, 0)
 leftPanel.Position = UDim2.new(0, 0, 0, 0)
-leftPanel.BackgroundTransparency = 1
+leftPanel.BackgroundColor3 = Color3.fromRGB(30,30,40)
 leftPanel.Parent = playerPage
+Instance.new("UICorner", leftPanel).CornerRadius = UDim.new(0, 12)
+
+local noSelection = Instance.new("TextLabel")
+noSelection.Size = UDim2.new(1, 0, 1, 0)
+noSelection.BackgroundTransparency = 1
+noSelection.Font = Enum.Font.GothamBold
+noSelection.TextSize = 14
+noSelection.TextColor3 = Color3.fromRGB(120,120,120)
+noSelection.Text = "Selecione um jogador"
+noSelection.Parent = leftPanel
+
+local actionPanel = Instance.new("Frame")
+actionPanel.Size = UDim2.new(1, 0, 1, 0)
+actionPanel.BackgroundTransparency = 1
+actionPanel.Visible = false
+actionPanel.Parent = leftPanel
+local actionLayout = Instance.new("UIListLayout", actionPanel)
+actionLayout.Padding = UDim.new(0, 10)
+actionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+local actionPadding = Instance.new("UIPadding", actionPanel)
+actionPadding.PaddingTop = UDim.new(0, 15)
+actionPadding.PaddingLeft = UDim.new(0, 15)
+actionPadding.PaddingRight = UDim.new(0, 15)
+
+local rightPanel = Instance.new("Frame")
+rightPanel.Size = UDim2.new(0.45, -5, 1, 0)
+rightPanel.Position = UDim2.new(0.55, 5, 0, 0)
+rightPanel.BackgroundTransparency = 1
+rightPanel.Parent = playerPage
 
 local playerHeader = Instance.new("Frame")
 playerHeader.Size = UDim2.new(1, 0, 0, 50)
 playerHeader.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-playerHeader.Parent = leftPanel
+playerHeader.Parent = rightPanel
 Instance.new("UICorner", playerHeader).CornerRadius = UDim.new(0, 12)
 
 local playerCount = Instance.new("TextLabel")
@@ -272,7 +299,7 @@ searchBox.TextColor3 = Color3.new(1,1,1)
 searchBox.PlaceholderText = "🔍 Buscar..."
 searchBox.PlaceholderColor3 = Color3.fromRGB(120,120,120)
 searchBox.Text = ""
-searchBox.Parent = leftPanel
+searchBox.Parent = rightPanel
 Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0, 8)
 local searchPadding = Instance.new("UIPadding", searchBox)
 searchPadding.PaddingLeft = UDim.new(0, 10)
@@ -285,38 +312,9 @@ playerScroll.BorderSizePixel = 0
 playerScroll.ScrollBarThickness = 4
 playerScroll.CanvasSize = UDim2.new(0,0,0,0)
 playerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-playerScroll.Parent = leftPanel
+playerScroll.Parent = rightPanel
 local playerLayout = Instance.new("UIListLayout", playerScroll)
 playerLayout.Padding = UDim.new(0, 5)
-
-local rightPanel = Instance.new("Frame")
-rightPanel.Size = UDim2.new(0.55, -5, 1, 0)
-rightPanel.Position = UDim2.new(0.45, 5, 0, 0)
-rightPanel.BackgroundColor3 = Color3.fromRGB(30,30,40)
-rightPanel.Parent = playerPage
-Instance.new("UICorner", rightPanel).CornerRadius = UDim.new(0, 12)
-
-local noSelection = Instance.new("TextLabel")
-noSelection.Size = UDim2.new(1, 0, 1, 0)
-noSelection.BackgroundTransparency = 1
-noSelection.Font = Enum.Font.GothamBold
-noSelection.TextSize = 14
-noSelection.TextColor3 = Color3.fromRGB(120,120,120)
-noSelection.Text = "Selecione um jogador"
-noSelection.Parent = rightPanel
-
-local actionPanel = Instance.new("Frame")
-actionPanel.Size = UDim2.new(1, 0, 1, 0)
-actionPanel.BackgroundTransparency = 1
-actionPanel.Visible = false
-actionPanel.Parent = rightPanel
-local actionLayout = Instance.new("UIListLayout", actionPanel)
-actionLayout.Padding = UDim.new(0, 10)
-actionLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-local actionPadding = Instance.new("UIPadding", actionPanel)
-actionPadding.PaddingTop = UDim.new(0, 15)
-actionPadding.PaddingLeft = UDim.new(0, 15)
-actionPadding.PaddingRight = UDim.new(0, 15)
 
 local function updateActionPanel(player)
     for _, child in ipairs(actionPanel:GetChildren()) do
