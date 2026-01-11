@@ -155,6 +155,22 @@ gui.Parent = game.CoreGui
 
 local menuMinimized = false
 
+local miniButton = Instance.new("TextButton")
+miniButton.Size = UDim2.fromOffset(50, 50)
+miniButton.Position = UDim2.new(1, -70, 0, 20)
+miniButton.Text = "⚡"
+miniButton.Font = Enum.Font.GothamBold
+miniButton.TextSize = 24
+miniButton.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+miniButton.TextColor3 = Color3.fromRGB(255,255,255)
+miniButton.Visible = false
+miniButton.Parent = gui
+Instance.new("UICorner", miniButton).CornerRadius = UDim.new(0, 12)
+local miniStroke = Instance.new("UIStroke")
+miniStroke.Color = Color3.fromRGB(139, 92, 246)
+miniStroke.Thickness = 2
+miniStroke.Parent = miniButton
+
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(900, 620)
 frame.Position = UDim2.new(0.5, -450, 0.5, -310)
@@ -240,6 +256,14 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
 closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 closeBtn.Parent = header
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
+
+miniButton.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    miniButton.Visible = false
+    panelVisible = true
+    UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+    UserInputService.MouseIconEnabled = true
+end)
 
 local tabs = Instance.new("ScrollingFrame")
 tabs.Size = UDim2.new(0, 150, 1, -95)
@@ -2394,28 +2418,17 @@ tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
 
 minimizeBtn.MouseButton1Click:Connect(function()
-	menuMinimized = not menuMinimized
-	if menuMinimized then
-		frame:TweenSize(UDim2.fromOffset(900, 75), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-		minimizeBtn.Text = "+"
-		tabs.Visible = false
-		pages.Visible = false
-	else
-		frame:TweenSize(UDim2.fromOffset(900, 620), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-		minimizeBtn.Text = "−"
-		tabs.Visible = true
-		pages.Visible = true
-	end
+	frame.Visible = false
+	miniButton.Visible = true
+	panelVisible = false
+	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
 end)
 
 closeBtn.MouseButton1Click:Connect(function() 
 	frame.Visible = false
+	miniButton.Visible = true
 	panelVisible = false
-	menuMinimized = false
-	frame.Size = UDim2.fromOffset(900, 620)
-	minimizeBtn.Text = "−"
-	tabs.Visible = true
-	pages.Visible = true
 	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
 	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
 end)
