@@ -2749,13 +2749,11 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end)
 end)
 
--- ═══════════════════════════════════════
--- INICIALIZAÇÃO DO SCRIPT
--- ═══════════════════════════════════════
+-- INICIALIZACAO
 FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 showPanel(true)
-print("✅ Dark Script carregado com sucesso!")
-print("🔑 Pressione M para abrir/fechar o menu")
-print("🎯 Todas as funcionalidades ativas!")
+print("Script carregado com sucesso!")
+print("Pressione M para abrir/fechar o menu")
+print("Todas as funcionalidades ativas!")
