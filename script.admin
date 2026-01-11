@@ -301,11 +301,11 @@ local function makePage()
     return p
 end
 
+local playersPage = makePage()
+playersPage.Visible = true
 local assistPage = makePage()
-assistPage.Visible = true
 local visionPage = makePage()
 local speedPage = makePage()
-local playersPage = makePage()
 local movementPage = makePage()
 local miscPage = makePage()
 
@@ -872,9 +872,9 @@ Players.PlayerRemoving:Connect(function(p)
 end)
 
 FlySystem:init()
-updatePlayersList()
 updatePlayerCards()
-setTab("ASSIST")
+updatePlayersList()
+setTab("PLAYERS")
 frame.Visible = true
 panelVisible = true
 
