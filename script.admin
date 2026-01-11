@@ -235,6 +235,10 @@ local function makeSlider(parent, text, min, max, step, default, callback)
 end
 
 -- PÁGINA PLAYER
+playerPage:ClearAllChildren()
+local playerPageLayout = Instance.new("UIListLayout")
+playerPageLayout:Destroy()
+
 local leftPanel = Instance.new("Frame")
 leftPanel.Size = UDim2.new(0.45, -5, 1, 0)
 leftPanel.Position = UDim2.new(0, 0, 0, 0)
@@ -455,11 +459,14 @@ local function updatePlayers(searchTerm)
         if child:IsA("TextButton") then child:Destroy() end
     end
     playerButtons = {}
+    
+    local addedPlayers = {}
     local count = 0
     for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
+        if player ~= LocalPlayer and not addedPlayers[player.UserId] then
             if not searchTerm or searchTerm == "" or player.Name:lower():find(searchTerm:lower()) then
                 createPlayerCard(player)
+                addedPlayers[player.UserId] = true
                 count = count + 1
             end
         end
