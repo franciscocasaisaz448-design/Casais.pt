@@ -1,4 +1,8 @@
-
+-- ═══════════════════════════════════════
+-- VERIFICAÇÕES DE SEGURANÇA
+-- ═══════════════════════════════════════
+if not game then error("Ambiente inválido") return end
+if not game.GetService then error("GetService não disponível") return end
 
 -- ═══════════════════════════════════════
 -- SERVIÇOS E VARIÁVEIS GLOBAIS
@@ -199,7 +203,15 @@ end
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
-gui.Parent = game.CoreGui
+
+-- Proteção para CoreGui
+local success = pcall(function()
+    gui.Parent = game:GetService("CoreGui")
+end)
+
+if not success then
+    gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+end
 
 local menuMinimized = false
 
