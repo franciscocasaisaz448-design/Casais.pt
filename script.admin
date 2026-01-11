@@ -945,12 +945,12 @@ makeCardToggle(aimbotCard, "Silent Aim", function(v) Aimbot.silentAim = v end)
 local aimbotKeyBtn = makeCardButton(aimbotCard, "Tecla: LeftAlt", "⌨️", Color3.fromRGB(59, 130, 246), function()
     if Aimbot.changingKey then return end
     Aimbot.changingKey = true
-    aimbotKeyBtn.Text = "⌨️ Pressione uma tecla..."
+    aimbotKeyBtn.TextLabel.Text = "⌨️ Pressione uma tecla..."
     local conn
     conn = UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Keyboard then
             Aimbot.key = input.KeyCode
-            aimbotKeyBtn.Text = "⌨️ Tecla: " .. input.KeyCode.Name
+            aimbotKeyBtn.TextLabel.Text = "⌨️ Tecla: " .. input.KeyCode.Name
             Aimbot.changingKey = false
             conn:Disconnect()
         end
@@ -968,6 +968,96 @@ makeCardSlider(triggerbotCard, "Tempo de Reação (ms)", 0, 100, 30, function(v)
 local triggerKeyBtn = makeCardButton(triggerbotCard, "Tecla: RightAlt", "⌨️", Color3.fromRGB(59, 130, 246), function()
     if Triggerbot.changingKey then return end
     Triggerbot.changingKey = true
+    triggerKeyBtn.TextLabel.Text = "⌨️ Pressione uma tecla..."
+    local conn
+    conn = UserInputService.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            Triggerbot.key = input.KeyCode
+            triggerKeyBtn.TextLabel.Text = "⌨️ Tecla: " .. input.KeyCode.Name
+            Triggerbot.changingKey = false
+            conn:Disconnect()
+        end
+    end)
+end)
+
+-- LÓGICA FUNCIONAL DO AIMBOT
+local function getClosestPlayer()
+    local closestPlayer, closestDistance = nil, math.huge
+    local myChar = LocalPlayer.Character
+    if not myChar then return nil end
+    local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return nil end
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local char = player.Character
+            local head = char:FindFirstChild("Head")
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if head and hum and hum.Health > 0 then
+                local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                if onScreen then
+                    local mousePos = UserInputService:GetMouseLocation()
+                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                    if distance < Aimbot.fov and distance < closestDistance then
+                        closestPlayer = player
+                        closestDistance = distance
+                    end
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+local function aimAt(target)
+    if not target or not target.Character then return end
+    local head = target.Character:FindFirstChild("Head")
+    if not head then return end
+    
+    local targetPos = head.Position
+    local camCFrame = Camera.CFrame
+    local targetCFrame = CFrame.new(camCFrame.Position, targetPos)
+    
+    if Aimbot.smooth > 0 then
+        Camera.CFrame = camCFrame:Lerp(targetCFrame, 1 / Aimbot.smooth)
+    else
+        Camera.CFrame = targetCFrame
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if Aimbot.enabled then
+        local isKeyPressed = UserInputService:IsKeyDown(Aimbot.key)
+        if isKeyPressed then
+            local target = getClosestPlayer()
+            if target then
+                aimAt(target)
+            end
+        end
+    end
+    
+    if Triggerbot.enabled then
+        local isKeyPressed = UserInputService:IsKeyDown(Triggerbot.key)
+        if isKeyPressed then
+            local target = getClosestPlayer()
+            if target then
+                local char = target.Character
+                local head = char and char:FindFirstChild("Head")
+                if head then
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                    if onScreen then
+                        local mousePos = UserInputService:GetMouseLocation()
+                        local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                        if distance < Triggerbot.fov then
+                            wait(Triggerbot.reactionTime / 1000)
+                            mouse1click()
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)angingKey = true
     triggerKeyBtn.Text = "⌨️ Pressione uma tecla..."
     local conn
     conn = UserInputService.InputBegan:Connect(function(input)
