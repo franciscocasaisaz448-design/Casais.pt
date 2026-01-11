@@ -980,6 +980,97 @@ local triggerKeyBtn = makeCardButton(triggerbotCard, "Tecla: RightAlt", "⌨️"
     end)
 end)
 
+-- FOV VISUAL
+local fovCircle = Drawing.new("Circle")
+fovCircle.Thickness = 2
+fovCircle.NumSides = 64
+fovCircle.Radius = 100
+fovCircle.Filled = false
+fovCircle.Transparency = 1
+fovCircle.Color = Color3.new(1, 1, 1)
+fovCircle.Visible = false
+
+-- LÓGICA AIMBOT E TRIGGERBOT
+local function getClosestPlayerInFOV(fovRadius)
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    local mousePos = UserInputService:GetMouseLocation()
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local character = player.Character
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local head = character:FindFirstChild("Head")
+            
+            if humanoid and humanoid.Health > 0 and head then
+                local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
+                if onScreen then
+                    local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
+                    if distance < fovRadius and distance < shortestDistance then
+                        closestPlayer = player
+                        shortestDistance = distance
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestPlayer
+end
+
+local function smoothAim(targetPosition)
+    local camera = workspace.CurrentCamera
+    local currentCFrame = camera.CFrame
+    local targetCFrame = CFrame.new(camera.CFrame.Position, targetPosition)
+    
+    if Aimbot.smooth > 0 then
+        camera.CFrame = currentCFrame:Lerp(targetCFrame, 1 / Aimbot.smooth)
+    else
+        camera.CFrame = targetCFrame
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    local mouseLocation = UserInputService:GetMouseLocation()
+    fovCircle.Position = Vector2.new(mouseLocation.X, mouseLocation.Y)
+    
+    -- AIMBOT
+    if Aimbot.enabled then
+        fovCircle.Radius = Aimbot.fov
+        fovCircle.Color = Color3.fromRGB(139, 92, 246)
+        fovCircle.Visible = true
+        
+        if UserInputService:IsKeyDown(Aimbot.key) then
+            local target = getClosestPlayerInFOV(Aimbot.fov)
+            if target and target.Character then
+                local head = target.Character:FindFirstChild("Head")
+                if head then
+                    smoothAim(head.Position)
+                end
+            end
+        end
+    elseif Triggerbot.enabled then
+        fovCircle.Radius = Triggerbot.fov
+        fovCircle.Color = Color3.fromRGB(236, 72, 153)
+        fovCircle.Visible = true
+        
+        if UserInputService:IsKeyDown(Triggerbot.key) then
+            local target = getClosestPlayerInFOV(Triggerbot.fov)
+            if target then
+                task.wait(Triggerbot.reactionTime / 1000)
+                mouse1click()
+            end
+        end
+    else
+        fovCircle.Visible = false
+    end
+end)Label.Text = "⌨️ Tecla: " .. input.KeyCode.Name
+            Triggerbot.changingKey = false
+            conn:Disconnect()
+        end
+    end)
+end)
+
 -- FOV CIRCLE
 local fovCircle = Drawing.new("Circle")
 fovCircle.Thickness = 2
