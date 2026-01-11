@@ -263,8 +263,6 @@ local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 75)
 header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 header.BorderSizePixel = 0
-header.Parent = frameePixel = 0
-header.Parent = frameePixel = 0
 header.Parent = frame
 local headerCorner = Instance.new("UICorner")
 headerCorner.CornerRadius = UDim.new(0, 18)
@@ -2534,9 +2532,7 @@ configsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 local configsListPadding = Instance.new("UIPadding", configsList)
 configsListPadding.PaddingTop = UDim.new(0, 8)
 configsListPadding.PaddingLeft = UDim.new(0, 8)
-configsListPadding.PaddingRight = UDim.new(0, 8)
-
-local function updateConfigsList()
+configsListPadding.PaddingRight = UDlocal function updateConfigsList()
 	for _, child in ipairs(configsList:GetChildren()) do
 		if child:IsA("Frame") then child:Destroy() end
 	end
