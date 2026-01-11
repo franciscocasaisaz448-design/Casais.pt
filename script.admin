@@ -477,141 +477,227 @@ searchBox:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 -- PÁGINA ASSISTÊNCIA
-local aimbotTitle = Instance.new("TextLabel")
-aimbotTitle.Size = UDim2.new(1, -20, 0, 30)
-aimbotTitle.BackgroundColor3 = Color3.fromRGB(28,28,38)
-aimbotTitle.Font = Enum.Font.GothamBold
-aimbotTitle.TextSize = 15
-aimbotTitle.TextColor3 = Color3.fromRGB(139, 92, 246)
-aimbotTitle.Text = "🎯 AIMBOT"
-aimbotTitle.Parent = assistPage
-Instance.new("UICorner", aimbotTitle).CornerRadius = UDim.new(0, 8)
+local function makeCard(parent, title, icon)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(1, -20, 0, 0)
+    card.BackgroundColor3 = Color3.fromRGB(30,30,40)
+    card.Parent = parent
+    Instance.new("UICorner", card).CornerRadius = UDim.new(0, 12)
+    
+    local cardLayout = Instance.new("UIListLayout", card)
+    cardLayout.Padding = UDim.new(0, 8)
+    cardLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    
+    local cardPadding = Instance.new("UIPadding", card)
+    cardPadding.PaddingTop = UDim.new(0, 12)
+    cardPadding.PaddingBottom = UDim.new(0, 12)
+    cardPadding.PaddingLeft = UDim.new(0, 12)
+    cardPadding.PaddingRight = UDim.new(0, 12)
+    
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, -24, 0, 35)
+    header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+    header.Parent = card
+    Instance.new("UICorner", header).CornerRadius = UDim.new(0, 8)
+    
+    local headerTitle = Instance.new("TextLabel")
+    headerTitle.Size = UDim2.new(1, -15, 1, 0)
+    headerTitle.Position = UDim2.new(0, 10, 0, 0)
+    headerTitle.BackgroundTransparency = 1
+    headerTitle.Font = Enum.Font.GothamBold
+    headerTitle.TextSize = 15
+    headerTitle.TextColor3 = Color3.new(1,1,1)
+    headerTitle.Text = icon .. " " .. title
+    headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+    headerTitle.Parent = header
+    
+    local statusIndicator = Instance.new("Frame")
+    statusIndicator.Size = UDim2.new(0, 10, 0, 10)
+    statusIndicator.Position = UDim2.new(1, -18, 0.5, -5)
+    statusIndicator.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
+    statusIndicator.Parent = header
+    Instance.new("UICorner", statusIndicator).CornerRadius = UDim.new(1, 0)
+    
+    card:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        card.Size = UDim2.new(1, -20, 0, cardLayout.AbsoluteContentSize.Y + 24)
+    end)
+    
+    return card, statusIndicator
+end
 
-makeToggle(assistPage, "Ativar Aimbot", function(v) Aimbot.enabled = v end)
+local function makeCardToggle(card, text, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -24, 0, 45)
+    btn.BackgroundColor3 = Color3.fromRGB(45,45,55)
+    btn.Text = ""
+    btn.Parent = card
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -60, 1, 0)
+    label.Position = UDim2.new(0, 12, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 13
+    label.TextColor3 = Color3.new(1,1,1)
+    label.Text = text
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = btn
+    
+    local toggle = Instance.new("Frame")
+    toggle.Size = UDim2.new(0, 45, 0, 25)
+    toggle.Position = UDim2.new(1, -55, 0.5, -12.5)
+    toggle.BackgroundColor3 = Color3.fromRGB(60,60,70)
+    toggle.Parent = btn
+    Instance.new("UICorner", toggle).CornerRadius = UDim.new(1, 0)
+    
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 19, 0, 19)
+    knob.Position = UDim2.new(0, 3, 0.5, -9.5)
+    knob.BackgroundColor3 = Color3.new(1,1,1)
+    knob.Parent = toggle
+    Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+    
+    local state = false
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        toggle.BackgroundColor3 = state and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(60,60,70)
+        knob:TweenPosition(state and UDim2.new(1, -22, 0.5, -9.5) or UDim2.new(0, 3, 0.5, -9.5), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
+        callback(state)
+    end)
+    return btn, toggle
+end
 
-local aimbotFovFrame = Instance.new("Frame")
-aimbotFovFrame.Size = UDim2.new(1, -20, 0, 50)
-aimbotFovFrame.BackgroundTransparency = 1
-aimbotFovFrame.Parent = assistPage
-local aimbotFovLabel = Instance.new("TextLabel")
-aimbotFovLabel.Size = UDim2.new(1, -110, 0, 40)
-aimbotFovLabel.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-aimbotFovLabel.Font = Enum.Font.GothamBold
-aimbotFovLabel.TextSize = 14
-aimbotFovLabel.TextColor3 = Color3.new(1,1,1)
-aimbotFovLabel.Text = "FOV: 100"
-aimbotFovLabel.Parent = aimbotFovFrame
-Instance.new("UICorner", aimbotFovLabel).CornerRadius = UDim.new(0, 8)
-local aimbotFovMinus = Instance.new("TextButton")
-aimbotFovMinus.Size = UDim2.new(0, 50, 0, 40)
-aimbotFovMinus.Position = UDim2.new(1, -105, 0, 0)
-aimbotFovMinus.Text = "-"
-aimbotFovMinus.Font = Enum.Font.GothamBold
-aimbotFovMinus.TextSize = 20
-aimbotFovMinus.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-aimbotFovMinus.TextColor3 = Color3.new(1,1,1)
-aimbotFovMinus.Parent = aimbotFovFrame
-Instance.new("UICorner", aimbotFovMinus).CornerRadius = UDim.new(0, 8)
-local aimbotFovPlus = Instance.new("TextButton")
-aimbotFovPlus.Size = UDim2.new(0, 50, 0, 40)
-aimbotFovPlus.Position = UDim2.new(1, -50, 0, 0)
-aimbotFovPlus.Text = "+"
-aimbotFovPlus.Font = Enum.Font.GothamBold
-aimbotFovPlus.TextSize = 20
-aimbotFovPlus.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-aimbotFovPlus.TextColor3 = Color3.new(1,1,1)
-aimbotFovPlus.Parent = aimbotFovFrame
-Instance.new("UICorner", aimbotFovPlus).CornerRadius = UDim.new(0, 8)
-aimbotFovMinus.MouseButton1Click:Connect(function()
-    Aimbot.fov = math.max(20, Aimbot.fov - 10)
-    aimbotFovLabel.Text = "FOV: " .. Aimbot.fov
+local function makeCardSlider(card, text, min, max, default, callback)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -24, 0, 55)
+    frame.BackgroundColor3 = Color3.fromRGB(45,45,55)
+    frame.Parent = card
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+    
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.6, 0, 0, 20)
+    lbl.Position = UDim2.new(0, 12, 0, 8)
+    lbl.BackgroundTransparency = 1
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 12
+    lbl.TextColor3 = Color3.fromRGB(200,200,200)
+    lbl.Text = text
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = frame
+    
+    local valueLbl = Instance.new("TextLabel")
+    valueLbl.Size = UDim2.new(0.4, -12, 0, 20)
+    valueLbl.Position = UDim2.new(0.6, 0, 0, 8)
+    valueLbl.BackgroundTransparency = 1
+    valueLbl.Font = Enum.Font.GothamBold
+    valueLbl.TextSize = 13
+    valueLbl.TextColor3 = Color3.fromRGB(139, 92, 246)
+    valueLbl.Text = tostring(default)
+    valueLbl.TextXAlignment = Enum.TextXAlignment.Right
+    valueLbl.Parent = frame
+    
+    local slider = Instance.new("TextButton")
+    slider.Size = UDim2.new(1, -24, 0, 20)
+    slider.Position = UDim2.new(0, 12, 0, 30)
+    slider.BackgroundColor3 = Color3.fromRGB(25,25,35)
+    slider.Text = ""
+    slider.Parent = frame
+    Instance.new("UICorner", slider).CornerRadius = UDim.new(1, 0)
+    
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+    fill.BorderSizePixel = 0
+    fill.Parent = slider
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+    
+    local value = default
+    slider.MouseButton1Down:Connect(function()
+        local mouse = LocalPlayer:GetMouse()
+        local function update()
+            local relX = math.clamp(mouse.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
+            local percent = relX / slider.AbsoluteSize.X
+            value = math.floor(min + (max - min) * percent)
+            fill.Size = UDim2.new(percent, 0, 1, 0)
+            valueLbl.Text = tostring(value)
+            callback(value)
+        end
+        update()
+        local conn = mouse.Move:Connect(update)
+        local release
+        release = UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                conn:Disconnect()
+                release:Disconnect()
+            end
+        end)
+    end)
+end
+
+local function makeCardButton(card, text, icon, color, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -24, 0, 40)
+    btn.BackgroundColor3 = color
+    btn.Text = ""
+    btn.Parent = card
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 13
+    label.TextColor3 = Color3.new(1,1,1)
+    label.Text = icon .. " " .. text
+    label.Parent = btn
+    
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- AIMBOT CARD
+local aimbotCard, aimbotStatus = makeCard(assistPage, "AIMBOT", "🎯")
+makeCardToggle(aimbotCard, "Ativar Aimbot", function(v)
+    Aimbot.enabled = v
+    aimbotStatus.BackgroundColor3 = v and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
 end)
-aimbotFovPlus.MouseButton1Click:Connect(function()
-    Aimbot.fov = math.min(300, Aimbot.fov + 10)
-    aimbotFovLabel.Text = "FOV: " .. Aimbot.fov
-end)
-
-makeSlider(assistPage, "Smooth", 0, 20, 1, 10, function(v) Aimbot.smooth = v end)
-makeToggle(assistPage, "Silent Aim", function(v) Aimbot.silentAim = v end)
-local aimbotKeyBtn = makeButton(assistPage, "Tecla: LeftAlt (Clique para mudar)", function()
+makeCardSlider(aimbotCard, "Campo de Visão (FOV)", 20, 300, 100, function(v) Aimbot.fov = v end)
+makeCardSlider(aimbotCard, "Suavização", 0, 20, 10, function(v) Aimbot.smooth = v end)
+makeCardToggle(aimbotCard, "Silent Aim", function(v) Aimbot.silentAim = v end)
+local aimbotKeyBtn = makeCardButton(aimbotCard, "Tecla: LeftAlt", "⌨️", Color3.fromRGB(59, 130, 246), function()
     if Aimbot.changingKey then return end
     Aimbot.changingKey = true
-    aimbotKeyBtn.Text = "Pressione uma tecla..."
+    aimbotKeyBtn.Text = "⌨️ Pressione uma tecla..."
     local conn
     conn = UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Keyboard then
             Aimbot.key = input.KeyCode
-            aimbotKeyBtn.Text = "Tecla: " .. input.KeyCode.Name
+            aimbotKeyBtn.Text = "⌨️ Tecla: " .. input.KeyCode.Name
             Aimbot.changingKey = false
             conn:Disconnect()
         end
     end)
 end)
 
-local triggerbotTitle = Instance.new("TextLabel")
-triggerbotTitle.Size = UDim2.new(1, -20, 0, 30)
-triggerbotTitle.BackgroundColor3 = Color3.fromRGB(28,28,38)
-triggerbotTitle.Font = Enum.Font.GothamBold
-triggerbotTitle.TextSize = 15
-triggerbotTitle.TextColor3 = Color3.fromRGB(139, 92, 246)
-triggerbotTitle.Text = "🔫 TRIGGERBOT"
-triggerbotTitle.Parent = assistPage
-Instance.new("UICorner", triggerbotTitle).CornerRadius = UDim.new(0, 8)
-
-makeToggle(assistPage, "Ativar Triggerbot", function(v) Triggerbot.enabled = v end)
-
-local triggerbotFovFrame = Instance.new("Frame")
-triggerbotFovFrame.Size = UDim2.new(1, -20, 0, 50)
-triggerbotFovFrame.BackgroundTransparency = 1
-triggerbotFovFrame.Parent = assistPage
-local triggerbotFovLabel = Instance.new("TextLabel")
-triggerbotFovLabel.Size = UDim2.new(1, -110, 0, 40)
-triggerbotFovLabel.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-triggerbotFovLabel.Font = Enum.Font.GothamBold
-triggerbotFovLabel.TextSize = 14
-triggerbotFovLabel.TextColor3 = Color3.new(1,1,1)
-triggerbotFovLabel.Text = "FOV: 50"
-triggerbotFovLabel.Parent = triggerbotFovFrame
-Instance.new("UICorner", triggerbotFovLabel).CornerRadius = UDim.new(0, 8)
-local triggerbotFovMinus = Instance.new("TextButton")
-triggerbotFovMinus.Size = UDim2.new(0, 50, 0, 40)
-triggerbotFovMinus.Position = UDim2.new(1, -105, 0, 0)
-triggerbotFovMinus.Text = "-"
-triggerbotFovMinus.Font = Enum.Font.GothamBold
-triggerbotFovMinus.TextSize = 20
-triggerbotFovMinus.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
-triggerbotFovMinus.TextColor3 = Color3.new(1,1,1)
-triggerbotFovMinus.Parent = triggerbotFovFrame
-Instance.new("UICorner", triggerbotFovMinus).CornerRadius = UDim.new(0, 8)
-local triggerbotFovPlus = Instance.new("TextButton")
-triggerbotFovPlus.Size = UDim2.new(0, 50, 0, 40)
-triggerbotFovPlus.Position = UDim2.new(1, -50, 0, 0)
-triggerbotFovPlus.Text = "+"
-triggerbotFovPlus.Font = Enum.Font.GothamBold
-triggerbotFovPlus.TextSize = 20
-triggerbotFovPlus.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-triggerbotFovPlus.TextColor3 = Color3.new(1,1,1)
-triggerbotFovPlus.Parent = triggerbotFovFrame
-Instance.new("UICorner", triggerbotFovPlus).CornerRadius = UDim.new(0, 8)
-triggerbotFovMinus.MouseButton1Click:Connect(function()
-    Triggerbot.fov = math.max(10, Triggerbot.fov - 10)
-    triggerbotFovLabel.Text = "FOV: " .. Triggerbot.fov
+-- TRIGGERBOT CARD
+local triggerbotCard, triggerbotStatus = makeCard(assistPage, "TRIGGERBOT", "🔫")
+makeCardToggle(triggerbotCard, "Ativar Triggerbot", function(v)
+    Triggerbot.enabled = v
+    triggerbotStatus.BackgroundColor3 = v and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
 end)
-triggerbotFovPlus.MouseButton1Click:Connect(function()
-    Triggerbot.fov = math.min(200, Triggerbot.fov + 10)
-    triggerbotFovLabel.Text = "FOV: " .. Triggerbot.fov
-end)
-
-makeSlider(assistPage, "Tempo de Reação", 0, 60, 5, 30, function(v) Triggerbot.reactionTime = v end)
-local triggerKeyBtn = makeButton(assistPage, "Tecla: RightAlt (Clique para mudar)", function()
+makeCardSlider(triggerbotCard, "Campo de Visão (FOV)", 10, 200, 50, function(v) Triggerbot.fov = v end)
+makeCardSlider(triggerbotCard, "Tempo de Reação (ms)", 0, 100, 30, function(v) Triggerbot.reactionTime = v end)
+local triggerKeyBtn = makeCardButton(triggerbotCard, "Tecla: RightAlt", "⌨️", Color3.fromRGB(59, 130, 246), function()
     if Triggerbot.changingKey then return end
     Triggerbot.changingKey = true
-    triggerKeyBtn.Text = "Pressione uma tecla..."
+    triggerKeyBtn.Text = "⌨️ Pressione uma tecla..."
     local conn
     conn = UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Keyboard then
             Triggerbot.key = input.KeyCode
-            triggerKeyBtn.Text = "Tecla: " .. input.KeyCode.Name
+            triggerKeyBtn.Text = "⌨️ Tecla: " .. input.KeyCode.Name
             Triggerbot.changingKey = false
             conn:Disconnect()
         end
