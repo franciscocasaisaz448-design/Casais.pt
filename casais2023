@@ -305,6 +305,7 @@ local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
 local tabMisc = makeTab("⚙️ MISC", 6)
+local tabConfigs = makeTab("💾 CONFIGS", 7)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -334,6 +335,7 @@ local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
 local miscPage = makePage()
+local configsPage = makePage()
 
 local aimbotEnabled = false
 local aimbotFOV = 80
@@ -1912,6 +1914,35 @@ noFogBtn.MouseButton1Click:Connect(function()
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
+local savedConfigs = {}
+
+local function saveConfig(configName)
+	if configName == "" then return end
+	savedConfigs[configName] = {
+		flySpeed = FlySystem.speed,
+		speedValue = currentSpeed,
+		aimbotFOV = aimbotFOV,
+		aimbotSmooth = aimbotSmooth,
+		aimbotTarget = aimbotTarget,
+		autoClickerSpeed = autoClickerSpeed,
+		espDistance = espDistance,
+		espMode = espMode
+	}
+end
+
+local function loadConfig(configName)
+	local config = savedConfigs[configName]
+	if not config then return end
+	FlySystem.speed = config.flySpeed
+	currentSpeed = config.speedValue
+	aimbotFOV = config.aimbotFOV
+	aimbotSmooth = config.aimbotSmooth
+	aimbotTarget = config.aimbotTarget
+	autoClickerSpeed = config.autoClickerSpeed
+	espDistance = config.espDistance
+	espMode = config.espMode
+end
+
 local espFolder = Instance.new("Folder")
 espFolder.Name = "ESPFolder"
 espFolder.Parent = game.CoreGui
@@ -1957,42 +1988,36 @@ RunService.RenderStepped:Connect(function()
 		
 		-- TRACERS
 		if tracersEnabled and onScreen and screenPos.Z > 0 then
-			local myChar = LocalPlayer.Character
-			if myChar then
-				local myRoot = myChar:FindFirstChild("HumanoidRootPart")
-				if myRoot then
-					local myScreenPos = Camera:WorldToViewportPoint(myRoot.Position)
-					local startX = myScreenPos.X
-					local startY = myScreenPos.Y
-					local endX = screenPos.X
-					local endY = screenPos.Y
-					
-					local color = Color3.fromRGB(139, 92, 246)
-					if espMode == "TEAM" then
-						color = isSameTeam(player) and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
-					else
-						color = isPlayerBehindWall(player) and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(0, 255, 100)
-					end
-					
-					local deltaX = endX - startX
-					local deltaY = endY - startY
-					local dist = math.sqrt(deltaX * deltaX + deltaY * deltaY)
-					local angle = math.deg(math.atan2(deltaY, deltaX))
-					
-					local line = Instance.new("Frame")
-					line.Size = UDim2.new(0, dist, 0, 3)
-					line.Position = UDim2.new(0, startX, 0, startY)
-					line.AnchorPoint = Vector2.new(0, 0.5)
-					line.Rotation = angle
-					line.BackgroundColor3 = color
-					line.BorderSizePixel = 0
-					line.ZIndex = 1
-					line.Parent = tracerGui
-					local gradient = Instance.new("UIGradient")
-					gradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0.8)})
-					gradient.Parent = line
-				end
+			local viewportSize = Camera.ViewportSize
+			local startX = viewportSize.X / 2
+			local startY = viewportSize.Y
+			local endX = screenPos.X
+			local endY = screenPos.Y
+			
+			local color = Color3.fromRGB(139, 92, 246)
+			if espMode == "TEAM" then
+				color = isSameTeam(player) and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+			else
+				color = isPlayerBehindWall(player) and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(0, 255, 100)
 			end
+			
+			local deltaX = endX - startX
+			local deltaY = endY - startY
+			local dist = math.sqrt(deltaX * deltaX + deltaY * deltaY)
+			local angle = math.deg(math.atan2(deltaY, deltaX))
+			
+			local line = Instance.new("Frame")
+			line.Size = UDim2.new(0, dist, 0, 2)
+			line.Position = UDim2.new(0, startX, 0, startY)
+			line.AnchorPoint = Vector2.new(0, 0.5)
+			line.Rotation = angle
+			line.BackgroundColor3 = color
+			line.BorderSizePixel = 0
+			line.ZIndex = 1
+			line.Parent = tracerGui
+			local gradient = Instance.new("UIGradient")
+			gradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 0.9)})
+			gradient.Parent = line
 		end
 		
 		-- NOME, VIDA, DISTANCIA
@@ -2369,6 +2394,152 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
+configsPage:FindFirstChildOfClass("UIListLayout"):Destroy()
+
+local configNameBox = Instance.new("TextBox")
+configNameBox.Size = UDim2.new(1, 0, 0, 45)
+configNameBox.BackgroundColor3 = Color3.fromRGB(28,28,38)
+configNameBox.PlaceholderText = "💾 Nome da Configuração..."
+configNameBox.PlaceholderColor3 = Color3.fromRGB(100,100,110)
+configNameBox.Text = ""
+configNameBox.Font = Enum.Font.GothamBold
+configNameBox.TextSize = 15
+configNameBox.TextColor3 = Color3.fromRGB(255,255,255)
+configNameBox.ClearTextOnFocus = false
+configNameBox.Parent = configsPage
+Instance.new("UICorner", configNameBox).CornerRadius = UDim.new(0, 12)
+local configStroke = Instance.new("UIStroke", configNameBox)
+configStroke.Color = Color3.fromRGB(139, 92, 246)
+configStroke.Thickness = 2
+configStroke.Transparency = 0.5
+local configPadding = Instance.new("UIPadding", configNameBox)
+configPadding.PaddingLeft = UDim.new(0, 15)
+
+local buttonsRow = Instance.new("Frame")
+buttonsRow.Size = UDim2.new(1, 0, 0, 50)
+buttonsRow.Position = UDim2.new(0, 0, 0, 55)
+buttonsRow.BackgroundTransparency = 1
+buttonsRow.Parent = configsPage
+
+local saveBtn = Instance.new("TextButton")
+saveBtn.Size = UDim2.new(0.48, -5, 1, 0)
+saveBtn.Position = UDim2.new(0, 0, 0, 0)
+saveBtn.Text = "💾 SALVAR"
+saveBtn.Font = Enum.Font.GothamBold
+saveBtn.TextSize = 16
+saveBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+saveBtn.TextColor3 = Color3.fromRGB(255,255,255)
+saveBtn.Parent = buttonsRow
+Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 12)
+
+local loadBtn = Instance.new("TextButton")
+loadBtn.Size = UDim2.new(0.48, -5, 1, 0)
+loadBtn.Position = UDim2.new(0.52, 0, 0, 0)
+loadBtn.Text = "📂 CARREGAR"
+loadBtn.Font = Enum.Font.GothamBold
+loadBtn.TextSize = 16
+loadBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 220)
+loadBtn.TextColor3 = Color3.fromRGB(255,255,255)
+loadBtn.Parent = buttonsRow
+Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 12)
+
+local configsList = Instance.new("ScrollingFrame")
+configsList.Size = UDim2.new(1, 0, 1, -120)
+configsList.Position = UDim2.new(0, 0, 0, 115)
+configsList.BackgroundColor3 = Color3.fromRGB(28,28,38)
+configsList.BorderSizePixel = 0
+configsList.ScrollBarThickness = 6
+configsList.CanvasSize = UDim2.new(0,0,0,0)
+configsList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+configsList.Parent = configsPage
+Instance.new("UICorner", configsList).CornerRadius = UDim.new(0, 12)
+local configsStroke = Instance.new("UIStroke", configsList)
+configsStroke.Color = Color3.fromRGB(139, 92, 246)
+configsStroke.Thickness = 2
+configsStroke.Transparency = 0.5
+local configsLayout = Instance.new("UIListLayout", configsList)
+configsLayout.Padding = UDim.new(0,8)
+configsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+local configsListPadding = Instance.new("UIPadding", configsList)
+configsListPadding.PaddingTop = UDim.new(0, 8)
+configsListPadding.PaddingLeft = UDim.new(0, 8)
+configsListPadding.PaddingRight = UDim.new(0, 8)
+
+local function updateConfigsList()
+	for _, child in ipairs(configsList:GetChildren()) do
+		if child:IsA("Frame") then child:Destroy() end
+	end
+	
+	for configName, _ in pairs(savedConfigs) do
+		local configItem = Instance.new("Frame")
+		configItem.Size = UDim2.new(1, -16, 0, 50)
+		configItem.BackgroundColor3 = Color3.fromRGB(35,35,45)
+		configItem.Parent = configsList
+		Instance.new("UICorner", configItem).CornerRadius = UDim.new(0, 10)
+		
+		local itemStroke = Instance.new("UIStroke", configItem)
+		itemStroke.Color = Color3.fromRGB(139, 92, 246)
+		itemStroke.Thickness = 1
+		itemStroke.Transparency = 0.7
+		
+		local nameLabel = Instance.new("TextLabel")
+		nameLabel.Size = UDim2.new(1, -120, 1, 0)
+		nameLabel.Position = UDim2.new(0, 15, 0, 0)
+		nameLabel.BackgroundTransparency = 1
+		nameLabel.Font = Enum.Font.GothamBold
+		nameLabel.TextSize = 14
+		nameLabel.TextColor3 = Color3.fromRGB(255,255,255)
+		nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+		nameLabel.Text = "💾 " .. configName
+		nameLabel.Parent = configItem
+		
+		local loadConfigBtn = Instance.new("TextButton")
+		loadConfigBtn.Size = UDim2.new(0, 50, 0, 30)
+		loadConfigBtn.Position = UDim2.new(1, -60, 0.5, -15)
+		loadConfigBtn.Text = "📂"
+		loadConfigBtn.Font = Enum.Font.GothamBold
+		loadConfigBtn.TextSize = 16
+		loadConfigBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 220)
+		loadConfigBtn.TextColor3 = Color3.fromRGB(255,255,255)
+		loadConfigBtn.Parent = configItem
+		Instance.new("UICorner", loadConfigBtn).CornerRadius = UDim.new(0, 8)
+		loadConfigBtn.MouseButton1Click:Connect(function()
+			loadConfig(configName)
+			configNameBox.Text = configName
+		end)
+		
+		local deleteBtn = Instance.new("TextButton")
+		deleteBtn.Size = UDim2.new(0, 50, 0, 30)
+		deleteBtn.Position = UDim2.new(1, -115, 0.5, -15)
+		deleteBtn.Text = "🗑️"
+		deleteBtn.Font = Enum.Font.GothamBold
+		deleteBtn.TextSize = 16
+		deleteBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+		deleteBtn.TextColor3 = Color3.fromRGB(255,255,255)
+		deleteBtn.Parent = configItem
+		Instance.new("UICorner", deleteBtn).CornerRadius = UDim.new(0, 8)
+		deleteBtn.MouseButton1Click:Connect(function()
+			savedConfigs[configName] = nil
+			updateConfigsList()
+		end)
+	end
+end
+
+saveBtn.MouseButton1Click:Connect(function()
+	local configName = configNameBox.Text
+	if configName ~= "" then
+		saveConfig(configName)
+		updateConfigsList()
+	end
+end)
+
+loadBtn.MouseButton1Click:Connect(function()
+	local configName = configNameBox.Text
+	if configName ~= "" and savedConfigs[configName] then
+		loadConfig(configName)
+	end
+end)
+
 local function updatePlayersList()
 	for _, child in ipairs(playersList:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
@@ -2402,7 +2573,9 @@ local function setTab(which)
 	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false
+	tabConfigs.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabConfigs.TextColor3 = Color3.fromRGB(180,180,190)
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false; configsPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
@@ -2423,6 +2596,10 @@ local function setTab(which)
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
+	elseif which=="CONFIGS" then 
+		tabConfigs.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabConfigs.TextColor3=Color3.fromRGB(255,255,255)
+		configsPage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
@@ -2435,6 +2612,7 @@ tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
 tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
 tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
+tabConfigs.MouseButton1Click:Connect(function() setTab("CONFIGS") end)
 
 minimizeBtn.MouseButton1Click:Connect(function()
 	frame.Visible = false
