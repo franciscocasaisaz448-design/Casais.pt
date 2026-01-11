@@ -258,15 +258,6 @@ titleIcon.Font = Enum.Font.GothamBold
 titleIcon.TextSize = 28
 titleIcon.TextColor3 = Color3.fromRGB(255,255,255)
 titleIcon.Parent = header
-Instance.new("UICorner", titleIcon).CornerRadius = UDim.new(0, 12)e = UDim2.new(0, 50, 0, 50)
-titleIcon.Position = UDim2.new(0, 15, 0, 10)
-titleIcon.BackgroundColor3 = Color3.fromRGB(255,255,255)
-titleIcon.BackgroundTransparency = 0.85
-titleIcon.Text = "⚡"
-titleIcon.Font = Enum.Font.GothamBold
-titleIcon.TextSize = 28
-titleIcon.TextColor3 = Color3.fromRGB(255,255,255)
-titleIcon.Parent = header
 Instance.new("UICorner", titleIcon).CornerRadius = UDim.new(0, 12)
 
 local title = Instance.new("TextLabel")
@@ -277,7 +268,7 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 24
 title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Text = "CASAIS SCRIPTER"
+title.Text = "DARK SCRIPT"
 title.Parent = header
 
 local minimizeBtn = Instance.new("TextButton")
@@ -2729,6 +2720,5 @@ FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 showPanel(true)
-print("✅ Admin Panel PRO carregado!")
-print("🔑 Pressione M para abrir/fechar o menu")
-print("🎯 Tecla Aimbot: " .. aimbotKeyName)
+print("Script carregado! Pressione M para abrir")
+print("Tecla Aimbot: " .. aimbotKeyName)
