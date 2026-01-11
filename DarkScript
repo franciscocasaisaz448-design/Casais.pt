@@ -982,6 +982,8 @@ local triggerKeyBtn = makeCardButton(triggerbotCard, "Tecla: RightAlt", "⌨️"
             conn:Disconnect()
         end
     end)
+end)
+
 -- FOV CIRCLE
 local fovCircle = Drawing.new("Circle")
 fovCircle.Thickness = 2
