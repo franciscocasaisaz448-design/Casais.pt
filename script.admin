@@ -1,3 +1,30 @@
+-- Proteção contra Infinite Yield
+local function safeWaitForChild(parent, childName, timeout)
+    timeout = timeout or 5
+    local child = parent:WaitForChild(childName, timeout)
+    if not child then
+        warn("[SAFE] Não foi possível encontrar: " .. childName .. " em " .. parent:GetFullName())
+    end
+    return child
+end
+
+-- Hook para prevenir infinite yields
+pcall(function()
+    local mt = getrawmetatable(game)
+    local oldNamecall = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        if method == "WaitForChild" and #args >= 1 then
+            local timeout = args[2] or 5
+            return oldNamecall(self, args[1], timeout)
+        end
+        return oldNamecall(self, ...)
+    end)
+    setreadonly(mt, true)
+end)
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
