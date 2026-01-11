@@ -153,6 +153,26 @@ gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
 gui.Parent = game.CoreGui
 
+local menuMinimized = false
+
+local miniButton = Instance.new("TextButton")
+miniButton.Size = UDim2.fromOffset(50, 50)
+miniButton.Position = UDim2.new(1, -70, 0, 20)
+miniButton.Text = "⚡"
+miniButton.Font = Enum.Font.GothamBold
+miniButton.TextSize = 24
+miniButton.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
+miniButton.TextColor3 = Color3.fromRGB(255,255,255)
+miniButton.Visible = false
+miniButton.Active = true
+miniButton.Draggable = true
+miniButton.Parent = gui
+Instance.new("UICorner", miniButton).CornerRadius = UDim.new(0, 12)
+local miniStroke = Instance.new("UIStroke")
+miniStroke.Color = Color3.fromRGB(139, 92, 246)
+miniStroke.Thickness = 2
+miniStroke.Parent = miniButton
+
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(900, 620)
 frame.Position = UDim2.new(0.5, -450, 0.5, -310)
@@ -217,6 +237,17 @@ title.TextXAlignment = Enum.TextXAlignment.Left
 title.Text = "CASAIS SCRIPTER"
 title.Parent = header
 
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.fromOffset(45, 45)
+minimizeBtn.Position = UDim2.new(1, -115, 0, 12)
+minimizeBtn.Text = "−"
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 24
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+minimizeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+minimizeBtn.Parent = header
+Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 10)
+
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.fromOffset(45, 45)
 closeBtn.Position = UDim2.new(1, -60, 0, 12)
@@ -227,6 +258,14 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
 closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 closeBtn.Parent = header
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 10)
+
+miniButton.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    miniButton.Visible = false
+    panelVisible = true
+    UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+    UserInputService.MouseIconEnabled = true
+end)
 
 local tabs = Instance.new("ScrollingFrame")
 tabs.Size = UDim2.new(0, 150, 1, -95)
@@ -265,8 +304,8 @@ local tabMovement = makeTab("🚀 MOVIMENTO", 2)
 local tabAimbot = makeTab("🎯 AIMBOT", 3)
 local tabClicker = makeTab("🖱️ CLICKER", 4)
 local tabVision = makeTab("👁️ VISÃO", 5)
-local tabPerformance = makeTab("⚡ DESEMPENHO", 6)
-local tabMisc = makeTab("⚙️ MISC", 7)
+local tabMisc = makeTab("⚙️ MISC", 6)
+local tabConfigs = makeTab("💾 CONFIGS", 7)
 
 local pages = Instance.new("Frame")
 pages.Size = UDim2.new(1, -185, 1, -95)
@@ -295,8 +334,8 @@ local movementPage = makePage()
 local aimbotPage = makePage()
 local clickerPage = makePage()
 local visionPage = makePage()
-local performancePage = makePage()
 local miscPage = makePage()
+local configsPage = makePage()
 
 local aimbotEnabled = false
 local aimbotFOV = 80
@@ -1468,6 +1507,12 @@ infoText.Parent = infoCard
 local espEnabled = true
 local espMode = "TEAM"
 local espHighlights = {}
+local espDistance = 200
+local tracersEnabled = false
+local showName = false
+local showHealth = false
+local showDistance = false
+local showDeadPlayers = false
 
 local function isSameTeam(player)
 	if not LocalPlayer.Team or not player.Team then return false end
@@ -1495,6 +1540,16 @@ local function updateESP()
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character then
 			local char = player.Character
+			local rootPart = char:FindFirstChild("HumanoidRootPart")
+			if not rootPart then continue end
+			
+			local myChar = LocalPlayer.Character
+			local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
+			if not myRoot then continue end
+			
+			local distance = (rootPart.Position - myRoot.Position).Magnitude
+			if distance > espDistance then continue end
+			
 			local highlight = espHighlights[player]
 			
 			if not highlight then
@@ -1557,16 +1612,10 @@ end)
 
 visionPage:FindFirstChildOfClass("UIListLayout"):Destroy()
 
-local visionTopRow = Instance.new("Frame")
-visionTopRow.Size = UDim2.new(1, 0, 0, 140)
-visionTopRow.BackgroundTransparency = 1
-visionTopRow.Parent = visionPage
-
 local espCard = Instance.new("Frame")
-espCard.Size = UDim2.new(0.48, -5, 1, 0)
-espCard.Position = UDim2.new(0, 0, 0, 0)
+espCard.Size = UDim2.new(1, 0, 0, 230)
 espCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-espCard.Parent = visionTopRow
+espCard.Parent = visionPage
 Instance.new("UICorner", espCard).CornerRadius = UDim.new(0, 12)
 local espStroke = Instance.new("UIStroke", espCard)
 espStroke.Color = Color3.fromRGB(0, 255, 150)
@@ -1574,45 +1623,34 @@ espStroke.Thickness = 2
 espStroke.Transparency = 0.7
 
 local espIcon = Instance.new("TextLabel")
-espIcon.Size = UDim2.new(0, 35, 0, 35)
-espIcon.Position = UDim2.new(0, 12, 0, 12)
+espIcon.Size = UDim2.new(0, 30, 0, 30)
+espIcon.Position = UDim2.new(0, 10, 0, 10)
 espIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
 espIcon.BackgroundTransparency = 0.8
 espIcon.Text = "👁️"
 espIcon.Font = Enum.Font.GothamBold
-espIcon.TextSize = 18
+espIcon.TextSize = 16
 espIcon.TextColor3 = Color3.fromRGB(255,255,255)
 espIcon.Parent = espCard
 Instance.new("UICorner", espIcon).CornerRadius = UDim.new(0, 8)
 
 local espTitle = Instance.new("TextLabel")
-espTitle.Size = UDim2.new(1, -130, 0, 18)
-espTitle.Position = UDim2.new(0, 55, 0, 15)
+espTitle.Size = UDim2.new(1, -120, 0, 16)
+espTitle.Position = UDim2.new(0, 48, 0, 12)
 espTitle.BackgroundTransparency = 1
 espTitle.Font = Enum.Font.GothamBold
-espTitle.TextSize = 14
+espTitle.TextSize = 13
 espTitle.TextColor3 = Color3.fromRGB(255,255,255)
 espTitle.TextXAlignment = Enum.TextXAlignment.Left
-espTitle.Text = "ESP WALLHACK"
+espTitle.Text = "ESP VISÃO"
 espTitle.Parent = espCard
 
-local espSubtitle = Instance.new("TextLabel")
-espSubtitle.Size = UDim2.new(1, -130, 0, 14)
-espSubtitle.Position = UDim2.new(0, 55, 0, 32)
-espSubtitle.BackgroundTransparency = 1
-espSubtitle.Font = Enum.Font.Gotham
-espSubtitle.TextSize = 10
-espSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
-espSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-espSubtitle.Text = "Ver jogadores através de paredes"
-espSubtitle.Parent = espCard
-
 local espToggle = Instance.new("TextButton")
-espToggle.Size = UDim2.new(0, 80, 0, 28)
-espToggle.Position = UDim2.new(1, -90, 0, 12)
+espToggle.Size = UDim2.new(0, 70, 0, 26)
+espToggle.Position = UDim2.new(1, -80, 0, 10)
 espToggle.Text = "ON"
 espToggle.Font = Enum.Font.GothamBold
-espToggle.TextSize = 12
+espToggle.TextSize = 11
 espToggle.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
 espToggle.TextColor3 = Color3.fromRGB(255,255,255)
 espToggle.Parent = espCard
@@ -1624,61 +1662,175 @@ espToggle.MouseButton1Click:Connect(function()
 	if espEnabled then updateESP() end
 end)
 
+local function createDistSlider()
+	local container = Instance.new("Frame")
+	container.Size = UDim2.new(1, -20, 0, 50)
+	container.Position = UDim2.new(0, 10, 0, 50)
+	container.BackgroundTransparency = 1
+	container.Parent = espCard
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0.5, -5, 0, 18)
+	label.Position = UDim2.new(0, 0, 0, 0)
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.GothamBold
+	label.TextSize = 11
+	label.TextColor3 = Color3.fromRGB(200,200,200)
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Text = "DISTÂNCIA"
+	label.Parent = container
+
+	local valueLabel = Instance.new("TextLabel")
+	valueLabel.Size = UDim2.new(0, 50, 0, 18)
+	valueLabel.Position = UDim2.new(1, -50, 0, 0)
+	valueLabel.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+	valueLabel.Font = Enum.Font.GothamBold
+	valueLabel.TextSize = 11
+	valueLabel.TextColor3 = Color3.fromRGB(255,255,255)
+	valueLabel.Text = tostring(espDistance)
+	valueLabel.Parent = container
+	Instance.new("UICorner", valueLabel).CornerRadius = UDim.new(0, 6)
+
+	local sliderBg = Instance.new("Frame")
+	sliderBg.Size = UDim2.new(1, 0, 0, 6)
+	sliderBg.Position = UDim2.new(0, 0, 0, 26)
+	sliderBg.BackgroundColor3 = Color3.fromRGB(40,40,50)
+	sliderBg.Parent = container
+	Instance.new("UICorner", sliderBg).CornerRadius = UDim.new(1, 0)
+
+	local sliderFill = Instance.new("Frame")
+	sliderFill.Size = UDim2.new((espDistance - 200) / (500 - 200), 0, 1, 0)
+	sliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+	sliderFill.Parent = sliderBg
+	Instance.new("UICorner", sliderFill).CornerRadius = UDim.new(1, 0)
+
+	local sliderBtn = Instance.new("TextButton")
+	sliderBtn.Size = UDim2.new(0, 18, 0, 18)
+	sliderBtn.Position = UDim2.new((espDistance - 200) / (500 - 200), -9, 0.5, -9)
+	sliderBtn.BackgroundColor3 = Color3.fromRGB(255,255,255)
+	sliderBtn.Text = ""
+	sliderBtn.Parent = sliderBg
+	Instance.new("UICorner", sliderBtn).CornerRadius = UDim.new(1, 0)
+
+	local dragging = false
+	sliderBtn.MouseButton1Down:Connect(function() dragging = true end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+	end)
+
+	RunService.RenderStepped:Connect(function()
+		if dragging then
+			local mousePos = UserInputService:GetMouseLocation().X
+			local sliderPos = sliderBg.AbsolutePosition.X
+			local sliderSize = sliderBg.AbsoluteSize.X
+			local relativePos = math.clamp((mousePos - sliderPos) / sliderSize, 0, 1)
+			espDistance = math.floor(200 + (500 - 200) * relativePos)
+			sliderFill.Size = UDim2.new(relativePos, 0, 1, 0)
+			sliderBtn.Position = UDim2.new(relativePos, -9, 0.5, -9)
+			valueLabel.Text = tostring(espDistance)
+		end
+	end)
+end
+
+createDistSlider()
+
+local tracersBtn = Instance.new("TextButton")
+tracersBtn.Size = UDim2.new(0.48, -5, 0, 28)
+tracersBtn.Position = UDim2.new(0, 10, 0, 110)
+tracersBtn.Text = "📏 TRACERS"
+tracersBtn.Font = Enum.Font.GothamBold
+tracersBtn.TextSize = 10
+tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
+tracersBtn.Parent = espCard
+Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
+tracersBtn.MouseButton1Click:Connect(function()
+	tracersEnabled = not tracersEnabled
+	tracersBtn.Text = tracersEnabled and "📏 ON" or "📏 TRACERS"
+	tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
 local espModeToggle = Instance.new("TextButton")
-espModeToggle.Size = UDim2.new(1, -24, 0, 32)
-espModeToggle.Position = UDim2.new(0, 12, 0, 60)
-espModeToggle.Text = "👥 MODO: EQUIPA"
+espModeToggle.Size = UDim2.new(0.48, -5, 0, 28)
+espModeToggle.Position = UDim2.new(0.52, 0, 0, 110)
+espModeToggle.Text = "👥 EQUIPA"
 espModeToggle.Font = Enum.Font.GothamBold
-espModeToggle.TextSize = 12
+espModeToggle.TextSize = 10
 espModeToggle.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
 espModeToggle.TextColor3 = Color3.fromRGB(255,255,255)
 espModeToggle.Parent = espCard
 Instance.new("UICorner", espModeToggle).CornerRadius = UDim.new(0, 8)
 espModeToggle.MouseButton1Click:Connect(function()
 	espMode = espMode == "TEAM" and "WALL" or "TEAM"
-	espModeToggle.Text = espMode == "TEAM" and "👥 MODO: EQUIPA" or "🧱 MODO: PAREDE"
+	espModeToggle.Text = espMode == "TEAM" and "👥 EQUIPA" or "🧱 PAREDE"
 	if espEnabled then updateESP() end
 end)
 
-local espBoxBtn = Instance.new("TextButton")
-espBoxBtn.Size = UDim2.new(0.48, -5, 0, 32)
-espBoxBtn.Position = UDim2.new(0, 12, 0, 100)
-espBoxBtn.Text = "□ BOXES"
-espBoxBtn.Font = Enum.Font.GothamBold
-espBoxBtn.TextSize = 11
-espBoxBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-espBoxBtn.TextColor3 = Color3.fromRGB(255,255,255)
-espBoxBtn.Parent = espCard
-Instance.new("UICorner", espBoxBtn).CornerRadius = UDim.new(0, 8)
-local espBoxEnabled = false
-espBoxBtn.MouseButton1Click:Connect(function()
-	espBoxEnabled = not espBoxEnabled
-	espBoxBtn.Text = espBoxEnabled and "■ ON" or "□ BOXES"
-	espBoxBtn.BackgroundColor3 = espBoxEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+local nameBtn = Instance.new("TextButton")
+nameBtn.Size = UDim2.new(0.32, -5, 0, 28)
+nameBtn.Position = UDim2.new(0, 10, 0, 148)
+nameBtn.Text = "🏷️ NOME"
+nameBtn.Font = Enum.Font.GothamBold
+nameBtn.TextSize = 10
+nameBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+nameBtn.TextColor3 = Color3.fromRGB(255,255,255)
+nameBtn.Parent = espCard
+Instance.new("UICorner", nameBtn).CornerRadius = UDim.new(0, 8)
+nameBtn.MouseButton1Click:Connect(function()
+	showName = not showName
+	nameBtn.BackgroundColor3 = showName and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
-local espHealthBtn = Instance.new("TextButton")
-espHealthBtn.Size = UDim2.new(0.48, -5, 0, 32)
-espHealthBtn.Position = UDim2.new(0.52, 0, 0, 100)
-espHealthBtn.Text = "❤️ HEALTH"
-espHealthBtn.Font = Enum.Font.GothamBold
-espHealthBtn.TextSize = 11
-espHealthBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-espHealthBtn.TextColor3 = Color3.fromRGB(255,255,255)
-espHealthBtn.Parent = espCard
-Instance.new("UICorner", espHealthBtn).CornerRadius = UDim.new(0, 8)
-local espHealthEnabled = false
-espHealthBtn.MouseButton1Click:Connect(function()
-	espHealthEnabled = not espHealthEnabled
-	espHealthBtn.Text = espHealthEnabled and "❤️ ON" or "❤️ HEALTH"
-	espHealthBtn.BackgroundColor3 = espHealthEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+local healthBtn = Instance.new("TextButton")
+healthBtn.Size = UDim2.new(0.32, -5, 0, 28)
+healthBtn.Position = UDim2.new(0.34, 0, 0, 148)
+healthBtn.Text = "❤️ VIDA"
+healthBtn.Font = Enum.Font.GothamBold
+healthBtn.TextSize = 10
+healthBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+healthBtn.TextColor3 = Color3.fromRGB(255,255,255)
+healthBtn.Parent = espCard
+Instance.new("UICorner", healthBtn).CornerRadius = UDim.new(0, 8)
+healthBtn.MouseButton1Click:Connect(function()
+	showHealth = not showHealth
+	healthBtn.BackgroundColor3 = showHealth and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local distBtn = Instance.new("TextButton")
+distBtn.Size = UDim2.new(0.32, -5, 0, 28)
+distBtn.Position = UDim2.new(0.68, 0, 0, 148)
+distBtn.Text = "📍 DIST"
+distBtn.Font = Enum.Font.GothamBold
+distBtn.TextSize = 10
+distBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+distBtn.TextColor3 = Color3.fromRGB(255,255,255)
+distBtn.Parent = espCard
+Instance.new("UICorner", distBtn).CornerRadius = UDim.new(0, 8)
+distBtn.MouseButton1Click:Connect(function()
+	showDistance = not showDistance
+	distBtn.BackgroundColor3 = showDistance and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
+end)
+
+local deadBtn = Instance.new("TextButton")
+deadBtn.Size = UDim2.new(1, -20, 0, 28)
+deadBtn.Position = UDim2.new(0, 10, 0, 184)
+deadBtn.Text = "💀 MORTOS"
+deadBtn.Font = Enum.Font.GothamBold
+deadBtn.TextSize = 10
+deadBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+deadBtn.TextColor3 = Color3.fromRGB(255,255,255)
+deadBtn.Parent = espCard
+Instance.new("UICorner", deadBtn).CornerRadius = UDim.new(0, 8)
+deadBtn.MouseButton1Click:Connect(function()
+	showDeadPlayers = not showDeadPlayers
+	deadBtn.BackgroundColor3 = showDeadPlayers and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 end)
 
 local visualCard = Instance.new("Frame")
-visualCard.Size = UDim2.new(0.48, -5, 1, 0)
-visualCard.Position = UDim2.new(0.52, 0, 0, 0)
+visualCard.Size = UDim2.new(1, 0, 0, 100)
+visualCard.Position = UDim2.new(0, 0, 0, 240)
 visualCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-visualCard.Parent = visionTopRow
+visualCard.Parent = visionPage
 Instance.new("UICorner", visualCard).CornerRadius = UDim.new(0, 12)
 local visualStroke = Instance.new("UIStroke", visualCard)
 visualStroke.Color = Color3.fromRGB(255, 200, 0)
@@ -1686,45 +1838,34 @@ visualStroke.Thickness = 2
 visualStroke.Transparency = 0.7
 
 local visualIcon = Instance.new("TextLabel")
-visualIcon.Size = UDim2.new(0, 35, 0, 35)
-visualIcon.Position = UDim2.new(0, 12, 0, 12)
+visualIcon.Size = UDim2.new(0, 30, 0, 30)
+visualIcon.Position = UDim2.new(0, 10, 0, 10)
 visualIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
 visualIcon.BackgroundTransparency = 0.8
 visualIcon.Text = "🌈"
 visualIcon.Font = Enum.Font.GothamBold
-visualIcon.TextSize = 18
+visualIcon.TextSize = 16
 visualIcon.TextColor3 = Color3.fromRGB(255,255,255)
 visualIcon.Parent = visualCard
 Instance.new("UICorner", visualIcon).CornerRadius = UDim.new(0, 8)
 
 local visualTitle = Instance.new("TextLabel")
-visualTitle.Size = UDim2.new(1, -60, 0, 18)
-visualTitle.Position = UDim2.new(0, 55, 0, 15)
+visualTitle.Size = UDim2.new(1, -50, 0, 16)
+visualTitle.Position = UDim2.new(0, 48, 0, 12)
 visualTitle.BackgroundTransparency = 1
 visualTitle.Font = Enum.Font.GothamBold
-visualTitle.TextSize = 14
+visualTitle.TextSize = 13
 visualTitle.TextColor3 = Color3.fromRGB(255,255,255)
 visualTitle.TextXAlignment = Enum.TextXAlignment.Left
 visualTitle.Text = "VISUAIS"
 visualTitle.Parent = visualCard
 
-local visualSubtitle = Instance.new("TextLabel")
-visualSubtitle.Size = UDim2.new(1, -60, 0, 14)
-visualSubtitle.Position = UDim2.new(0, 55, 0, 32)
-visualSubtitle.BackgroundTransparency = 1
-visualSubtitle.Font = Enum.Font.Gotham
-visualSubtitle.TextSize = 10
-visualSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
-visualSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-visualSubtitle.Text = "Melhorias visuais do jogo"
-visualSubtitle.Parent = visualCard
-
 local fullbrightBtn = Instance.new("TextButton")
-fullbrightBtn.Size = UDim2.new(1, -24, 0, 32)
-fullbrightBtn.Position = UDim2.new(0, 12, 0, 60)
-fullbrightBtn.Text = "💡 FULLBRIGHT"
+fullbrightBtn.Size = UDim2.new(0.32, -5, 0, 28)
+fullbrightBtn.Position = UDim2.new(0, 10, 0, 50)
+fullbrightBtn.Text = "💡 LIGHT"
 fullbrightBtn.Font = Enum.Font.GothamBold
-fullbrightBtn.TextSize = 12
+fullbrightBtn.TextSize = 10
 fullbrightBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 fullbrightBtn.TextColor3 = Color3.fromRGB(255,255,255)
 fullbrightBtn.Parent = visualCard
@@ -1732,7 +1873,6 @@ Instance.new("UICorner", fullbrightBtn).CornerRadius = UDim.new(0, 8)
 local fullbrightEnabled = false
 fullbrightBtn.MouseButton1Click:Connect(function()
 	fullbrightEnabled = not fullbrightEnabled
-	fullbrightBtn.Text = fullbrightEnabled and "💡 ON" or "💡 FULLBRIGHT"
 	fullbrightBtn.BackgroundColor3 = fullbrightEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	game:GetService("Lighting").Brightness = fullbrightEnabled and 2 or 1
 	game:GetService("Lighting").ClockTime = fullbrightEnabled and 14 or 12
@@ -1740,11 +1880,11 @@ fullbrightBtn.MouseButton1Click:Connect(function()
 end)
 
 local removeBlurBtn = Instance.new("TextButton")
-removeBlurBtn.Size = UDim2.new(0.48, -5, 0, 32)
-removeBlurBtn.Position = UDim2.new(0, 12, 0, 100)
+removeBlurBtn.Size = UDim2.new(0.32, -5, 0, 28)
+removeBlurBtn.Position = UDim2.new(0.34, 0, 0, 50)
 removeBlurBtn.Text = "🌫️ BLUR"
 removeBlurBtn.Font = Enum.Font.GothamBold
-removeBlurBtn.TextSize = 11
+removeBlurBtn.TextSize = 10
 removeBlurBtn.BackgroundColor3 = Color3.fromRGB(100, 50, 150)
 removeBlurBtn.TextColor3 = Color3.fromRGB(255,255,255)
 removeBlurBtn.Parent = visualCard
@@ -1758,11 +1898,11 @@ removeBlurBtn.MouseButton1Click:Connect(function()
 end)
 
 local noFogBtn = Instance.new("TextButton")
-noFogBtn.Size = UDim2.new(0.48, -5, 0, 32)
-noFogBtn.Position = UDim2.new(0.52, 0, 0, 100)
+noFogBtn.Size = UDim2.new(0.32, -5, 0, 28)
+noFogBtn.Position = UDim2.new(0.68, 0, 0, 50)
 noFogBtn.Text = "☁️ FOG"
 noFogBtn.Font = Enum.Font.GothamBold
-noFogBtn.TextSize = 11
+noFogBtn.TextSize = 10
 noFogBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 noFogBtn.TextColor3 = Color3.fromRGB(255,255,255)
 noFogBtn.Parent = visualCard
@@ -1770,464 +1910,206 @@ Instance.new("UICorner", noFogBtn).CornerRadius = UDim.new(0, 8)
 local noFogEnabled = false
 noFogBtn.MouseButton1Click:Connect(function()
 	noFogEnabled = not noFogEnabled
-	noFogBtn.Text = noFogEnabled and "☁️ ON" or "☁️ FOG"
 	noFogBtn.BackgroundColor3 = noFogEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
 	game:GetService("Lighting").FogEnd = noFogEnabled and 100000 or 500
 end)
 
-local tracerLines = {}
-RunService.RenderStepped:Connect(function()
-	for _, line in pairs(tracerLines) do
-		if line then line:Remove() end
-	end
-	tracerLines = {}
-	if tracersEnabled then
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local part = player.Character:FindFirstChild("HumanoidRootPart")
-				if part then
-					local line = Drawing.new("Line")
-					local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-					if onScreen then
-						line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-						line.To = Vector2.new(screenPos.X, screenPos.Y)
-						line.Color = Color3.fromRGB(139, 92, 246)
-						line.Thickness = 2
-						line.Transparency = 1
-						line.Visible = true
-						table.insert(tracerLines, line)
-					end
-				end
-			end
-		end
-	end
-end)
+local savedConfigs = {}
+
+local function saveConfig(configName)
+	if configName == "" then return end
+	savedConfigs[configName] = {
+		flySpeed = FlySystem.speed,
+		speedValue = currentSpeed,
+		aimbotFOV = aimbotFOV,
+		aimbotSmooth = aimbotSmooth,
+		aimbotTarget = aimbotTarget,
+		autoClickerSpeed = autoClickerSpeed,
+		espDistance = espDistance,
+		espMode = espMode
+	}
+end
+
+local function loadConfig(configName)
+	local config = savedConfigs[configName]
+	if not config then return end
+	FlySystem.speed = config.flySpeed
+	currentSpeed = config.speedValue
+	aimbotFOV = config.aimbotFOV
+	aimbotSmooth = config.aimbotSmooth
+	aimbotTarget = config.aimbotTarget
+	autoClickerSpeed = config.autoClickerSpeed
+	espDistance = config.espDistance
+	espMode = config.espMode
+end
+
+local espFolder = Instance.new("Folder")
+espFolder.Name = "ESPFolder"
+espFolder.Parent = game.CoreGui
+
+local tracerFolder = Instance.new("Folder")
+tracerFolder.Name = "TracerFolder"
+tracerFolder.Parent = game.CoreGui
+
+local tracerGui = Instance.new("ScreenGui")
+tracerGui.Name = "TracerGui"
+tracerGui.IgnoreGuiInset = true
+tracerGui.Parent = game.CoreGui
 
 RunService.RenderStepped:Connect(function()
-	for player, gui in pairs(nametagsGuis) do
-		if gui then gui:Destroy() end
-	end
-	nametagsGuis = {}
+	espFolder:ClearAllChildren()
+	tracerGui:ClearAllChildren()
 	
-	if nametagsEnabled then
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= LocalPlayer and player.Character then
-				local head = player.Character:FindFirstChild("Head")
-				if head then
-					local billboard = Instance.new("BillboardGui")
-					billboard.Adornee = head
-					billboard.Size = UDim2.new(0, 200, 0, 50)
-					billboard.StudsOffset = Vector3.new(0, 2, 0)
-					billboard.AlwaysOnTop = true
-					billboard.Parent = head
+	if not espEnabled then 
+		return 
+	end
+	
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player == LocalPlayer then continue end
+		if not player.Character then continue end
+		
+		local char = player.Character
+		local rootPart = char:FindFirstChild("HumanoidRootPart")
+		local head = char:FindFirstChild("Head")
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		
+		if not rootPart or not head or not hum then continue end
+		if not showDeadPlayers and hum.Health <= 0 then continue end
+		
+		local myChar = LocalPlayer.Character
+		if not myChar then continue end
+		local myRoot = myChar:FindFirstChild("HumanoidRootPart")
+		if not myRoot then continue end
+		
+		local distance = math.floor((rootPart.Position - myRoot.Position).Magnitude)
+		if distance > espDistance then continue end
+		
+		local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+		
+		-- TRACERS
+		if tracersEnabled and onScreen and screenPos.Z > 0 then
+			local viewportSize = Camera.ViewportSize
+			local startX = viewportSize.X / 2
+			local startY = viewportSize.Y
+			local endX = screenPos.X
+			local endY = screenPos.Y
+			
+			local color = Color3.fromRGB(139, 92, 246)
+			if espMode == "TEAM" then
+				color = isSameTeam(player) and Color3.fromRGB(0, 255, 100) or Color3.fromRGB(255, 50, 50)
+			else
+				color = isPlayerBehindWall(player) and Color3.fromRGB(255, 50, 50) or Color3.fromRGB(0, 255, 100)
+			end
+			
+			local deltaX = endX - startX
+			local deltaY = endY - startY
+			local dist = math.sqrt(deltaX * deltaX + deltaY * deltaY)
+			local angle = math.deg(math.atan2(deltaY, deltaX))
+			
+			local line = Instance.new("Frame")
+			line.Size = UDim2.new(0, dist, 0, 2)
+			line.Position = UDim2.new(0, startX, 0, startY)
+			line.AnchorPoint = Vector2.new(0, 0.5)
+			line.Rotation = angle
+			line.BackgroundColor3 = color
+			line.BorderSizePixel = 0
+			line.ZIndex = 1
+			line.Parent = tracerGui
+			local gradient = Instance.new("UIGradient")
+			gradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 0.9)})
+			gradient.Parent = line
+		end
+		
+		-- NOME, VIDA, DISTANCIA
+		if showName or showHealth or showDistance then
+			local billboard = Instance.new("BillboardGui")
+			billboard.Name = "ESP_" .. player.Name
+			billboard.Adornee = head
+			billboard.Size = UDim2.new(0, 200, 0, 80)
+			billboard.StudsOffset = Vector3.new(0, 2, 0)
+			billboard.AlwaysOnTop = true
+			billboard.Parent = espFolder
+			
+			local container = Instance.new("Frame")
+			container.Size = UDim2.new(1, 0, 1, 0)
+			container.BackgroundTransparency = 1
+			container.Parent = billboard
+			
+			-- NOME EM CIMA
+			if showName then
+				local nameLabel = Instance.new("TextLabel")
+				nameLabel.Size = UDim2.new(1, 0, 0, 20)
+				nameLabel.Position = UDim2.new(0, 0, 0, 0)
+				nameLabel.BackgroundTransparency = 1
+				nameLabel.Font = Enum.Font.GothamBold
+				nameLabel.TextSize = 14
+				nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+				nameLabel.TextStrokeTransparency = 0.3
+				nameLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+				nameLabel.Text = player.Name
+				nameLabel.Parent = container
+			end
+			
+			-- VIDA E DISTÂNCIA EM BAIXO
+			if showHealth or showDistance then
+				local yOffset = showName and 25 or 0
+				
+				if showHealth then
+					local hp = math.floor(hum.Health)
+					local maxHp = math.floor(hum.MaxHealth)
+					local hpPercent = hp / maxHp
 					
-					local nameLabel = Instance.new("TextLabel")
-					nameLabel.Size = UDim2.new(1, 0, 1, 0)
-					nameLabel.BackgroundTransparency = 1
-					nameLabel.Text = player.Name
-					nameLabel.Font = Enum.Font.GothamBold
-					nameLabel.TextSize = 14
-					nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-					nameLabel.TextStrokeTransparency = 0.5
-					nameLabel.Parent = billboard
+					-- Barra de fundo
+					local hpBarBg = Instance.new("Frame")
+					hpBarBg.Size = UDim2.new(0, 100, 0, 8)
+					hpBarBg.Position = UDim2.new(0.5, -50, 0, yOffset)
+					hpBarBg.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+					hpBarBg.BorderSizePixel = 0
+					hpBarBg.Parent = container
+					Instance.new("UICorner", hpBarBg).CornerRadius = UDim.new(1, 0)
 					
-					nametagsGuis[player] = billboard
+					-- Barra de vida colorida
+					local hpBar = Instance.new("Frame")
+					hpBar.Size = UDim2.new(hpPercent, 0, 1, 0)
+					hpBar.BackgroundColor3 = hpPercent > 0.5 and Color3.fromRGB(0, 255, 0) or (hpPercent > 0.25 and Color3.fromRGB(255, 200, 0) or Color3.fromRGB(255, 0, 0))
+					hpBar.BorderSizePixel = 0
+					hpBar.Parent = hpBarBg
+					Instance.new("UICorner", hpBar).CornerRadius = UDim.new(1, 0)
+					
+					-- Texto da vida
+					local hpText = Instance.new("TextLabel")
+					hpText.Size = UDim2.new(1, 0, 1, 0)
+					hpText.BackgroundTransparency = 1
+					hpText.Font = Enum.Font.GothamBold
+					hpText.TextSize = 10
+					hpText.TextColor3 = Color3.fromRGB(255, 255, 255)
+					hpText.TextStrokeTransparency = 0.3
+					hpText.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+					hpText.Text = hp .. "/" .. maxHp
+					hpText.Parent = hpBarBg
+					
+					yOffset = yOffset + 12
+				end
+				
+				if showDistance then
+					local distLabel = Instance.new("TextLabel")
+					distLabel.Size = UDim2.new(1, 0, 0, 16)
+					distLabel.Position = UDim2.new(0, 0, 0, yOffset)
+					distLabel.BackgroundTransparency = 1
+					distLabel.Font = Enum.Font.GothamBold
+					distLabel.TextSize = 12
+					distLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+					distLabel.TextStrokeTransparency = 0.3
+					distLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+					distLabel.Text = distance .. "m"
+					distLabel.Parent = container
 				end
 			end
 		end
 	end
 end)
 
-local visionBottomRow = Instance.new("Frame")
-visionBottomRow.Size = UDim2.new(1, 0, 0, 100)
-visionBottomRow.Position = UDim2.new(0, 0, 0, 150)
-visionBottomRow.BackgroundTransparency = 1
-visionBottomRow.Parent = visionPage
 
-local tracersCard = Instance.new("Frame")
-tracersCard.Size = UDim2.new(0.48, -5, 1, 0)
-tracersCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-tracersCard.Parent = visionBottomRow
-Instance.new("UICorner", tracersCard).CornerRadius = UDim.new(0, 12)
-local tracersStroke = Instance.new("UIStroke", tracersCard)
-tracersStroke.Color = Color3.fromRGB(139, 92, 246)
-tracersStroke.Thickness = 2
-tracersStroke.Transparency = 0.7
-
-local tracersIcon = Instance.new("TextLabel")
-tracersIcon.Size = UDim2.new(0, 30, 0, 30)
-tracersIcon.Position = UDim2.new(0, 12, 0, 12)
-tracersIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-tracersIcon.BackgroundTransparency = 0.8
-tracersIcon.Text = "📏"
-tracersIcon.Font = Enum.Font.GothamBold
-tracersIcon.TextSize = 16
-tracersIcon.TextColor3 = Color3.fromRGB(255,255,255)
-tracersIcon.Parent = tracersCard
-Instance.new("UICorner", tracersIcon).CornerRadius = UDim.new(0, 8)
-
-local tracersTitle = Instance.new("TextLabel")
-tracersTitle.Size = UDim2.new(1, -120, 0, 16)
-tracersTitle.Position = UDim2.new(0, 50, 0, 14)
-tracersTitle.BackgroundTransparency = 1
-tracersTitle.Font = Enum.Font.GothamBold
-tracersTitle.TextSize = 13
-tracersTitle.TextColor3 = Color3.fromRGB(255,255,255)
-tracersTitle.TextXAlignment = Enum.TextXAlignment.Left
-tracersTitle.Text = "TRACERS"
-tracersTitle.Parent = tracersCard
-
-local tracersBtn = Instance.new("TextButton")
-tracersBtn.Size = UDim2.new(0, 70, 0, 26)
-tracersBtn.Position = UDim2.new(1, -80, 0, 12)
-tracersBtn.Text = "OFF"
-tracersBtn.Font = Enum.Font.GothamBold
-tracersBtn.TextSize = 11
-tracersBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-tracersBtn.TextColor3 = Color3.fromRGB(255,255,255)
-tracersBtn.Parent = tracersCard
-Instance.new("UICorner", tracersBtn).CornerRadius = UDim.new(0, 8)
-local tracersEnabled = false
-local tracerLines = {}
-tracersBtn.MouseButton1Click:Connect(function()
-	tracersEnabled = not tracersEnabled
-	tracersBtn.Text = tracersEnabled and "ON" or "OFF"
-	tracersBtn.BackgroundColor3 = tracersEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local nametagsCard = Instance.new("Frame")
-nametagsCard.Size = UDim2.new(0.48, -5, 1, 0)
-nametagsCard.Position = UDim2.new(0.52, 0, 0, 0)
-nametagsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-nametagsCard.Parent = visionBottomRow
-Instance.new("UICorner", nametagsCard).CornerRadius = UDim.new(0, 12)
-local nametagsStroke = Instance.new("UIStroke", nametagsCard)
-nametagsStroke.Color = Color3.fromRGB(255, 100, 150)
-nametagsStroke.Thickness = 2
-nametagsStroke.Transparency = 0.7
-
-local nametagsIcon = Instance.new("TextLabel")
-nametagsIcon.Size = UDim2.new(0, 30, 0, 30)
-nametagsIcon.Position = UDim2.new(0, 12, 0, 12)
-nametagsIcon.BackgroundColor3 = Color3.fromRGB(255, 100, 150)
-nametagsIcon.BackgroundTransparency = 0.8
-nametagsIcon.Text = "🏷️"
-nametagsIcon.Font = Enum.Font.GothamBold
-nametagsIcon.TextSize = 16
-nametagsIcon.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsIcon.Parent = nametagsCard
-Instance.new("UICorner", nametagsIcon).CornerRadius = UDim.new(0, 8)
-
-local nametagsTitle = Instance.new("TextLabel")
-nametagsTitle.Size = UDim2.new(1, -120, 0, 16)
-nametagsTitle.Position = UDim2.new(0, 50, 0, 14)
-nametagsTitle.BackgroundTransparency = 1
-nametagsTitle.Font = Enum.Font.GothamBold
-nametagsTitle.TextSize = 13
-nametagsTitle.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsTitle.TextXAlignment = Enum.TextXAlignment.Left
-nametagsTitle.Text = "NAMETAGS"
-nametagsTitle.Parent = nametagsCard
-
-local nametagsBtn = Instance.new("TextButton")
-nametagsBtn.Size = UDim2.new(0, 70, 0, 26)
-nametagsBtn.Position = UDim2.new(1, -80, 0, 12)
-nametagsBtn.Text = "OFF"
-nametagsBtn.Font = Enum.Font.GothamBold
-nametagsBtn.TextSize = 11
-nametagsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsBtn).CornerRadius = UDim.new(0, 8)
-local nametagsEnabled = false
-local nametagsGuis = {}
-nametagsBtn.MouseButton1Click:Connect(function()
-	nametagsEnabled = not nametagsEnabled
-	nametagsBtn.Text = nametagsEnabled and "ON" or "OFF"
-	nametagsBtn.BackgroundColor3 = nametagsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-end)
-
-local nametagsDistBtn = Instance.new("TextButton")
-nametagsDistBtn.Size = UDim2.new(0.48, -5, 0, 28)
-nametagsDistBtn.Position = UDim2.new(0, 12, 0, 60)
-nametagsDistBtn.Text = "📍 DIST"
-nametagsDistBtn.Font = Enum.Font.GothamBold
-nametagsDistBtn.TextSize = 10
-nametagsDistBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsDistBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsDistBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsDistBtn).CornerRadius = UDim.new(0, 8)
-
-local nametagsHealthBtn = Instance.new("TextButton")
-nametagsHealthBtn.Size = UDim2.new(0.48, -5, 0, 28)
-nametagsHealthBtn.Position = UDim2.new(0.52, 0, 0, 60)
-nametagsHealthBtn.Text = "❤️ VIDA"
-nametagsHealthBtn.Font = Enum.Font.GothamBold
-nametagsHealthBtn.TextSize = 10
-nametagsHealthBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-nametagsHealthBtn.TextColor3 = Color3.fromRGB(255,255,255)
-nametagsHealthBtn.Parent = nametagsCard
-Instance.new("UICorner", nametagsHealthBtn).CornerRadius = UDim.new(0, 8)
-
-local visionInfo = Instance.new("TextLabel")
-visionInfo.Size = UDim2.new(1, 0, 0, 70)
-visionInfo.Position = UDim2.new(0, 0, 0, 260)
-visionInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
-visionInfo.Font = Enum.Font.Gotham
-visionInfo.TextSize = 11
-visionInfo.TextColor3 = Color3.fromRGB(180,180,200)
-visionInfo.TextWrapped = true
-visionInfo.Text = "  💡 DICAS:\n  • ESP mostra jogadores através de paredes | • Fullbright ilumina tudo\n  • Tracers desenha linhas | • Nametags mostra informações"
-visionInfo.Parent = visionPage
-Instance.new("UICorner", visionInfo).CornerRadius = UDim.new(0, 12)
-
-performancePage:FindFirstChildOfClass("UIListLayout"):Destroy()
-
-local perfTopRow = Instance.new("Frame")
-perfTopRow.Size = UDim2.new(1, 0, 0, 140)
-perfTopRow.BackgroundTransparency = 1
-perfTopRow.Parent = performancePage
-
-local fpsCard = Instance.new("Frame")
-fpsCard.Size = UDim2.new(0.48, -5, 1, 0)
-fpsCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-fpsCard.Parent = perfTopRow
-Instance.new("UICorner", fpsCard).CornerRadius = UDim.new(0, 12)
-local fpsStroke = Instance.new("UIStroke", fpsCard)
-fpsStroke.Color = Color3.fromRGB(0, 255, 100)
-fpsStroke.Thickness = 2
-fpsStroke.Transparency = 0.7
-
-local fpsIcon = Instance.new("TextLabel")
-fpsIcon.Size = UDim2.new(0, 35, 0, 35)
-fpsIcon.Position = UDim2.new(0, 12, 0, 12)
-fpsIcon.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-fpsIcon.BackgroundTransparency = 0.8
-fpsIcon.Text = "📊"
-fpsIcon.Font = Enum.Font.GothamBold
-fpsIcon.TextSize = 18
-fpsIcon.TextColor3 = Color3.fromRGB(255,255,255)
-fpsIcon.Parent = fpsCard
-Instance.new("UICorner", fpsIcon).CornerRadius = UDim.new(0, 8)
-
-local fpsTitle = Instance.new("TextLabel")
-fpsTitle.Size = UDim2.new(1, -60, 0, 18)
-fpsTitle.Position = UDim2.new(0, 55, 0, 15)
-fpsTitle.BackgroundTransparency = 1
-fpsTitle.Font = Enum.Font.GothamBold
-fpsTitle.TextSize = 14
-fpsTitle.TextColor3 = Color3.fromRGB(255,255,255)
-fpsTitle.TextXAlignment = Enum.TextXAlignment.Left
-fpsTitle.Text = "FPS MONITOR"
-fpsTitle.Parent = fpsCard
-
-local fpsValue = Instance.new("TextLabel")
-fpsValue.Size = UDim2.new(1, -24, 0, 50)
-fpsValue.Position = UDim2.new(0, 12, 0, 55)
-fpsValue.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
-fpsValue.BackgroundTransparency = 0.9
-fpsValue.Font = Enum.Font.GothamBold
-fpsValue.TextSize = 32
-fpsValue.TextColor3 = Color3.fromRGB(0, 255, 100)
-fpsValue.Text = "60 FPS"
-fpsValue.Parent = fpsCard
-Instance.new("UICorner", fpsValue).CornerRadius = UDim.new(0, 8)
-
-local pingCard = Instance.new("Frame")
-pingCard.Size = UDim2.new(0.48, -5, 1, 0)
-pingCard.Position = UDim2.new(0.52, 0, 0, 0)
-pingCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-pingCard.Parent = perfTopRow
-Instance.new("UICorner", pingCard).CornerRadius = UDim.new(0, 12)
-local pingStroke = Instance.new("UIStroke", pingCard)
-pingStroke.Color = Color3.fromRGB(255, 200, 0)
-pingStroke.Thickness = 2
-pingStroke.Transparency = 0.7
-
-local pingIcon = Instance.new("TextLabel")
-pingIcon.Size = UDim2.new(0, 35, 0, 35)
-pingIcon.Position = UDim2.new(0, 12, 0, 12)
-pingIcon.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-pingIcon.BackgroundTransparency = 0.8
-pingIcon.Text = "📡"
-pingIcon.Font = Enum.Font.GothamBold
-pingIcon.TextSize = 18
-pingIcon.TextColor3 = Color3.fromRGB(255,255,255)
-pingIcon.Parent = pingCard
-Instance.new("UICorner", pingIcon).CornerRadius = UDim.new(0, 8)
-
-local pingTitle = Instance.new("TextLabel")
-pingTitle.Size = UDim2.new(1, -60, 0, 18)
-pingTitle.Position = UDim2.new(0, 55, 0, 15)
-pingTitle.BackgroundTransparency = 1
-pingTitle.Font = Enum.Font.GothamBold
-pingTitle.TextSize = 14
-pingTitle.TextColor3 = Color3.fromRGB(255,255,255)
-pingTitle.TextXAlignment = Enum.TextXAlignment.Left
-pingTitle.Text = "PING"
-pingTitle.Parent = pingCard
-
-local pingValue = Instance.new("TextLabel")
-pingValue.Size = UDim2.new(1, -24, 0, 50)
-pingValue.Position = UDim2.new(0, 12, 0, 55)
-pingValue.BackgroundColor3 = Color3.fromRGB(255, 200, 0)
-pingValue.BackgroundTransparency = 0.9
-pingValue.Font = Enum.Font.GothamBold
-pingValue.TextSize = 32
-pingValue.TextColor3 = Color3.fromRGB(255, 200, 0)
-pingValue.Text = "0 MS"
-pingValue.Parent = pingCard
-Instance.new("UICorner", pingValue).CornerRadius = UDim.new(0, 8)
-
-local optimizeCard = Instance.new("Frame")
-optimizeCard.Size = UDim2.new(1, 0, 0, 180)
-optimizeCard.Position = UDim2.new(0, 0, 0, 150)
-optimizeCard.BackgroundColor3 = Color3.fromRGB(28,28,38)
-optimizeCard.Parent = performancePage
-Instance.new("UICorner", optimizeCard).CornerRadius = UDim.new(0, 12)
-local optStroke = Instance.new("UIStroke", optimizeCard)
-optStroke.Color = Color3.fromRGB(139, 92, 246)
-optStroke.Thickness = 2
-optStroke.Transparency = 0.7
-
-local optIcon = Instance.new("TextLabel")
-optIcon.Size = UDim2.new(0, 35, 0, 35)
-optIcon.Position = UDim2.new(0, 12, 0, 12)
-optIcon.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
-optIcon.BackgroundTransparency = 0.8
-optIcon.Text = "⚡"
-optIcon.Font = Enum.Font.GothamBold
-optIcon.TextSize = 18
-optIcon.TextColor3 = Color3.fromRGB(255,255,255)
-optIcon.Parent = optimizeCard
-Instance.new("UICorner", optIcon).CornerRadius = UDim.new(0, 8)
-
-local optTitle = Instance.new("TextLabel")
-optTitle.Size = UDim2.new(1, -60, 0, 18)
-optTitle.Position = UDim2.new(0, 55, 0, 15)
-optTitle.BackgroundTransparency = 1
-optTitle.Font = Enum.Font.GothamBold
-optTitle.TextSize = 14
-optTitle.TextColor3 = Color3.fromRGB(255,255,255)
-optTitle.TextXAlignment = Enum.TextXAlignment.Left
-optTitle.Text = "OTIMIZAÇÃO"
-optTitle.Parent = optimizeCard
-
-local optSubtitle = Instance.new("TextLabel")
-optSubtitle.Size = UDim2.new(1, -60, 0, 14)
-optSubtitle.Position = UDim2.new(0, 55, 0, 32)
-optSubtitle.BackgroundTransparency = 1
-optSubtitle.Font = Enum.Font.Gotham
-optSubtitle.TextSize = 10
-optSubtitle.TextColor3 = Color3.fromRGB(150,150,160)
-optSubtitle.TextXAlignment = Enum.TextXAlignment.Left
-optSubtitle.Text = "Melhore o desempenho do jogo"
-optSubtitle.Parent = optimizeCard
-
-local boostFpsBtn = Instance.new("TextButton")
-boostFpsBtn.Size = UDim2.new(0.48, -5, 0, 38)
-boostFpsBtn.Position = UDim2.new(0, 12, 0, 60)
-boostFpsBtn.Text = "🚀 BOOST FPS"
-boostFpsBtn.Font = Enum.Font.GothamBold
-boostFpsBtn.TextSize = 13
-boostFpsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-boostFpsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-boostFpsBtn.Parent = optimizeCard
-Instance.new("UICorner", boostFpsBtn).CornerRadius = UDim.new(0, 8)
-local boostFpsEnabled = false
-boostFpsBtn.MouseButton1Click:Connect(function()
-	boostFpsEnabled = not boostFpsEnabled
-	boostFpsBtn.Text = boostFpsEnabled and "🚀 ON" or "🚀 BOOST FPS"
-	boostFpsBtn.BackgroundColor3 = boostFpsEnabled and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	if boostFpsEnabled then
-		settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-		for _, v in pairs(workspace:GetDescendants()) do
-			if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Sparkles") then
-				v.Enabled = false
-			end
-		end
-	else
-		settings().Rendering.QualityLevel = Enum.QualityLevel.Automatic
-	end
-end)
-
-local removeTexturesBtn = Instance.new("TextButton")
-removeTexturesBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeTexturesBtn.Position = UDim2.new(0.52, 0, 0, 60)
-removeTexturesBtn.Text = "🎨 TEXTURAS"
-removeTexturesBtn.Font = Enum.Font.GothamBold
-removeTexturesBtn.TextSize = 13
-removeTexturesBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-removeTexturesBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeTexturesBtn.Parent = optimizeCard
-Instance.new("UICorner", removeTexturesBtn).CornerRadius = UDim.new(0, 8)
-removeTexturesBtn.MouseButton1Click:Connect(function()
-	for _, v in pairs(workspace:GetDescendants()) do
-		if v:IsA("Decal") or v:IsA("Texture") then
-			v.Transparency = 1
-		end
-		if v:IsA("BasePart") then
-			v.Material = Enum.Material.SmoothPlastic
-		end
-	end
-end)
-
-local removeShadowsBtn = Instance.new("TextButton")
-removeShadowsBtn.Size = UDim2.new(0.48, -5, 0, 38)
-removeShadowsBtn.Position = UDim2.new(0, 12, 0, 108)
-removeShadowsBtn.Text = "🌑 SOMBRAS"
-removeShadowsBtn.Font = Enum.Font.GothamBold
-removeShadowsBtn.TextSize = 13
-removeShadowsBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-removeShadowsBtn.TextColor3 = Color3.fromRGB(255,255,255)
-removeShadowsBtn.Parent = optimizeCard
-Instance.new("UICorner", removeShadowsBtn).CornerRadius = UDim.new(0, 8)
-removeShadowsBtn.MouseButton1Click:Connect(function()
-	game:GetService("Lighting").GlobalShadows = false
-	game:GetService("Lighting").FogEnd = 9e9
-end)
-
-local fpsUnlockerBtn = Instance.new("TextButton")
-fpsUnlockerBtn.Size = UDim2.new(0.48, -5, 0, 38)
-fpsUnlockerBtn.Position = UDim2.new(0.52, 0, 0, 108)
-fpsUnlockerBtn.Text = "🔓 FPS UNLOCK"
-fpsUnlockerBtn.Font = Enum.Font.GothamBold
-fpsUnlockerBtn.TextSize = 13
-fpsUnlockerBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-fpsUnlockerBtn.TextColor3 = Color3.fromRGB(255,255,255)
-fpsUnlockerBtn.Parent = optimizeCard
-Instance.new("UICorner", fpsUnlockerBtn).CornerRadius = UDim.new(0, 8)
-local fpsUnlocked = false
-fpsUnlockerBtn.MouseButton1Click:Connect(function()
-	fpsUnlocked = not fpsUnlocked
-	fpsUnlockerBtn.Text = fpsUnlocked and "🔓 ON" or "🔓 FPS UNLOCK"
-	fpsUnlockerBtn.BackgroundColor3 = fpsUnlocked and Color3.fromRGB(0, 160, 90) or Color3.fromRGB(60, 60, 70)
-	setfpscap(fpsUnlocked and 999 or 60)
-end)
-
-local perfInfo = Instance.new("TextLabel")
-perfInfo.Size = UDim2.new(1, 0, 0, 90)
-perfInfo.Position = UDim2.new(0, 0, 0, 340)
-perfInfo.BackgroundColor3 = Color3.fromRGB(28,28,38)
-perfInfo.Font = Enum.Font.Gotham
-perfInfo.TextSize = 11
-perfInfo.TextColor3 = Color3.fromRGB(180,180,200)
-perfInfo.TextWrapped = true
-perfInfo.Text = "  💡 DICAS DE DESEMPENHO:\n\n  • Boost FPS reduz qualidade gráfica | • Remover texturas melhora FPS\n  • Desativar sombras aumenta performance | • FPS Unlock remove limite de 60 FPS"
-perfInfo.Parent = performancePage
-Instance.new("UICorner", perfInfo).CornerRadius = UDim.new(0, 12)
-
-local lastFrameTime = tick()
-local fps = 60
-RunService.RenderStepped:Connect(function()
-	local currentTime = tick()
-	local deltaTime = currentTime - lastFrameTime
-	lastFrameTime = currentTime
-	fps = math.floor(1 / deltaTime)
-	fpsValue.Text = tostring(fps) .. " FPS"
-	local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
-	pingValue.Text = ping
-end)
 
 local miscTopRow = Instance.new("Frame")
 miscTopRow.Size = UDim2.new(1, 0, 0, 180)
@@ -2512,6 +2394,153 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• M: Abrir/Fechar painel | • F: Toggle Fly rápido | • P: Destravar mouse\n• WASD: Movimento | • Space: Subir | • Ctrl: Descer"
 infoText.Parent = infoCard
 
+local configsPageLayout = configsPage:FindFirstChildOfClass("UIListLayout")
+if configsPageLayout then configsPageLayout:Destroy() end
+
+local configNameBox = Instance.new("TextBox")
+configNameBox.Size = UDim2.new(1, 0, 0, 45)
+configNameBox.BackgroundColor3 = Color3.fromRGB(28,28,38)
+configNameBox.PlaceholderText = "💾 Nome da Configuração..."
+configNameBox.PlaceholderColor3 = Color3.fromRGB(100,100,110)
+configNameBox.Text = ""
+configNameBox.Font = Enum.Font.GothamBold
+configNameBox.TextSize = 15
+configNameBox.TextColor3 = Color3.fromRGB(255,255,255)
+configNameBox.ClearTextOnFocus = false
+configNameBox.Parent = configsPage
+Instance.new("UICorner", configNameBox).CornerRadius = UDim.new(0, 12)
+local configStroke = Instance.new("UIStroke", configNameBox)
+configStroke.Color = Color3.fromRGB(139, 92, 246)
+configStroke.Thickness = 2
+configStroke.Transparency = 0.5
+local configPadding = Instance.new("UIPadding", configNameBox)
+configPadding.PaddingLeft = UDim.new(0, 15)
+
+local buttonsRow = Instance.new("Frame")
+buttonsRow.Size = UDim2.new(1, 0, 0, 50)
+buttonsRow.Position = UDim2.new(0, 0, 0, 55)
+buttonsRow.BackgroundTransparency = 1
+buttonsRow.Parent = configsPage
+
+local saveBtn = Instance.new("TextButton")
+saveBtn.Size = UDim2.new(0.48, -5, 1, 0)
+saveBtn.Position = UDim2.new(0, 0, 0, 0)
+saveBtn.Text = "💾 SALVAR"
+saveBtn.Font = Enum.Font.GothamBold
+saveBtn.TextSize = 16
+saveBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+saveBtn.TextColor3 = Color3.fromRGB(255,255,255)
+saveBtn.Parent = buttonsRow
+Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 12)
+
+local loadBtn = Instance.new("TextButton")
+loadBtn.Size = UDim2.new(0.48, -5, 1, 0)
+loadBtn.Position = UDim2.new(0.52, 0, 0, 0)
+loadBtn.Text = "📂 CARREGAR"
+loadBtn.Font = Enum.Font.GothamBold
+loadBtn.TextSize = 16
+loadBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 220)
+loadBtn.TextColor3 = Color3.fromRGB(255,255,255)
+loadBtn.Parent = buttonsRow
+Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 12)
+
+local configsList = Instance.new("ScrollingFrame")
+configsList.Size = UDim2.new(1, 0, 1, -120)
+configsList.Position = UDim2.new(0, 0, 0, 115)
+configsList.BackgroundColor3 = Color3.fromRGB(28,28,38)
+configsList.BorderSizePixel = 0
+configsList.ScrollBarThickness = 6
+configsList.CanvasSize = UDim2.new(0,0,0,0)
+configsList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+configsList.Parent = configsPage
+Instance.new("UICorner", configsList).CornerRadius = UDim.new(0, 12)
+local configsStroke = Instance.new("UIStroke", configsList)
+configsStroke.Color = Color3.fromRGB(139, 92, 246)
+configsStroke.Thickness = 2
+configsStroke.Transparency = 0.5
+local configsLayout = Instance.new("UIListLayout", configsList)
+configsLayout.Padding = UDim.new(0,8)
+configsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+local configsListPadding = Instance.new("UIPadding", configsList)
+configsListPadding.PaddingTop = UDim.new(0, 8)
+configsListPadding.PaddingLeft = UDim.new(0, 8)
+configsListPadding.PaddingRight = UDim.new(0, 8)
+
+local function updateConfigsList()
+	for _, child in ipairs(configsList:GetChildren()) do
+		if child:IsA("Frame") then child:Destroy() end
+	end
+	
+	for configName, _ in pairs(savedConfigs) do
+		local configItem = Instance.new("Frame")
+		configItem.Size = UDim2.new(1, -16, 0, 50)
+		configItem.BackgroundColor3 = Color3.fromRGB(35,35,45)
+		configItem.Parent = configsList
+		Instance.new("UICorner", configItem).CornerRadius = UDim.new(0, 10)
+		
+		local itemStroke = Instance.new("UIStroke", configItem)
+		itemStroke.Color = Color3.fromRGB(139, 92, 246)
+		itemStroke.Thickness = 1
+		itemStroke.Transparency = 0.7
+		
+		local nameLabel = Instance.new("TextLabel")
+		nameLabel.Size = UDim2.new(1, -120, 1, 0)
+		nameLabel.Position = UDim2.new(0, 15, 0, 0)
+		nameLabel.BackgroundTransparency = 1
+		nameLabel.Font = Enum.Font.GothamBold
+		nameLabel.TextSize = 14
+		nameLabel.TextColor3 = Color3.fromRGB(255,255,255)
+		nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+		nameLabel.Text = "💾 " .. configName
+		nameLabel.Parent = configItem
+		
+		local loadConfigBtn = Instance.new("TextButton")
+		loadConfigBtn.Size = UDim2.new(0, 50, 0, 30)
+		loadConfigBtn.Position = UDim2.new(1, -60, 0.5, -15)
+		loadConfigBtn.Text = "📂"
+		loadConfigBtn.Font = Enum.Font.GothamBold
+		loadConfigBtn.TextSize = 16
+		loadConfigBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 220)
+		loadConfigBtn.TextColor3 = Color3.fromRGB(255,255,255)
+		loadConfigBtn.Parent = configItem
+		Instance.new("UICorner", loadConfigBtn).CornerRadius = UDim.new(0, 8)
+		loadConfigBtn.MouseButton1Click:Connect(function()
+			loadConfig(configName)
+			configNameBox.Text = configName
+		end)
+		
+		local deleteBtn = Instance.new("TextButton")
+		deleteBtn.Size = UDim2.new(0, 50, 0, 30)
+		deleteBtn.Position = UDim2.new(1, -115, 0.5, -15)
+		deleteBtn.Text = "🗑️"
+		deleteBtn.Font = Enum.Font.GothamBold
+		deleteBtn.TextSize = 16
+		deleteBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+		deleteBtn.TextColor3 = Color3.fromRGB(255,255,255)
+		deleteBtn.Parent = configItem
+		Instance.new("UICorner", deleteBtn).CornerRadius = UDim.new(0, 8)
+		deleteBtn.MouseButton1Click:Connect(function()
+			savedConfigs[configName] = nil
+			updateConfigsList()
+		end)
+	end
+end
+
+saveBtn.MouseButton1Click:Connect(function()
+	local configName = configNameBox.Text
+	if configName ~= "" then
+		saveConfig(configName)
+		updateConfigsList()
+	end
+end)
+
+loadBtn.MouseButton1Click:Connect(function()
+	local configName = configNameBox.Text
+	if configName ~= "" and savedConfigs[configName] then
+		loadConfig(configName)
+	end
+end)
+
 local function updatePlayersList()
 	for _, child in ipairs(playersList:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
@@ -2543,11 +2572,11 @@ local function setTab(which)
 	tabClicker.TextColor3 = Color3.fromRGB(180,180,190)
 	tabVision.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabVision.TextColor3 = Color3.fromRGB(180,180,190)
-	tabPerformance.BackgroundColor3 = Color3.fromRGB(30,30,40)
-	tabPerformance.TextColor3 = Color3.fromRGB(180,180,190)
 	tabMisc.BackgroundColor3 = Color3.fromRGB(30,30,40)
 	tabMisc.TextColor3 = Color3.fromRGB(180,180,190)
-	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; performancePage.Visible=false; miscPage.Visible=false
+	tabConfigs.BackgroundColor3 = Color3.fromRGB(30,30,40)
+	tabConfigs.TextColor3 = Color3.fromRGB(180,180,190)
+	playersPage.Visible=false; movementPage.Visible=false; aimbotPage.Visible=false; clickerPage.Visible=false; visionPage.Visible=false; miscPage.Visible=false; configsPage.Visible=false
 	if which=="PLAYERS" then 
 		tabPlayers.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabPlayers.TextColor3=Color3.fromRGB(255,255,255)
@@ -2568,10 +2597,10 @@ local function setTab(which)
 		tabVision.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabVision.TextColor3=Color3.fromRGB(255,255,255)
 		visionPage.Visible=true
-	elseif which=="PERFORMANCE" then 
-		tabPerformance.BackgroundColor3=Color3.fromRGB(139, 92, 246)
-		tabPerformance.TextColor3=Color3.fromRGB(255,255,255)
-		performancePage.Visible=true
+	elseif which=="CONFIGS" then 
+		tabConfigs.BackgroundColor3=Color3.fromRGB(139, 92, 246)
+		tabConfigs.TextColor3=Color3.fromRGB(255,255,255)
+		configsPage.Visible=true
 	else 
 		tabMisc.BackgroundColor3=Color3.fromRGB(139, 92, 246)
 		tabMisc.TextColor3=Color3.fromRGB(255,255,255)
@@ -2583,11 +2612,20 @@ tabMovement.MouseButton1Click:Connect(function() setTab("MOVEMENT") end)
 tabAimbot.MouseButton1Click:Connect(function() setTab("AIMBOT") end)
 tabClicker.MouseButton1Click:Connect(function() setTab("CLICKER") end)
 tabVision.MouseButton1Click:Connect(function() setTab("VISION") end)
-tabPerformance.MouseButton1Click:Connect(function() setTab("PERFORMANCE") end)
 tabMisc.MouseButton1Click:Connect(function() setTab("MISC") end)
+tabConfigs.MouseButton1Click:Connect(function() setTab("CONFIGS") end)
+
+minimizeBtn.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	miniButton.Visible = true
+	panelVisible = false
+	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
+	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
+end)
 
 closeBtn.MouseButton1Click:Connect(function() 
 	frame.Visible = false
+	miniButton.Visible = true
 	panelVisible = false
 	if prevMouseBehavior then UserInputService.MouseBehavior = prevMouseBehavior end
 	if prevMouseIconEnabled ~= nil then UserInputService.MouseIconEnabled = prevMouseIconEnabled end
