@@ -1,8 +1,3 @@
-
-
--- ═══════════════════════════════════════
--- SERVIÇOS E VARIÁVEIS GLOBAIS
--- ═══════════════════════════════════════
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -55,9 +50,6 @@ local function getPrimaryPart(char)
 	return char.PrimaryPart or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
 end
 
--- ═══════════════════════════════════════
--- SISTEMA DE VOO (FLY SYSTEM)
--- ═══════════════════════════════════════
 local FlySystem = {
     flying = false,
     noclip = false,
@@ -160,9 +152,6 @@ function FlySystem:init()
     self:startLoop()
 end
 
--- ═══════════════════════════════════════
--- FUNÇÕES DE JOGADORES
--- ═══════════════════════════════════════
 local function startSpectate(p)
     if not p or p == LocalPlayer then return end
     local targetChar = p.Character
@@ -193,9 +182,6 @@ local function instantTPTo(targetPlayer)
 	char:PivotTo(CFrame.new(dstPart.Position + Vector3.new(0,3,0)))
 end
 
--- ═══════════════════════════════════════
--- INTERFACE GRÁFICA (GUI)
--- ═══════════════════════════════════════
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
@@ -251,7 +237,6 @@ local header = Instance.new("Frame")
 header.Size = UDim2.new(1, 0, 0, 75)
 header.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
 header.BorderSizePixel = 0
-header.Parent = frameePixel = 0
 header.Parent = frame
 local headerCorner = Instance.new("UICorner")
 headerCorner.CornerRadius = UDim.new(0, 18)
@@ -386,9 +371,6 @@ local visionPage = makePage()
 local miscPage = makePage()
 local configsPage = makePage()
 
--- ═══════════════════════════════════════
--- SISTEMA DE AIMBOT
--- ═══════════════════════════════════════
 local aimbotEnabled = false
 local aimbotFOV = 80
 local aimbotTarget = "Head"
@@ -1196,9 +1178,6 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos,
 	end)
 end
 
--- ═══════════════════════════════════════
--- SISTEMA DE VELOCIDADE
--- ═══════════════════════════════════════
 local speedBoostActive = false
 local speedConnection = nil
 local currentSpeed = 16
@@ -1559,9 +1538,6 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• F: Ativar/Desativar Fly\n• WASD: Movimento | Space: Subir | Ctrl: Descer\n• Noclip permite atravessar paredes"
 infoText.Parent = infoCard
 
--- ═══════════════════════════════════════
--- SISTEMA ESP/WALLHACK
--- ═══════════════════════════════════════
 local espEnabled = true
 local espMode = "TEAM"
 local espHighlights = {}
@@ -2740,13 +2716,9 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end)
 end)
 
--- ═══════════════════════════════════════
--- INICIALIZAÇÃO DO SCRIPT
--- ═══════════════════════════════════════
 FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 showPanel(true)
-print("✅ Dark Script carregado com sucesso!")
-print("🔑 Pressione M para abrir/fechar o menu")
-print("🎯 Todas as funcionalidades ativas!")
+print("Script carregado! Pressione M para abrir")
+print("Tecla Aimbot: " .. aimbotKeyName)
