@@ -1,3 +1,22 @@
+--[[
+    ╔══════════════════════════════════════╗
+    ║         DARK SCRIPT v1.0             ║
+    ║    Script Completo para Roblox       ║
+    ╚══════════════════════════════════════╝
+    
+    Funcionalidades:
+    • Sistema de Jogadores (TP, Spectate)
+    • Sistema de Movimento (Fly, Speed, Noclip)
+    • Aimbot Avançado
+    • Auto Clicker
+    • ESP/Wallhack
+    • Misc (Godmode, Inf Jump, Anti-AFK)
+    • Sistema de Configs
+--]]
+
+-- ═══════════════════════════════════════
+-- SERVIÇOS E VARIÁVEIS GLOBAIS
+-- ═══════════════════════════════════════
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -50,6 +69,9 @@ local function getPrimaryPart(char)
 	return char.PrimaryPart or char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
 end
 
+-- ═══════════════════════════════════════
+-- SISTEMA DE VOO (FLY SYSTEM)
+-- ═══════════════════════════════════════
 local FlySystem = {
     flying = false,
     noclip = false,
@@ -152,6 +174,9 @@ function FlySystem:init()
     self:startLoop()
 end
 
+-- ═══════════════════════════════════════
+-- FUNÇÕES DE JOGADORES
+-- ═══════════════════════════════════════
 local function startSpectate(p)
     if not p or p == LocalPlayer then return end
     local targetChar = p.Character
@@ -182,6 +207,9 @@ local function instantTPTo(targetPlayer)
 	char:PivotTo(CFrame.new(dstPart.Position + Vector3.new(0,3,0)))
 end
 
+-- ═══════════════════════════════════════
+-- INTERFACE GRÁFICA (GUI)
+-- ═══════════════════════════════════════
 local gui = Instance.new("ScreenGui")
 gui.Name = "AdminPanel"
 gui.ResetOnSpawn = false
@@ -277,7 +305,7 @@ title.Font = Enum.Font.GothamBold
 title.TextSize = 24
 title.TextColor3 = Color3.new(1,1,1)
 title.TextXAlignment = Enum.TextXAlignment.Left
-title.Text = "CASAIS SCRIPTER"
+title.Text = "DARK SCRIPT"
 title.Parent = header
 
 local minimizeBtn = Instance.new("TextButton")
@@ -380,6 +408,9 @@ local visionPage = makePage()
 local miscPage = makePage()
 local configsPage = makePage()
 
+-- ═══════════════════════════════════════
+-- SISTEMA DE AIMBOT
+-- ═══════════════════════════════════════
 local aimbotEnabled = false
 local aimbotFOV = 80
 local aimbotTarget = "Head"
@@ -1187,6 +1218,9 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, yPos,
 	end)
 end
 
+-- ═══════════════════════════════════════
+-- SISTEMA DE VELOCIDADE
+-- ═══════════════════════════════════════
 local speedBoostActive = false
 local speedConnection = nil
 local currentSpeed = 16
@@ -1547,6 +1581,9 @@ infoText.TextYAlignment = Enum.TextYAlignment.Top
 infoText.Text = "• F: Ativar/Desativar Fly\n• WASD: Movimento | Space: Subir | Ctrl: Descer\n• Noclip permite atravessar paredes"
 infoText.Parent = infoCard
 
+-- ═══════════════════════════════════════
+-- SISTEMA ESP/WALLHACK
+-- ═══════════════════════════════════════
 local espEnabled = true
 local espMode = "TEAM"
 local espHighlights = {}
@@ -2725,10 +2762,13 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 	end)
 end)
 
+-- ═══════════════════════════════════════
+-- INICIALIZAÇÃO DO SCRIPT
+-- ═══════════════════════════════════════
 FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
 showPanel(true)
-print("✅ Admin Panel PRO carregado!")
+print("✅ Dark Script carregado com sucesso!")
 print("🔑 Pressione M para abrir/fechar o menu")
-print("🎯 Tecla Aimbot: " .. aimbotKeyName)
+print("🎯 Todas as funcionalidades ativas!")
