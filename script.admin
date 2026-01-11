@@ -2719,6 +2719,15 @@ end)
 FlySystem:init()
 updatePlayersList()
 setTab("PLAYERS")
-showPanel(true)
-print("Script carregado! Pressione M para abrir")
+
+-- Abrir painel automaticamente
+frame.Visible = true
+miniButton.Visible = false
+panelVisible = true
+prevMouseBehavior = UserInputService.MouseBehavior
+prevMouseIconEnabled = UserInputService.MouseIconEnabled
+UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+UserInputService.MouseIconEnabled = true
+
+print("Script carregado! Pressione M para abrir/fechar")
 print("Tecla Aimbot: " .. aimbotKeyName)
