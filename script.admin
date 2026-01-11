@@ -980,14 +980,19 @@ local triggerKeyBtn = makeCardButton(triggerbotCard, "Tecla: RightAlt", "⌨️"
     end)
 end)
 
--- LÓGICA FUNCIONAL DO AIMBOT
-local function getClosestPlayer()
+-- FOV CIRCLE
+local fovCircle = Drawing.new("Circle")
+fovCircle.Thickness = 2
+fovCircle.NumSides = 50
+fovCircle.Radius = 100
+fovCircle.Filled = false
+fovCircle.Transparency = 1
+fovCircle.Color = Color3.fromRGB(139, 92, 246)
+fovCircle.Visible = false
+
+-- LÓGICA FUNCIONAL
+local function getClosestPlayer(fov)
     local closestPlayer, closestDistance = nil, math.huge
-    local myChar = LocalPlayer.Character
-    if not myChar then return nil end
-    local myHRP = myChar:FindFirstChild("HumanoidRootPart")
-    if not myHRP then return nil end
-    
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
             local char = player.Character
@@ -998,7 +1003,7 @@ local function getClosestPlayer()
                 if onScreen then
                     local mousePos = UserInputService:GetMouseLocation()
                     local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-                    if distance < Aimbot.fov and distance < closestDistance then
+                    if distance < fov and distance < closestDistance then
                         closestPlayer = player
                         closestDistance = distance
                     end
@@ -1013,11 +1018,9 @@ local function aimAt(target)
     if not target or not target.Character then return end
     local head = target.Character:FindFirstChild("Head")
     if not head then return end
-    
     local targetPos = head.Position
     local camCFrame = Camera.CFrame
     local targetCFrame = CFrame.new(camCFrame.Position, targetPos)
-    
     if Aimbot.smooth > 0 then
         Camera.CFrame = camCFrame:Lerp(targetCFrame, 1 / Aimbot.smooth)
     else
@@ -1026,48 +1029,31 @@ local function aimAt(target)
 end
 
 RunService.RenderStepped:Connect(function()
-    if Aimbot.enabled then
-        local isKeyPressed = UserInputService:IsKeyDown(Aimbot.key)
-        if isKeyPressed then
-            local target = getClosestPlayer()
-            if target then
-                aimAt(target)
-            end
-        end
-    end
+    local mousePos = UserInputService:GetMouseLocation()
+    fovCircle.Position = mousePos
     
-    if Triggerbot.enabled then
-        local isKeyPressed = UserInputService:IsKeyDown(Triggerbot.key)
-        if isKeyPressed then
-            local target = getClosestPlayer()
+    if Aimbot.enabled then
+        fovCircle.Radius = Aimbot.fov
+        fovCircle.Visible = true
+        fovCircle.Color = Color3.fromRGB(139, 92, 246)
+        if UserInputService:IsKeyDown(Aimbot.key) then
+            local target = getClosestPlayer(Aimbot.fov)
+            if target then aimAt(target) end
+        end
+    elseif Triggerbot.enabled then
+        fovCircle.Radius = Triggerbot.fov
+        fovCircle.Visible = true
+        fovCircle.Color = Color3.fromRGB(236, 72, 153)
+        if UserInputService:IsKeyDown(Triggerbot.key) then
+            local target = getClosestPlayer(Triggerbot.fov)
             if target then
-                local char = target.Character
-                local head = char and char:FindFirstChild("Head")
-                if head then
-                    local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position)
-                    if onScreen then
-                        local mousePos = UserInputService:GetMouseLocation()
-                        local distance = (Vector2.new(screenPos.X, screenPos.Y) - mousePos).Magnitude
-                        if distance < Triggerbot.fov then
-                            wait(Triggerbot.reactionTime / 1000)
-                            mouse1click()
-                        end
-                    end
-                end
+                wait(Triggerbot.reactionTime / 1000)
+                mouse1click()
             end
         end
+    else
+        fovCircle.Visible = false
     end
-end)angingKey = true
-    triggerKeyBtn.Text = "⌨️ Pressione uma tecla..."
-    local conn
-    conn = UserInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Keyboard then
-            Triggerbot.key = input.KeyCode
-            triggerKeyBtn.Text = "⌨️ Tecla: " .. input.KeyCode.Name
-            Triggerbot.changingKey = false
-            conn:Disconnect()
-        end
-    end)
 end)
 
 -- PÁGINA VISÃO
