@@ -4,6 +4,40 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
+-- Proteções para compatibilidade com diferentes exploits
+local task = task or {wait = wait}
+local Drawing = Drawing or {new = function(type)
+    if type == "Circle" then
+        return {
+            Visible = false,
+            Position = Vector2.zero,
+            Radius = 0,
+            Thickness = 0,
+            Color = Color3.new(),
+            Filled = false,
+            NumSides = 0
+        }
+    elseif type == "Line" then
+        return {
+            From = Vector2.zero,
+            To = Vector2.zero,
+            Color = Color3.new(),
+            Thickness = 0,
+            Transparency = 0,
+            Visible = false
+        }
+    end
+end}
+if not mouse1click then
+    mouse1click = function()
+        pcall(function()
+            local vim = game:GetService("VirtualInputManager")
+            vim:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+            vim:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+        end)
+    end
+end
+
 local UI_TOGGLE_KEY = Enum.KeyCode.M
 local panelVisible = false
 local prevMouseBehavior, prevMouseIconEnabled
@@ -1598,7 +1632,7 @@ end)
 
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function()
-		task.wait(0.5)
+		wait(0.5)
 		if espEnabled then updateESP() end
 	end)
 end)
@@ -2338,7 +2372,7 @@ chatSpamBtn.MouseButton1Click:Connect(function()
 	if chatSpamEnabled then
 		chatSpamConnection = RunService.Heartbeat:Connect(function()
 			game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("Admin Panel PRO", "All")
-			task.wait(2)
+			wait(2)
 		end)
 	else
 		if chatSpamConnection then
@@ -2664,7 +2698,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
-Players.PlayerAdded:Connect(function(p) task.wait(0.5); updatePlayersList() end)
+Players.PlayerAdded:Connect(function(p) wait(0.5); updatePlayersList() end)
 Players.PlayerRemoving:Connect(function(p)
 	if playerButtons[p] then playerButtons[p]:Destroy(); playerButtons[p] = nil end
 	if selectedPlayer == p then selectedPlayer = nil; selectedPlayerTitle.Text = "SELECIONE UM JOGADOR" end
