@@ -40,6 +40,11 @@ local Visuals = {fovChanger = 70, nightMode = false, noBlood = false, noParticle
 local ESPObjects = {}
 local espConnections = {}
 
+-- BIBLIOTECA GLOBAL DARKMENU
+_G.DarkMenu = _G.DarkMenu or {}
+_G.DarkMenu.Version = "3.0"
+_G.DarkMenu.Loaded = true
+
 -- Funções auxiliares (GLOBAIS)
 _G.DarkMenu = _G.DarkMenu or {}
 
@@ -2362,20 +2367,6 @@ Instance.new("UICorner", statsLabel).CornerRadius = UDim.new(0, 8)
 -- Sistema de abas melhorado
 local currentTab = nil
 local function setTab(which)
-    -- Resetar todas as abas
-    for _, tab in ipairs(tabs:GetChildren()) do
-        if tab:IsA("TextButton") then
-            tab.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-            local indicator = tab:FindFirstChild("Frame")
-            if indicator then indicator.Visible = false end
-            for _, child in pairs(tab:GetChildren()) do
-                if child:IsA("TextLabel") and child.Name ~= "Frame" then
-                    child.TextColor3 = Color3.fromRGB(180, 180, 190)
-                end
-            end
-        end
-    end
-    
     playerPage.Visible = false
     combatPage.Visible = false
     visionPage.Visible = false
@@ -2389,9 +2380,6 @@ local function setTab(which)
         tabPlayerLabel.TextColor3 = Color3.new(1, 1, 1)
         tabPlayerIcon.TextColor3 = Color3.new(1, 1, 1)
         playerPage.Visible = true
-        for _, card in pairs(playerButtons) do
-            card.Parent = playersList
-        end
         updatePlayers()
     elseif which == "COMBAT" then
         tabCombat.BackgroundColor3 = Color3.fromRGB(139, 92, 246)
@@ -2424,7 +2412,6 @@ local function setTab(which)
         tabSettingsIcon.TextColor3 = Color3.new(1, 1, 1)
         settingsPage.Visible = true
     end
-    currentTab = which
 end
 
 tabPlayer.MouseButton1Click:Connect(function() setTab("PLAYER") end)
@@ -2843,6 +2830,22 @@ spawn(function()
         end
     end
 end)
+
+-- Expor configurações na biblioteca global
+_G.DarkMenu.Config = {
+    Aimbot = Aimbot,
+    ESP = ESP,
+    Speed = Speed,
+    AutoKill = AutoKill,
+    Combat = Combat,
+    Exploits = Exploits,
+    Visuals = Visuals,
+    Stats = Stats,
+    Radar = Radar,
+    Crosshair = Crosshair,
+    Hitbox = Hitbox,
+    Spinbot = Spinbot
+}
 
 notify("✅ DarkMenu Carregado!", 3)
 notify("Pressione M para abrir/fechar", 3)
